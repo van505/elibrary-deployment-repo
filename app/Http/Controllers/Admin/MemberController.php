@@ -1,0 +1,61 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Helpers\ActivityLogger;
+use App\Http\Controllers\Controller;
+use App\Models\Member;
+use Illuminate\Http\Request;
+
+class MemberController extends Controller
+{
+    public function index()
+    {
+        $members = Member::with('user')->paginate(10);
+
+        return view('admin.members.index', compact('members'));
+    }
+
+    public function show($id)
+    {
+        $member = Member::with('user', 'borrowings', 'reservations', 'payments')->findOrFail($id);
+
+        return view('admin.members.show', compact('member'));
+    }
+
+    public function edit($id)
+    {
+        $member = Member::with('user')->findOrFail($id);
+
+        return view('admin.members.edit', compact('member'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $member = Member::findOrFail($id);
+
+        $validated = $request->validate([
+            'status'            => 'required|in:active,suspended,expired',
+            'phone'             => 'nullable|string|max:255',
+            'address'           => 'nullable|string',
+            'membership_expiry' => 'nullable|date',
+        ]);
+
+        $member->update($validated);
+
+        ActivityLogger::log('updated', 'members', 'Updated member: ' . $member->member_code);
+
+        return redirect()->route('admin.members.index')->with('success', 'Member updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $member = Member::findOrFail($id);
+
+        ActivityLogger::log('deleted', 'members', 'Deleted member: ' . $member->member_code);
+
+        $member->delete();
+
+        return redirect()->route('admin.members.index')->with('success', 'Member deleted successfully.');
+    }
+}
