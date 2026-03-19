@@ -16,10 +16,10 @@ class EbookController extends Controller
 
         if (request('search')) {
             $search = request('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', '%' . $search . '%')
-                  ->orWhereHas('author', fn ($a) => $a->where('name', 'like', '%' . $search . '%'));
-            });
+            $query->where('title', 'like', '%' . $search . '%')
+                  ->orWhereHas('author', function ($a) use ($search) {
+                      $a->where('name', 'like', '%' . $search . '%');
+                  });
         }
 
         if (request('category_id')) {
