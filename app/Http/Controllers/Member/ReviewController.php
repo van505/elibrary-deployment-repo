@@ -8,6 +8,22 @@ use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
+    public function index()
+    {
+        $member = auth()->user()->member;
+
+        if (! $member) {
+            return redirect()->route('member.dashboard');
+        }
+
+        $reviews = $member->reviews()
+            ->with('ebook')
+            ->latest()
+            ->paginate(10);
+
+        return view('member.reviews.index', compact('reviews'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([

@@ -94,7 +94,7 @@ Route::middleware(['auth', 'role:member'])
             ->only(['index', 'store', 'destroy']);
 
         Route::resource('reviews', Member\ReviewController::class)
-            ->only(['store', 'destroy']);
+            ->only(['index', 'store', 'destroy']);
     });
 
 require __DIR__ . '/auth.php';
