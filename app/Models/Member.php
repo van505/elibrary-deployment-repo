@@ -14,38 +14,72 @@ class Member extends Model
         'phone',
         'address',
         'status',
-        'membership_expiry',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'membership_expiry' => 'date',
-        ];
-    }
+    // ── Relationships ────────────────────────────────────────────────────────
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function borrowings(): HasMany
+    public function subscriptions(): HasMany
     {
-        return $this->hasMany(Borrowing::class);
+        return $this->hasMany(Subscription::class);
     }
 
-    public function reservations(): HasMany
+    public function ebookAccess(): HasMany
     {
-        return $this->hasMany(Reservation::class);
+        return $this->hasMany(EbookAccess::class);
     }
 
-    public function payments(): HasMany
+    public function transactions(): HasMany
     {
-        return $this->hasMany(Payment::class);
+        return $this->hasMany(Transaction::class);
     }
 
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
+    }
+
+    // ── Subscription Helpers ─────────────────────────────────────────────────
+
+    public function activeSubscription(): ?Subscription
+    {
+        return $this->subscriptions()
+            ->where('status', 'active')
+            ->where(function ($q) {
+                $q->whereNull('expires_at')
+                  ->orWhere('expires_at', '>', now());
+            })
+            ->latest()
+            ->first();
+    }
+
+    public function currentPlan(): ?SubscriptionPlan
+    {
+        $sub = $this->activeSubscription();
+        return $sub ? $sub->plan : null;
+    }
+
+    public function canAccessEbook(int $ebookId): bool
+    {
+        $plan = $this->currentPlan();
+        if (! $plan) {
+            return false;
+        }
+
+        $hasAccess = $this->ebookAccess()->where('ebook_id', $ebookId)->exists();
+        if ($hasAccess) {
+            return true;
+        }
+
+        $limit = $plan->ebook_limit;
+        if ($limit === -1) {
+            return true; // unlimited
+        }
+
+        return $this->ebookAccess()->count() < $limit;
     }
 }

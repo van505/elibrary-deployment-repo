@@ -5,23 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Payment extends Model
+class Subscription extends Model
 {
     protected $fillable = [
         'member_id',
-        'borrowing_id',
-        'amount',
-        'payment_type',
-        'payment_status',
-        'reference_no',
-        'paid_at',
+        'plan_id',
+        'status',
+        'started_at',
+        'expires_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'amount'  => 'decimal:2',
-            'paid_at' => 'datetime',
+            'started_at' => 'datetime',
+            'expires_at' => 'datetime',
         ];
     }
 
@@ -30,8 +28,8 @@ class Payment extends Model
         return $this->belongsTo(Member::class);
     }
 
-    public function borrowing(): BelongsTo
+    public function plan(): BelongsTo
     {
-        return $this->belongsTo(Borrowing::class);
+        return $this->belongsTo(SubscriptionPlan::class, 'plan_id');
     }
 }

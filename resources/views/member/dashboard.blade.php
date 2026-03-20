@@ -2,68 +2,97 @@
 @section('title', 'My Dashboard')
 
 @section('content')
-<div class="mb-6">
-    <h2 class="text-2xl font-bold text-gray-800">Welcome back, {{ auth()->user()->name }}! 👋</h2>
-    <p class="text-gray-500 text-sm mt-1">Here's an overview of your library activity.</p>
-</div>
+<div class="space-y-6">
 
-{{-- Stats --}}
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white rounded-xl shadow-sm p-6 flex items-center gap-4">
-        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
-            </svg>
+    {{-- Welcome + Plan Badge --}}
+    <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
+        <div class="flex items-start justify-between">
+            <div>
+                <h1 class="text-2xl font-bold mb-1">Welcome back, {{ auth()->user()->name }}!</h1>
+                <p class="text-blue-100 text-sm">Your digital reading hub</p>
+            </div>
+            @if($plan)
+                @php
+                    $planColors = ['free' => 'bg-gray-200 text-gray-700', 'basic' => 'bg-blue-200 text-blue-800', 'premium' => 'bg-purple-200 text-purple-800'];
+                    $color = $planColors[$plan->slug] ?? 'bg-gray-200 text-gray-700';
+                @endphp
+                <span class="px-3 py-1 rounded-full text-xs font-bold {{ $color }}">
+                    {{ strtoupper($plan->name) }} PLAN
+                </span>
+            @else
+                <a href="{{ route('member.subscriptions.index') }}" class="bg-white text-blue-600 text-xs font-bold px-3 py-1 rounded-full hover:bg-blue-50 transition-colors">GET A PLAN</a>
+            @endif
         </div>
+
+        <div class="grid grid-cols-3 gap-4 mt-6">
+            <div class="bg-white/20 rounded-xl p-4 text-center">
+                <p class="text-2xl font-bold">{{ $accessCount }}</p>
+                <p class="text-xs text-blue-100 mt-1">Ebooks Accessed</p>
+            </div>
+            <div class="bg-white/20 rounded-xl p-4 text-center">
+                <p class="text-2xl font-bold">{{ $plan ? ($plan->ebook_limit === -1 ? '∞' : $plan->ebook_limit) : 0 }}</p>
+                <p class="text-xs text-blue-100 mt-1">Plan Limit</p>
+            </div>
+            <div class="bg-white/20 rounded-xl p-4 text-center">
+                <p class="text-2xl font-bold">
+                    @if($subscription && $subscription->expires_at)
+                        {{ $subscription->expires_at->diffInDays(now()) }}d
+                    @else
+                        ∞
+                    @endif
+                </p>
+                <p class="text-xs text-blue-100 mt-1">
+                    @if($subscription && $subscription->expires_at) Days Left @else No Expiry @endif
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {{-- Upgrade Banner (only for free plan) --}}
+    @if($plan && $plan->slug === 'free')
+    <div class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-4 flex items-center justify-between">
         <div>
-            <p class="text-3xl font-bold text-blue-600">{{ $activeBorrowings }}</p>
-            <p class="text-sm text-gray-500 mt-1">Active Borrowings</p>
+            <p class="font-semibold text-gray-800 text-sm">Unlock more ebooks</p>
+            <p class="text-xs text-gray-500">Upgrade to Basic (₱99/mo) or Premium (₱199/mo) for more access</p>
         </div>
+        <a href="{{ route('member.subscriptions.index') }}" class="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+            Upgrade Plan
+        </a>
+    </div>
+    @endif
+
+    {{-- Recently Accessed --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="font-semibold text-gray-800">Recently Accessed</h2>
+            <a href="{{ route('member.ebooks.index') }}" class="text-blue-600 text-sm hover:underline">Browse all</a>
+        </div>
+
+        @if($recentAccess->isEmpty())
+            <div class="text-center py-10 text-gray-400">
+                <svg class="w-12 h-12 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13"/></svg>
+                <p class="text-sm">No ebooks accessed yet.</p>
+                <a href="{{ route('member.ebooks.index') }}" class="mt-2 inline-block text-blue-600 text-sm hover:underline">Browse ebooks →</a>
+            </div>
+        @else
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                @foreach($recentAccess as $access)
+                <a href="{{ route('member.ebooks.read', $access->ebook->id) }}" class="group block">
+                    <div class="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden mb-2">
+                        @if($access->ebook->cover_image)
+                            <img src="{{ asset('storage/' . $access->ebook->cover_image) }}" alt="{{ $access->ebook->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200">
+                                <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13"/></svg>
+                            </div>
+                        @endif
+                    </div>
+                    <p class="text-xs font-medium text-gray-700 truncate">{{ $access->ebook->title }}</p>
+                </a>
+                @endforeach
+            </div>
+        @endif
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm p-6 flex items-center gap-4">
-        <div class="w-12 h-12 bg-{{ $overdueBorrowings->count() > 0 ? 'red' : 'gray' }}-100 rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg class="w-6 h-6 text-{{ $overdueBorrowings->count() > 0 ? 'red' : 'gray' }}-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-        </div>
-        <div>
-            <p class="text-3xl font-bold text-{{ $overdueBorrowings->count() > 0 ? 'red-600' : 'gray-400' }}">{{ $overdueBorrowings->count() }}</p>
-            <p class="text-sm text-gray-500 mt-1">Overdue Books</p>
-        </div>
-    </div>
-
-    <div class="bg-white rounded-xl shadow-sm p-6 flex items-center gap-4">
-        <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-        </div>
-        <div>
-            <p class="text-3xl font-bold text-yellow-600">{{ $reservations }}</p>
-            <p class="text-sm text-gray-500 mt-1">Pending Reservations</p>
-        </div>
-    </div>
 </div>
-
-{{-- Overdue List --}}
-@if($overdueBorrowings->count() > 0)
-<div class="bg-red-50 border border-red-200 rounded-xl p-6">
-    <h3 class="font-bold text-red-700 mb-4 flex items-center gap-2">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-        </svg>
-        Overdue Books — Please return as soon as possible
-    </h3>
-    <div class="space-y-2">
-        @foreach($overdueBorrowings as $b)
-        <div class="flex justify-between text-sm bg-white rounded-lg p-3 border border-red-100">
-            <span class="font-medium text-gray-800">{{ $b->ebook->title }}</span>
-            <span class="text-red-600 font-medium">Due: {{ $b->due_date?->format('M d, Y') }}</span>
-        </div>
-        @endforeach
-    </div>
-</div>
-@endif
-
 @endsection

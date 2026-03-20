@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Author extends Model
 {
@@ -13,8 +13,8 @@ class Author extends Model
         'nationality',
     ];
 
-    public function ebooks(): HasMany
+    public function ebooks(): BelongsToMany
     {
-        return $this->hasMany(Ebook::class);
+        return $this->belongsToMany(Ebook::class, 'book_authors');
     }
 }

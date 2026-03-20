@@ -2,65 +2,93 @@
 @section('title', 'Browse Ebooks')
 
 @section('content')
-<h2 class="text-2xl font-bold text-gray-800 mb-6">Browse Ebooks</h2>
+<div class="space-y-6">
 
-{{-- Search & Filter --}}
-<form method="GET" class="flex gap-3 mb-6">
-    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by title or author…" class="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-    <select name="category_id" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <option value="">All Categories</option>
-        @foreach($categories as $cat)
-        <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-        @endforeach
-    </select>
-    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Search</button>
-    @if(request('search') || request('category_id'))
-    <a href="{{ route('member.ebooks.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-600 px-4 py-2 rounded-lg text-sm">Clear</a>
-    @endif
-</form>
-
-{{-- Grid --}}
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    @forelse($ebooks as $ebook)
-    <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-        <a href="{{ route('member.ebooks.show', $ebook) }}">
-            <img src="{{ $ebook->cover_image ? Storage::url($ebook->cover_image) : '/images/placeholder.png' }}"
-                 class="w-full h-48 object-cover"
-                 onerror="this.src='/images/placeholder.png'">
-        </a>
-        <div class="p-4">
-            <a href="{{ route('member.ebooks.show', $ebook) }}" class="font-bold text-gray-800 hover:text-blue-600 line-clamp-2 leading-snug">{{ $ebook->title }}</a>
-            <p class="text-sm text-gray-500 mt-1">{{ $ebook->author->name }}</p>
-            <div class="flex items-center justify-between mt-3">
-                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">{{ $ebook->category->name }}</span>
-                <span class="text-xs font-medium {{ $ebook->available_copies > 0 ? 'text-green-600' : 'text-red-500' }}">
-                    {{ $ebook->available_copies > 0 ? $ebook->available_copies.' available' : 'Unavailable' }}
-                </span>
-            </div>
-            <div class="flex gap-2 mt-4">
-                <form action="{{ route('member.borrowings.store') }}" method="POST" class="flex-1">
-                    @csrf
-                    <input type="hidden" name="ebook_id" value="{{ $ebook->id }}">
-                    <button type="submit" {{ $ebook->available_copies < 1 ? 'disabled' : '' }}
-                            class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-3 py-1.5 rounded text-sm font-medium">
-                        Borrow
-                    </button>
-                </form>
-                <form action="{{ route('member.reservations.store') }}" method="POST" class="flex-1">
-                    @csrf
-                    <input type="hidden" name="ebook_id" value="{{ $ebook->id }}">
-                    <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded text-sm font-medium">Reserve</button>
-                </form>
-            </div>
+    {{-- Search & Filters --}}
+    <form method="GET" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+        <div class="flex flex-wrap gap-3">
+            <input type="text" name="search" value="{{ request('search') }}"
+                   placeholder="Search by title or author..."
+                   class="flex-1 min-w-48 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            <select name="category_id" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="">All Categories</option>
+                @foreach($categories as $cat)
+                    <option value="{{ $cat->id }}" @selected(request('category_id') == $cat->id)>{{ $cat->name }}</option>
+                @endforeach
+            </select>
+            <select name="access_level" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="">All Levels</option>
+                <option value="free"    @selected(request('access_level') === 'free')>Free</option>
+                <option value="basic"   @selected(request('access_level') === 'basic')>Basic</option>
+                <option value="premium" @selected(request('access_level') === 'premium')>Premium</option>
+            </select>
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors">Search</button>
+            @if(request()->hasAny(['search','category_id','access_level']))
+                <a href="{{ route('member.ebooks.index') }}" class="text-gray-500 hover:text-gray-700 px-4 py-2 text-sm">Clear</a>
+            @endif
         </div>
-    </div>
-    @empty
-    <div class="col-span-3 py-16 text-center text-gray-400">
-        <p class="text-lg">No ebooks found.</p>
-        <a href="{{ route('member.ebooks.index') }}" class="text-blue-600 text-sm mt-2 inline-block">Clear search</a>
-    </div>
-    @endforelse
-</div>
+    </form>
 
-<div class="mt-6">{{ $ebooks->links() }}</div>
+    {{-- Ebooks Grid --}}
+    @if($ebooks->isEmpty())
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-16 text-center text-gray-400">
+            <svg class="w-16 h-16 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13"/></svg>
+            <p class="font-medium">No ebooks found.</p>
+        </div>
+    @else
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            @foreach($ebooks as $ebook)
+            @php
+                $accessed = in_array($ebook->id, $accessedIds ?? []);
+                $levelColors = ['free' => 'bg-green-100 text-green-700', 'basic' => 'bg-blue-100 text-blue-700', 'premium' => 'bg-purple-100 text-purple-700'];
+                $levelColor = $levelColors[$ebook->access_level] ?? 'bg-gray-100 text-gray-600';
+            @endphp
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
+                {{-- Cover --}}
+                <div class="aspect-[3/4] bg-gray-100 overflow-hidden relative">
+                    @if($ebook->cover_image)
+                        <img src="{{ asset('storage/' . $ebook->cover_image) }}" alt="{{ $ebook->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    @else
+                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+                            <svg class="w-12 h-12 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13"/></svg>
+                        </div>
+                    @endif
+                    {{-- Access Level Badge --}}
+                    <span class="absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full {{ $levelColor }}">
+                        {{ ucfirst($ebook->access_level) }}
+                    </span>
+                    {{-- Reading Badge --}}
+                    @if($accessed)
+                        <span class="absolute top-2 right-2 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">Reading</span>
+                    @endif
+                </div>
+
+                <div class="p-3">
+                    <h3 class="font-semibold text-gray-800 text-sm truncate mb-1">{{ $ebook->title }}</h3>
+                    <p class="text-xs text-gray-500 truncate mb-3">
+                        {{ $ebook->authors->pluck('name')->join(', ') ?: 'Unknown Author' }}
+                    </p>
+
+                    @if($accessed)
+                        <a href="{{ route('member.ebooks.read', $ebook->id) }}"
+                           class="block text-center bg-green-600 hover:bg-green-700 text-white text-xs font-medium py-1.5 rounded-lg transition-colors">
+                            Continue Reading
+                        </a>
+                    @else
+                        <form action="{{ route('member.ebooks.access', $ebook->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium py-1.5 rounded-lg transition-colors">
+                                Read Now
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            </div>
+            @endforeach
+        </div>
+
+        <div>{{ $ebooks->withQueryString()->links() }}</div>
+    @endif
+
+</div>
 @endsection

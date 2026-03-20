@@ -5,21 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Reservation extends Model
+class EbookAccess extends Model
 {
+    protected $table = 'ebook_access';
+
     protected $fillable = [
         'member_id',
         'ebook_id',
-        'reserved_date',
-        'expiry_date',
-        'status',
+        'accessed_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'reserved_date' => 'date',
-            'expiry_date'   => 'date',
+            'accessed_at' => 'datetime',
         ];
     }
 

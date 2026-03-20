@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('ebooks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('author_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->string('title');
             $table->string('isbn')->unique()->nullable();
@@ -21,8 +20,8 @@ return new class extends Migration
             $table->integer('publish_year')->nullable();
             $table->string('file_path');
             $table->string('cover_image')->nullable();
-            $table->integer('total_copies')->default(1);
-            $table->integer('available_copies')->default(1);
+            $table->enum('file_type', ['pdf', 'epub', 'mp3'])->default('pdf');
+            $table->enum('access_level', ['free', 'basic', 'premium'])->default('free');
             $table->timestamps();
         });
     }

@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
             $table->enum('status', ['active', 'suspended', 'expired'])->default('active');
-            $table->date('membership_expiry')->nullable();
             $table->timestamps();
         });
     }

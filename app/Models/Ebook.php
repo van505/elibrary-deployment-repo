@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ebook extends Model
 {
     protected $fillable = [
-        'author_id',
         'category_id',
         'title',
         'isbn',
@@ -17,28 +17,25 @@ class Ebook extends Model
         'publish_year',
         'file_path',
         'cover_image',
-        'total_copies',
-        'available_copies',
+        'file_type',
+        'access_level',
     ];
 
-    public function author(): BelongsTo
-    {
-        return $this->belongsTo(Author::class);
-    }
+    // ── Relationships ────────────────────────────────────────────────────────
 
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function borrowings(): HasMany
+    public function authors(): BelongsToMany
     {
-        return $this->hasMany(Borrowing::class);
+        return $this->belongsToMany(Author::class, 'book_authors');
     }
 
-    public function reservations(): HasMany
+    public function ebookAccess(): HasMany
     {
-        return $this->hasMany(Reservation::class);
+        return $this->hasMany(EbookAccess::class);
     }
 
     public function reviews(): HasMany
