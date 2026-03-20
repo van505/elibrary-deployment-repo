@@ -2,19 +2,15 @@
 
 namespace App\Http\Controllers\Member;
 
-use App\Http\Controllers\Controller;
+use App\Models\EbookAccess;
 use App\Models\Review;
 use Illuminate\Http\Request;
 
-class ReviewController extends Controller
+class ReviewController extends BaseMemberController
 {
     public function index()
     {
-        $member = auth()->user()->member;
-
-        if (! $member) {
-            return redirect()->route('member.dashboard');
-        }
+        $member = $this->getOrCreateMember();
 
         $reviews = $member->reviews()
             ->with('ebook')
@@ -29,28 +25,27 @@ class ReviewController extends Controller
         $request->validate([
             'ebook_id' => 'required|exists:ebooks,id',
             'rating'   => 'required|integer|min:1|max:5',
-            'comment'  => 'nullable|string',
+            'comment'  => 'nullable|string|max:1000',
         ]);
 
-        $member = auth()->user()->member;
+        $member = $this->getOrCreateMember();
 
-        // Must have a returned borrowing for this ebook
-        $hasBorrowed = $member->borrowings()
+        // Member must have accessed this ebook first (subscription system)
+        $hasAccess = EbookAccess::where('member_id', $member->id)
             ->where('ebook_id', $request->ebook_id)
-            ->where('status', 'returned')
             ->exists();
 
-        if (!$hasBorrowed) {
-            return redirect()->back()->with('error', 'You can only review ebooks you have borrowed and returned.');
+        if (! $hasAccess) {
+            return redirect()->back()
+                ->with('error', 'You can only review ebooks you have accessed.');
         }
 
-        // No duplicate review
-        $alreadyReviewed = $member->reviews()
-            ->where('ebook_id', $request->ebook_id)
-            ->exists();
+        // No duplicate reviews
+        $alreadyReviewed = $member->reviews()->where('ebook_id', $request->ebook_id)->exists();
 
         if ($alreadyReviewed) {
-            return redirect()->back()->with('error', 'You have already submitted a review for this ebook.');
+            return redirect()->back()
+                ->with('error', 'You have already submitted a review for this ebook.');
         }
 
         Review::create([
@@ -66,7 +61,7 @@ class ReviewController extends Controller
 
     public function destroy($id)
     {
-        $member = auth()->user()->member;
+        $member = $this->getOrCreateMember();
         $review = Review::where('id', $id)
             ->where('member_id', $member->id)
             ->firstOrFail();

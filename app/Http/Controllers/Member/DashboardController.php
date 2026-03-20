@@ -2,18 +2,11 @@
 
 namespace App\Http\Controllers\Member;
 
-use App\Http\Controllers\Controller;
-
-class DashboardController extends Controller
+class DashboardController extends BaseMemberController
 {
     public function index()
     {
-        $user   = auth()->user();
-        $member = $user->member;
-
-        if (! $member) {
-            return redirect()->route('member.ebooks.index');
-        }
+        $member = $this->getOrCreateMember();
 
         $subscription = $member->activeSubscription();
         $plan         = $member->currentPlan();

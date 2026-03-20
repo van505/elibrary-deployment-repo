@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers\Member;
 
-use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Ebook;
 use App\Models\EbookAccess;
 
-class EbookController extends Controller
+class EbookController extends BaseMemberController
 {
     public function index()
     {
         $categories = Category::orderBy('name')->get();
-        $member     = auth()->user()->member;
+        $member     = $this->getOrCreateMember();
 
         $query = Ebook::with('authors', 'category');
 
@@ -32,10 +31,7 @@ class EbookController extends Controller
 
         $ebooks = $query->paginate(12);
 
-        // Collect ebook IDs this member has already accessed
-        $accessedIds = $member
-            ? $member->ebookAccess()->pluck('ebook_id')->toArray()
-            : [];
+        $accessedIds = $member->ebookAccess()->pluck('ebook_id')->toArray();
 
         return view('member.ebooks.index', compact('ebooks', 'categories', 'accessedIds', 'member'));
     }
@@ -46,10 +42,10 @@ class EbookController extends Controller
 
         $approvedReviews = $ebook->reviews->where('status', 'approved');
 
-        $member    = auth()->user()->member;
-        $hasAccess = $member
-            ? EbookAccess::where('member_id', $member->id)->where('ebook_id', $id)->exists()
-            : false;
+        $member    = $this->getOrCreateMember();
+        $hasAccess = EbookAccess::where('member_id', $member->id)
+            ->where('ebook_id', $id)
+            ->exists();
 
         return view('member.ebooks.show', compact('ebook', 'approvedReviews', 'hasAccess', 'member'));
     }

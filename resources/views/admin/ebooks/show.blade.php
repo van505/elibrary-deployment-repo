@@ -20,12 +20,13 @@
         <div class="bg-white rounded-xl shadow-sm p-6">
             <h2 class="text-xl font-bold text-gray-800 mb-4">{{ $ebook->title }}</h2>
             <dl class="grid grid-cols-2 gap-4 text-sm">
-                <div><dt class="text-gray-500">Author</dt><dd class="font-medium">{{ $ebook->author->name }}</dd></div>
+                <div><dt class="text-gray-500">Authors</dt><dd class="font-medium">{{ $ebook->authors->pluck('name')->join(', ') ?: '—' }}</dd></div>
                 <div><dt class="text-gray-500">Category</dt><dd><span class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">{{ $ebook->category->name }}</span></dd></div>
                 <div><dt class="text-gray-500">ISBN</dt><dd>{{ $ebook->isbn ?? '—' }}</dd></div>
                 <div><dt class="text-gray-500">Publisher</dt><dd>{{ $ebook->publisher ?? '—' }}</dd></div>
                 <div><dt class="text-gray-500">Publish Year</dt><dd>{{ $ebook->publish_year ?? '—' }}</dd></div>
-                <div><dt class="text-gray-500">Copies</dt><dd>{{ $ebook->available_copies }}/{{ $ebook->total_copies }} available</dd></div>
+                <div><dt class="text-gray-500">Format</dt><dd><span class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full uppercase">{{ $ebook->file_type }}</span></dd></div>
+                <div><dt class="text-gray-500">Access Level</dt><dd>@php $lc=['free'=>'bg-green-100 text-green-700','basic'=>'bg-blue-100 text-blue-700','premium'=>'bg-purple-100 text-purple-700']; @endphp<span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $lc[$ebook->access_level] ?? 'bg-gray-100 text-gray-600' }}">{{ ucfirst($ebook->access_level) }}</span></dd></div>
             </dl>
         </div>
 
