@@ -29,7 +29,18 @@ class SubscriptionController extends BaseMemberController
         $member = $this->getOrCreateMember();
         $plan   = SubscriptionPlan::findOrFail($request->plan_id);
 
-        // Cancel existing active subscriptions
+        // Guard: already on this exact plan
+        $alreadyOnThisPlan = $member->subscriptions()
+            ->where('status', 'active')
+            ->where('plan_id', $plan->id)
+            ->exists();
+
+        if ($alreadyOnThisPlan) {
+            return redirect()->route('member.subscriptions.index')
+                ->with('error', 'You are already subscribed to the ' . $plan->name . ' plan.');
+        }
+
+        // Cancel current active subscriptions
         $member->subscriptions()->where('status', 'active')->update(['status' => 'cancelled']);
 
         // Create new subscription

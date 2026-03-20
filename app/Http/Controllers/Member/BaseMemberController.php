@@ -11,8 +11,9 @@ use Illuminate\Support\Str;
 class BaseMemberController extends Controller
 {
     /**
-     * Get the authenticated user's member record, auto-creating it
-     * (plus a free subscription) if it doesn't exist yet.
+     * Get (or auto-create) the Member record for the authenticated user,
+     * and ensure they have at least a free subscription.
+     * Checks ALL subscription statuses (not just active) to prevent duplicates.
      */
     protected function getOrCreateMember(): Member
     {
@@ -27,10 +28,11 @@ class BaseMemberController extends Controller
             ]);
         }
 
-        // Auto-assign free plan if this member has no active subscription
-        $hasActive = $member->subscriptions()->where('status', 'active')->exists();
+        // Only create a free plan if this member has NO subscription at all
+        // (checking any status — active, cancelled, expired — avoids duplicates)
+        $hasAnySubscription = $member->subscriptions()->exists();
 
-        if (! $hasActive) {
+        if (! $hasAnySubscription) {
             $freePlan = SubscriptionPlan::where('slug', 'free')->first();
             if ($freePlan) {
                 Subscription::create([
@@ -43,7 +45,6 @@ class BaseMemberController extends Controller
             }
         }
 
-        // Refresh so relationships are re-loaded after potential creation
         return $member->refresh();
     }
 }

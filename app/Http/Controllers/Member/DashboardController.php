@@ -17,12 +17,19 @@ class DashboardController extends BaseMemberController
             ->take(5)
             ->get();
 
+        // Calculate days left — 0 if expired, null if no expiry (unlimited)
+        $daysLeft = null;
+        if ($subscription && $subscription->expires_at) {
+            $daysLeft = (int) max(0, now()->diffInDays($subscription->expires_at, false));
+        }
+
         return view('member.dashboard', compact(
             'member',
             'subscription',
             'plan',
             'accessCount',
-            'recentAccess'
+            'recentAccess',
+            'daysLeft'
         ));
     }
 }

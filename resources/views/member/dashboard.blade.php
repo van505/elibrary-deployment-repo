@@ -34,16 +34,13 @@
                 <p class="text-xs text-blue-100 mt-1">Plan Limit</p>
             </div>
             <div class="bg-white/20 rounded-xl p-4 text-center">
-                <p class="text-2xl font-bold">
-                    @if($subscription && $subscription->expires_at)
-                        {{ $subscription->expires_at->diffInDays(now()) }}d
-                    @else
-                        ∞
-                    @endif
-                </p>
-                <p class="text-xs text-blue-100 mt-1">
-                    @if($subscription && $subscription->expires_at) Days Left @else No Expiry @endif
-                </p>
+                @if($daysLeft !== null)
+                    <p class="text-2xl font-bold">{{ $daysLeft }}d</p>
+                    <p class="text-xs text-blue-100 mt-1">Days Left</p>
+                @else
+                    <p class="text-2xl font-bold">∞</p>
+                    <p class="text-xs text-blue-100 mt-1">Never Expires</p>
+                @endif
             </div>
         </div>
     </div>

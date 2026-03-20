@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Member;
 
-use App\Models\Category;
-use App\Models\Ebook;
 use App\Models\EbookAccess;
+use App\Models\Ebook;
+use App\Models\Review;
+use App\Models\Category;
 
 class EbookController extends BaseMemberController
 {
@@ -17,8 +18,10 @@ class EbookController extends BaseMemberController
 
         if (request('search')) {
             $search = request('search');
-            $query->where('title', 'like', '%' . $search . '%')
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
                   ->orWhereHas('authors', fn ($a) => $a->where('name', 'like', '%' . $search . '%'));
+            });
         }
 
         if (request('category_id')) {
@@ -29,24 +32,37 @@ class EbookController extends BaseMemberController
             $query->where('access_level', request('access_level'));
         }
 
-        $ebooks = $query->paginate(12);
-
+        $ebooks      = $query->paginate(12);
         $accessedIds = $member->ebookAccess()->pluck('ebook_id')->toArray();
 
         return view('member.ebooks.index', compact('ebooks', 'categories', 'accessedIds', 'member'));
     }
 
-    public function show($id)
+    public function show(Ebook $ebook)
     {
-        $ebook = Ebook::with('authors', 'category', 'reviews.member.user')->findOrFail($id);
+        $member = $this->getOrCreateMember();
 
-        $approvedReviews = $ebook->reviews->where('status', 'approved');
+        $ebook->load('authors', 'category');
 
-        $member    = $this->getOrCreateMember();
         $hasAccess = EbookAccess::where('member_id', $member->id)
-            ->where('ebook_id', $id)
+            ->where('ebook_id', $ebook->id)
             ->exists();
 
-        return view('member.ebooks.show', compact('ebook', 'approvedReviews', 'hasAccess', 'member'));
+        $hasReviewed = Review::where('member_id', $member->id)
+            ->where('ebook_id', $ebook->id)
+            ->exists();
+
+        $reviews = Review::where('ebook_id', $ebook->id)
+            ->where('status', 'approved')
+            ->with('member.user')
+            ->latest()
+            ->get();
+
+        return view('member.ebooks.show', compact(
+            'ebook',
+            'hasAccess',
+            'hasReviewed',
+            'reviews'
+        ));
     }
 }

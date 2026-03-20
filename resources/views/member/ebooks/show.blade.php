@@ -73,25 +73,106 @@
         </div>
     </div>
 
-    {{-- Reviews --}}
-    @if($approvedReviews->count())
+    {{-- Reviews Section --}}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 class="font-semibold text-gray-800 mb-4">Reader Reviews ({{ $approvedReviews->count() }})</h2>
-        <div class="space-y-4">
-            @foreach($approvedReviews as $review)
-            <div class="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="font-medium text-sm text-gray-700">{{ $review->member->user->name ?? 'Member' }}</span>
-                    <span class="text-yellow-400 text-sm">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</span>
+        <h2 class="text-lg font-bold text-gray-800 mb-5">
+            Reviews
+            @if($reviews->count()) <span class="text-gray-400 font-normal text-sm">({{ $reviews->count() }})</span> @endif
+        </h2>
+
+        {{-- Approved reviews list --}}
+        @forelse($reviews as $review)
+        <div class="border-b border-gray-100 pb-4 mb-4 last:border-0 last:mb-0 last:pb-0">
+            <div class="flex items-center justify-between mb-1">
+                <span class="font-medium text-sm text-gray-700">{{ $review->member->user->name ?? 'Member' }}</span>
+                <div class="flex items-center gap-0.5">
+                    @for($i = 1; $i <= 5; $i++)
+                        <span class="{{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-200' }} text-base">★</span>
+                    @endfor
                 </div>
-                @if($review->comment)
-                    <p class="text-sm text-gray-600">{{ $review->comment }}</p>
-                @endif
             </div>
-            @endforeach
+            @if($review->comment)
+                <p class="text-sm text-gray-600">{{ $review->comment }}</p>
+            @endif
         </div>
+        @empty
+            <p class="text-gray-400 text-sm">No reviews yet. Be the first to review!</p>
+        @endforelse
+
+        {{-- Review form (only if has access and hasn't reviewed yet) --}}
+        @if($hasAccess && !$hasReviewed)
+        <div class="mt-6 pt-6 border-t border-gray-100">
+            <h3 class="font-semibold text-gray-800 mb-4">Write a Review</h3>
+            <form method="POST" action="{{ route('member.reviews.store') }}" id="review-form">
+                @csrf
+                <input type="hidden" name="ebook_id" value="{{ $ebook->id }}">
+
+                {{-- Star Rating --}}
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Rating <span class="text-red-500">*</span></label>
+                    <div class="flex gap-2" id="star-container">
+                        @for($i = 1; $i <= 5; $i++)
+                        <label class="cursor-pointer">
+                            <input type="radio" name="rating" value="{{ $i }}" class="sr-only" required>
+                            <span class="text-4xl text-gray-300 hover:text-yellow-400 transition-colors" data-star="{{ $i }}">★</span>
+                        </label>
+                        @endfor
+                    </div>
+                    @error('rating') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- Comment --}}
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Comment <span class="text-gray-400 text-xs">(optional)</span></label>
+                    <textarea name="comment" rows="4"
+                              placeholder="Share your thoughts about this ebook..."
+                              class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none">{{ old('comment') }}</textarea>
+                    @error('comment') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                    Submit Review
+                </button>
+            </form>
+        </div>
+
+        <script>
+        // Interactive star rating
+        const container = document.getElementById('star-container');
+        const stars = container.querySelectorAll('[data-star]');
+        const inputs = container.querySelectorAll('input[type="radio"]');
+
+        stars.forEach((star, idx) => {
+            star.addEventListener('mouseover', () => highlightStars(idx + 1));
+            star.addEventListener('click', () => {
+                inputs[idx].checked = true;
+                highlightStars(idx + 1, true);
+            });
+        });
+
+        container.addEventListener('mouseleave', () => {
+            const checked = [...inputs].findIndex(i => i.checked);
+            checked >= 0 ? highlightStars(checked + 1, true) : highlightStars(0);
+        });
+
+        function highlightStars(count, persist = false) {
+            stars.forEach((star, i) => {
+                star.classList.toggle('text-yellow-400', i < count);
+                star.classList.toggle('text-gray-300', i >= count);
+            });
+        }
+        </script>
+
+        @elseif($hasReviewed)
+        <div class="mt-6 pt-6 border-t border-gray-100 bg-green-50 rounded-lg p-4">
+            <p class="text-green-700 text-sm">✅ You have already reviewed this ebook. Thank you for your feedback!</p>
+        </div>
+        @elseif(!$hasAccess)
+        <div class="mt-6 pt-6 border-t border-gray-100 bg-gray-50 rounded-lg p-4">
+            <p class="text-gray-500 text-sm">📖 Access this ebook first to leave a review.</p>
+        </div>
+        @endif
     </div>
-    @endif
 
 </div>
 @endsection
