@@ -36,7 +36,7 @@
             <div class="px-6 py-4 border-t border-gray-100">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="text-sm font-medium text-gray-800">{{ $review->member->user->name ?? 'Unknown' }}</p>
+                        <p class="text-sm font-medium text-gray-800">{{ $review->member?->full_name ?: 'Unknown' }}</p>
                         <p class="text-xs text-gray-500">Rating: {{ $review->rating }}/5</p>
                     </div>
                     <span class="px-2 py-0.5 rounded text-xs {{ $review->status === 'approved' ? 'bg-green-100 text-green-700' : ($review->status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">{{ $review->status }}</span>

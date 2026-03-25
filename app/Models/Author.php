@@ -8,13 +8,28 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Author extends Model
 {
     protected $fillable = [
-        'name',
+        'first_name',
+        'middle_name',
+        'last_name',
         'bio',
         'nationality',
     ];
 
+    // ── Name Accessor ─────────────────────────────────────────────────────────
+
+    public function getFullNameAttribute(): string
+    {
+        return trim(
+            collect([$this->first_name, $this->middle_name, $this->last_name])
+                ->filter()
+                ->implode(' ')
+        );
+    }
+
+    // ── Relationships ─────────────────────────────────────────────────────────
+
     public function ebooks(): BelongsToMany
     {
-        return $this->belongsToMany(Ebook::class, 'book_authors');
+        return $this->belongsToMany(Ebook::class, 'ebook_authors');
     }
 }

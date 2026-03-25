@@ -18,7 +18,7 @@ class MemberController extends Controller
 
     public function show($id)
     {
-        $member = Member::with('user', 'borrowings', 'reservations', 'payments')->findOrFail($id);
+        $member = Member::with('user', 'subscriptions.plan')->findOrFail($id);
 
         return view('admin.members.show', compact('member'));
     }
@@ -35,15 +35,17 @@ class MemberController extends Controller
         $member = Member::findOrFail($id);
 
         $validated = $request->validate([
-            'status'            => 'required|in:active,suspended,expired',
-            'phone'             => 'nullable|string|max:255',
-            'address'           => 'nullable|string',
-            'membership_expiry' => 'nullable|date',
+            'first_name'  => 'nullable|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name'   => 'nullable|string|max:255',
+            'status'      => 'required|in:active,suspended,expired',
+            'phone'       => 'nullable|string|max:255',
+            'address'     => 'nullable|string',
         ]);
 
         $member->update($validated);
 
-        ActivityLogger::log('updated', 'members', 'Updated member: ' . $member->member_code);
+        ActivityLogger::log('updated', 'members', 'Updated member: ' . $member->full_name . ' (' . $member->member_code . ')');
 
         return redirect()->route('admin.members.index')->with('success', 'Member updated successfully.');
     }

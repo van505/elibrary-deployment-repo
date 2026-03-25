@@ -29,7 +29,7 @@
         <tbody>
             @forelse($reviews as $r)
             <tr class="border-t border-gray-100 hover:bg-gray-50">
-                <td class="px-6 py-3">{{ $r->member->user->name }}</td>
+                <td class="px-6 py-3">{{ $r->member?->full_name ?: ($r->member?->user?->email ?? 'Unknown') }}</td>
                 <td class="px-6 py-3 max-w-xs truncate">{{ $r->ebook->title }}</td>
                 <td class="px-6 py-3">
                     <span class="text-yellow-500">{{ str_repeat('★', $r->rating) }}</span><span class="text-gray-300">{{ str_repeat('★', 5 - $r->rating) }}</span>

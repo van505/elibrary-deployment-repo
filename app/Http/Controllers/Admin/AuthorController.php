@@ -11,7 +11,7 @@ class AuthorController extends Controller
 {
     public function index()
     {
-        $authors = Author::paginate(10);
+        $authors = Author::withCount('ebooks')->orderBy('last_name')->paginate(10);
 
         return view('admin.authors.index', compact('authors'));
     }
@@ -24,14 +24,16 @@ class AuthorController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'        => 'required|string|max:255',
+            'first_name'  => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name'   => 'required|string|max:255',
             'bio'         => 'nullable|string',
             'nationality' => 'nullable|string|max:255',
         ]);
 
         $author = Author::create($validated);
 
-        ActivityLogger::log('created', 'authors', 'Created new author: ' . $author->name);
+        ActivityLogger::log('created', 'authors', 'Created new author: ' . $author->full_name);
 
         return redirect()->route('admin.authors.index')->with('success', 'Author created successfully.');
     }
@@ -55,14 +57,16 @@ class AuthorController extends Controller
         $author = Author::findOrFail($id);
 
         $validated = $request->validate([
-            'name'        => 'required|string|max:255',
+            'first_name'  => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name'   => 'required|string|max:255',
             'bio'         => 'nullable|string',
             'nationality' => 'nullable|string|max:255',
         ]);
 
         $author->update($validated);
 
-        ActivityLogger::log('updated', 'authors', 'Updated author: ' . $author->name);
+        ActivityLogger::log('updated', 'authors', 'Updated author: ' . $author->full_name);
 
         return redirect()->route('admin.authors.index')->with('success', 'Author updated successfully.');
     }
@@ -71,7 +75,7 @@ class AuthorController extends Controller
     {
         $author = Author::findOrFail($id);
 
-        ActivityLogger::log('deleted', 'authors', 'Deleted author: ' . $author->name);
+        ActivityLogger::log('deleted', 'authors', 'Deleted author: ' . $author->full_name);
 
         $author->delete();
 

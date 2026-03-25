@@ -34,7 +34,7 @@
                         @endif
                     </td>
                     <td class="px-6 py-3 font-medium text-gray-800 max-w-xs">{{ $ebook->title }}</td>
-                    <td class="px-6 py-3 text-gray-500 text-xs">{{ $ebook->authors->pluck('name')->join(', ') ?: '—' }}</td>
+                    <td class="px-6 py-3 text-gray-500 text-xs">{{ $ebook->authors->pluck('full_name')->join(', ') ?: '—' }}</td>
                     <td class="px-6 py-3">
                         <span class="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">{{ $ebook->category->name ?? '—' }}</span>
                     </td>

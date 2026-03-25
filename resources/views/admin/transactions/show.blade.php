@@ -21,8 +21,8 @@
         <div class="grid grid-cols-2 gap-y-4 text-sm">
             <div>
                 <p class="text-gray-400 text-xs uppercase tracking-wide">Member</p>
-                <p class="font-semibold text-gray-800 mt-0.5">{{ $transaction->member->user->name ?? 'N/A' }}</p>
-                <p class="text-gray-500 text-xs">{{ $transaction->member->user->email ?? '' }}</p>
+                <p class="font-semibold text-gray-800 mt-0.5">{{ $transaction->member?->full_name ?: 'N/A' }}</p>
+                <p class="text-gray-500 text-xs">{{ $transaction->member?->user?->email ?? '' }}</p>
             </div>
             <div>
                 <p class="text-gray-400 text-xs uppercase tracking-wide">Plan</p>

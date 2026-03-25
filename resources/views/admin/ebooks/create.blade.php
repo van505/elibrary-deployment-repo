@@ -24,7 +24,7 @@
                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none @error('author_ids') border-red-400 @enderror">
                     @foreach($authors as $author)
                         <option value="{{ $author->id }}" {{ in_array($author->id, (array) old('author_ids', [])) ? 'selected' : '' }}>
-                            {{ $author->name }}
+                            {{ $author->full_name }}
                         </option>
                     @endforeach
                 </select>

@@ -9,20 +9,33 @@
     <form action="{{ route('admin.authors.store') }}" method="POST">
         @csrf
         <div class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Name <span class="text-red-500">*</span></label>
-                <input type="text" name="name" value="{{ old('name') }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                @error('name')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">First Name <span class="text-red-500">*</span></label>
+                    <input type="text" name="first_name" value="{{ old('first_name') }}"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    @error('first_name')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Middle Name</label>
+                    <input type="text" name="middle_name" value="{{ old('middle_name') }}"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Last Name <span class="text-red-500">*</span></label>
+                    <input type="text" name="last_name" value="{{ old('last_name') }}"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    @error('last_name')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                </div>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
-                <input type="text" name="nationality" value="{{ old('nationality') }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                @error('nationality')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
+                <input type="text" name="nationality" value="{{ old('nationality') }}"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
                 <textarea name="bio" rows="4" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">{{ old('bio') }}</textarea>
-                @error('bio')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
             </div>
         </div>
         <div class="flex gap-3 mt-6">

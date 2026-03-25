@@ -12,9 +12,9 @@
         {{-- Member Card --}}
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
             <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Member</h2>
-            <p class="font-bold text-gray-800">{{ $subscription->member->user->name ?? 'N/A' }}</p>
-            <p class="text-sm text-gray-500">{{ $subscription->member->user->email ?? '' }}</p>
-            <p class="text-xs text-gray-400 mt-1">{{ $subscription->member->member_code ?? '' }}</p>
+            <p class="font-bold text-gray-800">{{ $subscription->member?->full_name ?: 'N/A' }}</p>
+            <p class="text-sm text-gray-500">{{ $subscription->member?->user?->email ?? '' }}</p>
+            <p class="text-xs text-gray-400 mt-1">{{ $subscription->member?->member_code ?? '' }}</p>
         </div>
 
         {{-- Plan Card --}}

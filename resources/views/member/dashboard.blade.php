@@ -8,7 +8,7 @@
     <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
         <div class="flex items-start justify-between">
             <div>
-                <h1 class="text-2xl font-bold mb-1">Welcome back, {{ auth()->user()->name }}!</h1>
+                <h1 class="text-2xl font-bold mb-1">Welcome back, {{ auth()->user()->member->full_name ?: auth()->user()->email }}!</h1>
                 <p class="text-blue-100 text-sm">Your digital reading hub</p>
             </div>
             @if($plan)

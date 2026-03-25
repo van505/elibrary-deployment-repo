@@ -23,7 +23,7 @@
                 @forelse($transactions as $txn)
                 <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4">
-                        <p class="font-medium text-gray-800">{{ $txn->member->user->name ?? 'N/A' }}</p>
+                        <p class="font-medium text-gray-800">{{ $txn->member?->full_name ?: ($txn->member?->user?->email ?? 'N/A') }}</p>
                     </td>
                     <td class="px-6 py-4 text-gray-700">{{ $txn->plan->name ?? 'N/A' }}</td>
                     <td class="px-6 py-4 font-semibold text-gray-800">₱{{ number_format($txn->amount, 2) }}</td>

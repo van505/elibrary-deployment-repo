@@ -12,6 +12,7 @@ class UserObserver
 {
     /**
      * Auto-create a Member record and a free Subscription when a member registers.
+     * Full name fields (first/middle/last) are nullable — filled in profile later.
      */
     public function created(User $user): void
     {
@@ -19,6 +20,9 @@ class UserObserver
             $member = Member::create([
                 'user_id'     => $user->id,
                 'member_code' => 'MBR-' . strtoupper(Str::random(6)),
+                'first_name'  => null,
+                'middle_name' => null,
+                'last_name'   => null,
                 'phone'       => null,
                 'address'     => null,
                 'status'      => 'active',
@@ -33,7 +37,7 @@ class UserObserver
                     'plan_id'    => $freePlan->id,
                     'status'     => 'active',
                     'started_at' => now(),
-                    'expires_at' => null, // free plan doesn't expire
+                    'expires_at' => null,
                 ]);
             }
         }

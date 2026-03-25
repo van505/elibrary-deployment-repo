@@ -15,6 +15,7 @@ class SubscriptionPlanSeeder extends Seeder
                 'slug'        => 'free',
                 'price'       => 0.00,
                 'ebook_limit' => 3,
+                'level'       => 0,
                 'description' => 'Access up to 3 ebooks at a time. Perfect for casual readers.',
                 'is_active'   => true,
             ],
@@ -23,6 +24,7 @@ class SubscriptionPlanSeeder extends Seeder
                 'slug'        => 'basic',
                 'price'       => 99.00,
                 'ebook_limit' => 10,
+                'level'       => 1,
                 'description' => 'Access up to 10 ebooks at a time. Great for regular readers.',
                 'is_active'   => true,
             ],
@@ -31,13 +33,14 @@ class SubscriptionPlanSeeder extends Seeder
                 'slug'        => 'premium',
                 'price'       => 199.00,
                 'ebook_limit' => -1,
+                'level'       => 2,
                 'description' => 'Unlimited ebook access. Perfect for avid readers.',
                 'is_active'   => true,
             ],
         ];
 
         foreach ($plans as $plan) {
-            SubscriptionPlan::firstOrCreate(['slug' => $plan['slug']], $plan);
+            SubscriptionPlan::updateOrCreate(['slug' => $plan['slug']], $plan);
         }
     }
 }

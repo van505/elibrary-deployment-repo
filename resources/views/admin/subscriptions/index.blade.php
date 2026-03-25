@@ -21,8 +21,8 @@
                 @forelse($subscriptions as $sub)
                 <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4">
-                        <p class="font-medium text-gray-800">{{ $sub->member->user->name ?? 'N/A' }}</p>
-                        <p class="text-xs text-gray-400">{{ $sub->member->member_code ?? '' }}</p>
+                        <p class="font-medium text-gray-800">{{ $sub->member?->full_name ?: ($sub->member?->user?->email ?? 'N/A') }}</p>
+                        <p class="text-xs text-gray-400">{{ $sub->member?->member_code ?? '' }}</p>
                     </td>
                     <td class="px-6 py-4 font-medium text-gray-700">{{ $sub->plan->name ?? 'N/A' }}</td>
                     <td class="px-6 py-4">

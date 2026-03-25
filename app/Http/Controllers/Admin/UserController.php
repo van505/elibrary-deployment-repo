@@ -17,7 +17,7 @@ class UserController extends Controller
 
     public function show($id)
     {
-        $user = User::with('member', 'member.borrowings')->findOrFail($id);
+        $user = User::with('member', 'member.subscriptions.plan')->findOrFail($id);
 
         return view('admin.users.show', compact('user'));
     }
@@ -34,7 +34,6 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
-            'name'  => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
             'role'  => 'required|in:admin,member',
         ]);

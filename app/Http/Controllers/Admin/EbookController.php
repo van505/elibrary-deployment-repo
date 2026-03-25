@@ -19,7 +19,7 @@ class EbookController extends Controller
 
     public function create()
     {
-        $authors    = Author::orderBy('name')->get();
+        $authors    = Author::orderBy('last_name')->get();
         $categories = Category::orderBy('name')->get();
         return view('admin.ebooks.create', compact('authors', 'categories'));
     }
@@ -73,7 +73,7 @@ class EbookController extends Controller
     public function edit($id)
     {
         $ebook      = Ebook::with('authors')->findOrFail($id);
-        $authors    = Author::orderBy('name')->get();
+        $authors    = Author::orderBy('last_name')->get();
         $categories = Category::orderBy('name')->get();
         return view('admin.ebooks.edit', compact('ebook', 'authors', 'categories'));
     }

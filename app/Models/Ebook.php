@@ -21,7 +21,7 @@ class Ebook extends Model
         'access_level',
     ];
 
-    // ── Relationships ────────────────────────────────────────────────────────
+    // ── Relationships ─────────────────────────────────────────────────────────
 
     public function category(): BelongsTo
     {
@@ -30,7 +30,7 @@ class Ebook extends Model
 
     public function authors(): BelongsToMany
     {
-        return $this->belongsToMany(Author::class, 'book_authors');
+        return $this->belongsToMany(Author::class, 'ebook_authors');
     }
 
     public function ebookAccess(): HasMany

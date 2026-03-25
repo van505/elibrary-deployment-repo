@@ -10,13 +10,9 @@
         @csrf @method('PUT')
         <div class="space-y-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input type="text" name="name" value="{{ old('name', $user->name) }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                @error('name')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
-            </div>
-            <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" name="email" value="{{ old('email', $user->email) }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="email" name="email" value="{{ old('email', $user->email) }}"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                 @error('email')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
             </div>
             <div>
@@ -27,6 +23,7 @@
                 </select>
                 @error('role')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
             </div>
+            <p class="text-xs text-gray-400">Note: Member full name (first/last) is managed in the Member Profile section.</p>
         </div>
         <div class="flex gap-3 mt-6">
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">Save Changes</button>

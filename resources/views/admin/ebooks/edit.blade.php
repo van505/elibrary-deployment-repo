@@ -28,7 +28,7 @@
                     @foreach($authors as $author)
                         <option value="{{ $author->id }}"
                             {{ in_array($author->id, old('author_ids', $currentAuthorIds)) ? 'selected' : '' }}>
-                            {{ $author->name }}
+                            {{ $author->full_name }}
                         </option>
                     @endforeach
                 </select>

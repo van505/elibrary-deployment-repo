@@ -13,7 +13,7 @@ class BaseMemberController extends Controller
     /**
      * Get (or auto-create) the Member record for the authenticated user,
      * and ensure they have at least a free subscription.
-     * Checks ALL subscription statuses (not just active) to prevent duplicates.
+     * Name fields are nullable — filled later via profile form.
      */
     protected function getOrCreateMember(): Member
     {
@@ -24,12 +24,14 @@ class BaseMemberController extends Controller
             $member = Member::create([
                 'user_id'     => $user->id,
                 'member_code' => 'MBR-' . strtoupper(Str::random(6)),
+                'first_name'  => null,
+                'middle_name' => null,
+                'last_name'   => null,
                 'status'      => 'active',
             ]);
         }
 
         // Only create a free plan if this member has NO subscription at all
-        // (checking any status — active, cancelled, expired — avoids duplicates)
         $hasAnySubscription = $member->subscriptions()->exists();
 
         if (! $hasAnySubscription) {

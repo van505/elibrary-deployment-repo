@@ -11,12 +11,26 @@ class Member extends Model
     protected $fillable = [
         'user_id',
         'member_code',
+        'first_name',
+        'middle_name',
+        'last_name',
         'phone',
         'address',
         'status',
     ];
 
-    // ── Relationships ────────────────────────────────────────────────────────
+    // ── Name Accessor ─────────────────────────────────────────────────────────
+
+    public function getFullNameAttribute(): string
+    {
+        return trim(
+            collect([$this->first_name, $this->middle_name, $this->last_name])
+                ->filter()
+                ->implode(' ')
+        );
+    }
+
+    // ── Relationships ─────────────────────────────────────────────────────────
 
     public function user(): BelongsTo
     {
@@ -43,7 +57,7 @@ class Member extends Model
         return $this->hasMany(Review::class);
     }
 
-    // ── Subscription Helpers ─────────────────────────────────────────────────
+    // ── Subscription Helpers ──────────────────────────────────────────────────
 
     public function activeSubscription(): ?Subscription
     {
@@ -70,14 +84,13 @@ class Member extends Model
             return false;
         }
 
-        $hasAccess = $this->ebookAccess()->where('ebook_id', $ebookId)->exists();
-        if ($hasAccess) {
+        if ($this->ebookAccess()->where('ebook_id', $ebookId)->exists()) {
             return true;
         }
 
         $limit = $plan->ebook_limit;
         if ($limit === -1) {
-            return true; // unlimited
+            return true;
         }
 
         return $this->ebookAccess()->count() < $limit;

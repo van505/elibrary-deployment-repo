@@ -52,10 +52,10 @@
         <div class="px-4 py-4 border-t border-slate-700">
             <div class="flex items-center gap-3 mb-3">
                 <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                    {{ strtoupper(substr(auth()->user()->name ?? 'M', 0, 1)) }}
+                    {{ strtoupper(substr(auth()->user()->member->full_name ?: auth()->user()->email ?? 'M', 0, 1)) }}
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-white text-sm font-medium truncate">{{ auth()->user()->name ?? '' }}</p>
+                    <p class="text-white text-sm font-medium truncate">{{ auth()->user()->member->full_name ?: (auth()->user()->email ?? '') }}</p>
                     <p class="text-slate-400 text-xs truncate">Member</p>
                 </div>
             </div>
@@ -76,9 +76,9 @@
         <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between flex-shrink-0">
             <h1 class="text-xl font-semibold text-gray-800">@yield('title', 'Dashboard')</h1>
             <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-600">{{ auth()->user()->name ?? '' }}</span>
+                <span class="text-sm text-gray-600">{{ auth()->user()->member->full_name ?: (auth()->user()->email ?? '') }}</span>
                 <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                    {{ strtoupper(substr(auth()->user()->name ?? 'M', 0, 1)) }}
+                    {{ strtoupper(substr(auth()->user()->member->full_name ?: auth()->user()->email ?? 'M', 0, 1)) }}
                 </div>
             </div>
         </header>

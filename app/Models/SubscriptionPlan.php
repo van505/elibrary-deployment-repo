@@ -13,6 +13,7 @@ class SubscriptionPlan extends Model
         'description',
         'price',
         'ebook_limit',
+        'level',
         'is_active',
     ];
 
@@ -21,7 +22,16 @@ class SubscriptionPlan extends Model
         return [
             'price'     => 'decimal:2',
             'is_active' => 'boolean',
+            'level'     => 'integer',
         ];
+    }
+
+    /**
+     * Returns true if this plan has a higher level than the given plan.
+     */
+    public function isHigherThan(self $other): bool
+    {
+        return $this->level > $other->level;
     }
 
     public function subscriptions(): HasMany

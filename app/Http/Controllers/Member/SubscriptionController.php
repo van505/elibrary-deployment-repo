@@ -12,11 +12,18 @@ class SubscriptionController extends BaseMemberController
 {
     public function index()
     {
-        $plans               = SubscriptionPlan::where('is_active', true)->orderBy('price')->get();
+        $plans               = SubscriptionPlan::where('is_active', true)->orderBy('level')->get();
         $member              = $this->getOrCreateMember();
         $currentSubscription = $member->activeSubscription();
 
-        return view('member.subscriptions.index', compact('plans', 'member', 'currentSubscription'));
+        // Past subscriptions (cancelled/expired) for history
+        $history = $member->subscriptions()
+            ->whereIn('status', ['cancelled', 'expired'])
+            ->with('plan')
+            ->latest()
+            ->get();
+
+        return view('member.subscriptions.index', compact('plans', 'member', 'currentSubscription', 'history'));
     }
 
     public function subscribe(Request $request)
@@ -26,38 +33,47 @@ class SubscriptionController extends BaseMemberController
             'payment_method' => 'nullable|in:cash,gcash,maya,credit_card',
         ]);
 
-        $member = $this->getOrCreateMember();
-        $plan   = SubscriptionPlan::findOrFail($request->plan_id);
+        $member  = $this->getOrCreateMember();
+        $newPlan = SubscriptionPlan::findOrFail($request->plan_id);
 
-        // Guard: already on this exact plan
-        $alreadyOnThisPlan = $member->subscriptions()
-            ->where('status', 'active')
-            ->where('plan_id', $plan->id)
-            ->exists();
+        // Check for an active (non-expired) subscription
+        $activeSub = $member->subscriptions()->active()->first();
 
-        if ($alreadyOnThisPlan) {
-            return redirect()->route('member.subscriptions.index')
-                ->with('error', 'You are already subscribed to the ' . $plan->name . ' plan.');
+        if ($activeSub) {
+            $currentPlan = $activeSub->plan;
+
+            // Block same plan or downgrade
+            if ($newPlan->level <= $currentPlan->level) {
+                $expiryNote = $activeSub->expires_at
+                    ? ' or wait until it expires on ' . $activeSub->expires_at->format('M d, Y')
+                    : '';
+
+                return redirect()->route('member.subscriptions.index')
+                    ->with('error',
+                        'You already have an active ' . $currentPlan->name . ' subscription. '
+                        . 'You can only upgrade to a higher plan' . $expiryNote . '.'
+                    );
+            }
+
+            // Upgrade: cancel current
+            $activeSub->update(['status' => 'cancelled']);
         }
 
-        // Cancel current active subscriptions
-        $member->subscriptions()->where('status', 'active')->update(['status' => 'cancelled']);
-
         // Create new subscription
-        Subscription::create([
+        $newSub = Subscription::create([
             'member_id'  => $member->id,
-            'plan_id'    => $plan->id,
+            'plan_id'    => $newPlan->id,
             'status'     => 'active',
             'started_at' => now(),
-            'expires_at' => $plan->price > 0 ? now()->addMonth() : null,
+            'expires_at' => $newPlan->price > 0 ? now()->addMonth() : null,
         ]);
 
         // Record transaction for paid plans
-        if ($plan->price > 0) {
+        if ($newPlan->price > 0) {
             Transaction::create([
                 'member_id'      => $member->id,
-                'plan_id'        => $plan->id,
-                'amount'         => $plan->price,
+                'plan_id'        => $newPlan->id,
+                'amount'         => $newPlan->price,
                 'payment_method' => $request->payment_method ?? 'cash',
                 'status'         => 'completed',
                 'reference_no'   => 'TXN-' . strtoupper(Str::random(8)),
@@ -66,6 +82,6 @@ class SubscriptionController extends BaseMemberController
         }
 
         return redirect()->route('member.dashboard')
-            ->with('success', 'Successfully subscribed to ' . $plan->name . ' plan!');
+            ->with('success', 'Successfully subscribed to ' . $newPlan->name . ' plan!');
     }
 }

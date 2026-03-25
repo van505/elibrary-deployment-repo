@@ -20,7 +20,7 @@
         <tbody>
             @forelse($authors as $author)
             <tr class="border-t border-gray-100 hover:bg-gray-50">
-                <td class="px-6 py-4 font-medium text-gray-800">{{ $author->name }}</td>
+                <td class="px-6 py-4 font-medium text-gray-800">{{ $author->full_name }}</td>
                 <td class="px-6 py-4 text-gray-500">{{ $author->nationality ?? '—' }}</td>
                 <td class="px-6 py-4">{{ $author->ebooks_count ?? 0 }}</td>
                 <td class="px-6 py-4 flex gap-2">

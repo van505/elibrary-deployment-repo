@@ -10,7 +10,7 @@
     <table class="w-full text-sm text-left">
         <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
             <tr>
-                <th class="px-6 py-3">Name</th>
+                <th class="px-6 py-3">Full Name / Email</th>
                 <th class="px-6 py-3">Email</th>
                 <th class="px-6 py-3">Role</th>
                 <th class="px-6 py-3">Member Code</th>
@@ -20,7 +20,7 @@
         <tbody>
             @forelse($users as $user)
             <tr class="border-t border-gray-100 hover:bg-gray-50">
-                <td class="px-6 py-4 font-medium text-gray-800">{{ $user->name }}</td>
+                <td class="px-6 py-4 font-medium text-gray-800">{{ $user->member?->full_name ?: $user->email }}</td>
                 <td class="px-6 py-4 text-gray-600">{{ $user->email }}</td>
                 <td class="px-6 py-4">
                     <span class="px-2 py-1 rounded text-xs font-medium {{ $user->role === 'admin' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600' }}">
