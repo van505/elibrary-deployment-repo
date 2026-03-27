@@ -12,7 +12,7 @@ class ReviewController extends BaseMemberController
         $member = $this->getOrCreateMember();
 
         $reviews = $member->reviews()
-            ->with('ebook')
+            ->with('ebook.authors')
             ->latest()
             ->paginate(10);
 
@@ -29,16 +29,6 @@ class ReviewController extends BaseMemberController
 
         $member = $this->getOrCreateMember();
 
-        // No duplicate reviews
-        $alreadyReviewed = Review::where('member_id', $member->id)
-            ->where('ebook_id', $request->ebook_id)
-            ->exists();
-
-        if ($alreadyReviewed) {
-            return redirect()->back()
-                ->with('error', 'You have already reviewed this ebook.');
-        }
-
         Review::create([
             'member_id' => $member->id,
             'ebook_id'  => $request->ebook_id,
@@ -47,7 +37,7 @@ class ReviewController extends BaseMemberController
             'status'    => 'pending',
         ]);
 
-        return redirect()->back()->with('success', 'Review submitted! Pending admin approval.');
+        return redirect()->back()->with('success', 'Your review has been submitted and is awaiting approval.');
     }
 
     public function destroy($id)

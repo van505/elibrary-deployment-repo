@@ -18,6 +18,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'first_name',
+        'last_name',
     ];
 
     protected $hidden = [
@@ -31,6 +33,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
         ];
+    }
+
+    /**
+     * Display name for admin: "First Last" if set, otherwise email.
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        $name = trim(($this->first_name ?? '') . ' ' . ($this->last_name ?? ''));
+        return $name ?: $this->email;
     }
 
     public function member(): HasOne

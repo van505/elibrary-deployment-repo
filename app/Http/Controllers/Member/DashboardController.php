@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Member;
 
+use App\Models\EbookAccess;
+use App\Models\Review;
+
 class DashboardController extends BaseMemberController
 {
     public function index()
@@ -17,10 +20,23 @@ class DashboardController extends BaseMemberController
             ->take(5)
             ->get();
 
+        // Ebooks accessed this month
+        $ebooksThisMonth = $member->ebookAccess()
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        // Total reviews submitted
+        $reviewsCount = Review::where('member_id', $member->id)->count();
+
         // Calculate days left — 0 if expired, null if no expiry (unlimited)
         $daysLeft = null;
+        $daysTotal = null;
         if ($subscription && $subscription->expires_at) {
             $daysLeft = (int) max(0, now()->diffInDays($subscription->expires_at, false));
+            if ($subscription->started_at) {
+                $daysTotal = (int) $subscription->started_at->diffInDays($subscription->expires_at);
+            }
         }
 
         return view('member.dashboard', compact(
@@ -29,7 +45,10 @@ class DashboardController extends BaseMemberController
             'plan',
             'accessCount',
             'recentAccess',
-            'daysLeft'
+            'daysLeft',
+            'daysTotal',
+            'ebooksThisMonth',
+            'reviewsCount'
         ));
     }
 }

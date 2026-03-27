@@ -46,13 +46,15 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
                 {{-- Cover --}}
                 <div class="aspect-[3/4] bg-gray-100 overflow-hidden relative">
-                    @if($ebook->cover_image)
-                        <img src="{{ asset('storage/' . $ebook->cover_image) }}" alt="{{ $ebook->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                    @else
-                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
-                            <svg class="w-12 h-12 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13"/></svg>
-                        </div>
-                    @endif
+                    <a href="{{ route('member.ebooks.show', $ebook->id) }}" class="block w-full h-full">
+                        @if($ebook->cover_image)
+                            <img src="{{ asset('storage/' . $ebook->cover_image) }}" alt="{{ $ebook->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+                                <svg class="w-12 h-12 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13"/></svg>
+                            </div>
+                        @endif
+                    </a>
                     {{-- Access Level Badge --}}
                     <span class="absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full {{ $levelColor }}">
                         {{ ucfirst($ebook->access_level) }}
@@ -64,9 +66,13 @@
                 </div>
 
                 <div class="p-3">
-                    <h3 class="font-semibold text-gray-800 text-sm truncate mb-1">{{ $ebook->title }}</h3>
+                    <h3 class="font-semibold text-gray-800 text-sm truncate mb-1">
+                        <a href="{{ route('member.ebooks.show', $ebook->id) }}" class="hover:text-blue-600 transition-colors">
+                            {{ $ebook->title }}
+                        </a>
+                    </h3>
                     <p class="text-xs text-gray-500 truncate mb-3">
-                        {{ $ebook->authors->pluck('name')->join(', ') ?: 'Unknown Author' }}
+                        {{ $ebook->authors->pluck('full_name')->join(', ') ?: 'Unknown Author' }}
                     </p>
 
                     @if($accessed)

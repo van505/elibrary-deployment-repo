@@ -40,6 +40,7 @@
                 ['route' => 'admin.reviews.index',            'label' => 'Reviews',            'icon' => 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z'],
                 ['route' => 'admin.settings.index',           'label' => 'Settings',           'icon' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z'],
                 ['route' => 'admin.activity-logs.index',      'label' => 'Activity Logs',      'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'],
+                ['route' => 'admin.profile.edit',             'label' => 'My Profile',         'icon' => 'M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0M19 21a7 7 0 10-14 0'],
             ];
             @endphp
 
@@ -60,10 +61,10 @@
         <div class="px-4 py-4 border-t border-slate-700">
             <div class="flex items-center gap-3 mb-3">
                 <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                    {{ strtoupper(substr(auth()->user()->email ?? 'A', 0, 1)) }}
+                    {{ strtoupper(substr(auth()->user()->first_name ?? auth()->user()->email ?? 'A', 0, 1)) }}
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-white text-sm font-medium truncate">{{ auth()->user()->member?->full_name ?: (auth()->user()->email ?? '') }}</p>
+                    <p class="text-white text-sm font-medium truncate">{{ auth()->user()->display_name }}</p>
                     <p class="text-slate-400 text-xs truncate">Administrator</p>
                 </div>
             </div>
@@ -86,9 +87,9 @@
         <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between flex-shrink-0">
             <h1 class="text-xl font-semibold text-gray-800">@yield('title', 'Dashboard')</h1>
             <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-600">{{ auth()->user()->member?->full_name ?: (auth()->user()->email ?? '') }}</span>
+                <span class="text-sm text-gray-600">{{ auth()->user()->display_name }}</span>
                 <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                    {{ strtoupper(substr(auth()->user()->email ?? 'A', 0, 1)) }}
+                    {{ strtoupper(substr(auth()->user()->first_name ?? auth()->user()->email ?? 'A', 0, 1)) }}
                 </div>
             </div>
         </header>

@@ -51,6 +51,10 @@ Route::middleware(['auth', 'role:admin'])
         Route::put('settings', [Admin\SettingController::class, 'update'])->name('settings.update');
 
         Route::get('activity-logs', [Admin\ActivityLogController::class, 'index'])->name('activity-logs.index');
+
+        // Admin Profile
+        Route::get ('profile',        [Admin\ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put ('profile/update', [Admin\ProfileController::class, 'update'])->name('profile.update');
     });
 
 // ── Member ────────────────────────────────────────────────────────────────────
@@ -74,6 +78,13 @@ Route::middleware(['auth', 'role:member'])
         Route::post('subscriptions/subscribe', [Member\SubscriptionController::class, 'subscribe'])->name('subscriptions.subscribe');
 
         Route::resource('reviews', Member\ReviewController::class)->only(['index', 'store', 'destroy']);
+
+        // My Reading History
+        Route::get('my-ebooks', [Member\MyEbookController::class, 'index'])->name('my-ebooks');
+
+        // Member Profile
+        Route::get ('profile',        [Member\ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put ('profile/update', [Member\ProfileController::class, 'update'])->name('profile.update');
     });
 
 require __DIR__ . '/auth.php';

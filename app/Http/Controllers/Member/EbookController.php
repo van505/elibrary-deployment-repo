@@ -20,7 +20,8 @@ class EbookController extends BaseMemberController
             $search = request('search');
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', '%' . $search . '%')
-                  ->orWhereHas('authors', fn ($a) => $a->where('name', 'like', '%' . $search . '%'));
+                  ->orWhereHas('authors', fn ($a) => $a->where('first_name', 'like', '%' . $search . '%')
+                                                        ->orWhere('last_name', 'like', '%' . $search . '%'));
             });
         }
 
@@ -48,21 +49,24 @@ class EbookController extends BaseMemberController
             ->where('ebook_id', $ebook->id)
             ->exists();
 
-        $hasReviewed = Review::where('member_id', $member->id)
-            ->where('ebook_id', $ebook->id)
-            ->exists();
-
         $reviews = Review::where('ebook_id', $ebook->id)
             ->where('status', 'approved')
             ->with('member.user')
             ->latest()
             ->get();
 
+        // Member's own pending reviews for this ebook (only shown to that member)
+        $pendingReviews = Review::where('ebook_id', $ebook->id)
+            ->where('member_id', $member->id)
+            ->where('status', 'pending')
+            ->latest()
+            ->get();
+
         return view('member.ebooks.show', compact(
             'ebook',
             'hasAccess',
-            'hasReviewed',
-            'reviews'
+            'reviews',
+            'pendingReviews'
         ));
     }
 }

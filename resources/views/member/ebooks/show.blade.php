@@ -80,11 +80,36 @@
             @if($reviews->count()) <span class="text-gray-400 font-normal text-sm">({{ $reviews->count() }})</span> @endif
         </h2>
 
+        {{-- Member's own PENDING reviews (only visible to that member) --}}
+        @if($pendingReviews->count())
+        <div class="mb-5 space-y-3">
+            @foreach($pendingReviews as $pr)
+            <div class="border border-yellow-200 bg-yellow-50 rounded-lg p-4">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center gap-2">
+                        <span class="font-medium text-sm text-gray-700">Your Review</span>
+                        <span class="bg-yellow-200 text-yellow-800 text-xs font-semibold px-2 py-0.5 rounded-full">⏳ Awaiting Approval</span>
+                    </div>
+                    <div class="flex items-center gap-0.5">
+                        @for($i = 1; $i <= 5; $i++)
+                            <span class="{{ $i <= $pr->rating ? 'text-yellow-400' : 'text-gray-200' }} text-base">★</span>
+                        @endfor
+                    </div>
+                </div>
+                @if($pr->comment)
+                    <p class="text-sm text-gray-600">{{ $pr->comment }}</p>
+                @endif
+                <p class="text-xs text-gray-400 mt-1">Submitted {{ $pr->created_at->diffForHumans() }}</p>
+            </div>
+            @endforeach
+        </div>
+        @endif
+
         {{-- Approved reviews list --}}
         @forelse($reviews as $review)
         <div class="border-b border-gray-100 pb-4 mb-4 last:border-0 last:mb-0 last:pb-0">
             <div class="flex items-center justify-between mb-1">
-                <span class="font-medium text-sm text-gray-700">{{ $review->member->user->name ?? 'Member' }}</span>
+                <span class="font-medium text-sm text-gray-700">{{ $review->member->full_name ?: ($review->member->user->email ?? 'Member') }}</span>
                 <div class="flex items-center gap-0.5">
                     @for($i = 1; $i <= 5; $i++)
                         <span class="{{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-200' }} text-base">★</span>
@@ -96,11 +121,13 @@
             @endif
         </div>
         @empty
-            <p class="text-gray-400 text-sm">No reviews yet. Be the first to review!</p>
+            @if(!$pendingReviews->count())
+                <p class="text-gray-400 text-sm">No reviews yet. Be the first to review!</p>
+            @endif
         @endforelse
 
-        {{-- Review form (only if has access and hasn't reviewed yet) --}}
-        @if($hasAccess && !$hasReviewed)
+        {{-- Write a Review form — always shown when member has access --}}
+        @if($hasAccess)
         <div class="mt-6 pt-6 border-t border-gray-100">
             <h3 class="font-semibold text-gray-800 mb-4">Write a Review</h3>
             <form method="POST" action="{{ route('member.reviews.store') }}" id="review-form">
@@ -133,6 +160,7 @@
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors">
                     Submit Review
                 </button>
+                <p class="text-xs text-gray-400 mt-2">All reviews are subject to admin approval before being published.</p>
             </form>
         </div>
 
@@ -163,10 +191,6 @@
         }
         </script>
 
-        @elseif($hasReviewed)
-        <div class="mt-6 pt-6 border-t border-gray-100 bg-green-50 rounded-lg p-4">
-            <p class="text-green-700 text-sm">✅ You have already reviewed this ebook. Thank you for your feedback!</p>
-        </div>
         @elseif(!$hasAccess)
         <div class="mt-6 pt-6 border-t border-gray-100 bg-gray-50 rounded-lg p-4">
             <p class="text-gray-500 text-sm">📖 Access this ebook first to leave a review.</p>

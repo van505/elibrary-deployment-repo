@@ -1,0 +1,101 @@
+@extends('layouts.member')
+@section('title', 'My Profile')
+
+@section('content')
+<div class="max-w-2xl">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">My Profile</h2>
+        <p class="text-sm text-gray-500 mt-1">Update your personal information and password</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <form method="POST" action="{{ route('member.profile.update') }}">
+            @csrf @method('PUT')
+
+            {{-- Personal Info --}}
+            <div class="mb-6">
+                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 border-b border-gray-100 pb-2">Personal Information</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">First Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="first_name" value="{{ old('first_name', $member->first_name) }}" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        @error('first_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Last Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="last_name" value="{{ old('last_name', $member->last_name) }}" required
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        @error('last_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Middle Name <span class="text-gray-400 text-xs">(optional)</span></label>
+                    <input type="text" name="middle_name" value="{{ old('middle_name', $member->middle_name) }}"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    @error('middle_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone <span class="text-gray-400 text-xs">(optional)</span></label>
+                    <input type="text" name="phone" value="{{ old('phone', $member->phone) }}"
+                           class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                           placeholder="+63 912 345 6789">
+                    @error('phone') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Address <span class="text-gray-400 text-xs">(optional)</span></label>
+                    <textarea name="address" rows="2"
+                              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none">{{ old('address', $member->address) }}</textarea>
+                    @error('address') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input type="email" value="{{ auth()->user()->email }}" disabled
+                           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-400 cursor-not-allowed">
+                    <p class="text-xs text-gray-400 mt-1">Email cannot be changed here. Contact admin if needed.</p>
+                </div>
+            </div>
+
+            {{-- Password Change --}}
+            <div class="mb-6">
+                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 border-b border-gray-100 pb-2">Change Password</h3>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Current Password <span class="text-gray-400 text-xs">(required to change password)</span></label>
+                        <input type="password" name="current_password"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                               placeholder="Enter only if changing password">
+                        @error('current_password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">New Password <span class="text-gray-400 text-xs">(optional, min 8 chars)</span></label>
+                        <input type="password" name="new_password"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                               placeholder="Leave blank to keep current">
+                        @error('new_password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                        <input type="password" name="new_password_confirmation"
+                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                               placeholder="Confirm new password">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                    Save Changes
+                </button>
+                <a href="{{ route('member.dashboard') }}" class="text-gray-500 hover:text-gray-700 text-sm">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
