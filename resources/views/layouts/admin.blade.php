@@ -7,11 +7,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style> body { font-family: 'Inter', sans-serif; } </style>
+    @stack('styles')
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden">
 
+    {{-- ========== OVERLAY (mobile) ========== --}}
+    <div id="sidebarOverlay"
+         class="fixed inset-0 bg-black/50 z-20 hidden md:hidden"
+         onclick="closeSidebar()"></div>
+
     {{-- ========== SIDEBAR ========== --}}
-    <aside class="w-64 bg-slate-800 flex flex-col flex-shrink-0 h-screen overflow-y-auto">
+    <aside id="sidebar"
+           class="fixed md:relative z-30 w-64 bg-slate-800 flex flex-col flex-shrink-0 h-screen overflow-y-auto
+                  -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
 
         {{-- Logo --}}
         <div class="flex items-center gap-3 px-6 py-5 border-b border-slate-700">
@@ -40,6 +48,7 @@
                 ['route' => 'admin.reviews.index',            'label' => 'Reviews',            'icon' => 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z'],
                 ['route' => 'admin.settings.index',           'label' => 'Settings',           'icon' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z'],
                 ['route' => 'admin.activity-logs.index',      'label' => 'Activity Logs',      'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'],
+                ['route' => 'admin.reports.index',            'label' => 'Reports',            'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
                 ['route' => 'admin.profile.edit',             'label' => 'My Profile',         'icon' => 'M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0M19 21a7 7 0 10-14 0'],
             ];
             @endphp
@@ -81,13 +90,22 @@
     </aside>
 
     {{-- ========== MAIN CONTENT ========== --}}
-    <div class="flex-1 flex flex-col h-screen overflow-hidden">
+    <div class="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
 
         {{-- Top Navbar --}}
-        <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between flex-shrink-0">
-            <h1 class="text-xl font-semibold text-gray-800">@yield('title', 'Dashboard')</h1>
+        <header class="bg-white border-b border-gray-200 px-4 md:px-6 py-4 flex items-center justify-between flex-shrink-0">
             <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-600">{{ auth()->user()->display_name }}</span>
+                {{-- Hamburger (mobile only) --}}
+                <button id="hamburgerBtn"
+                        onclick="toggleSidebar()"
+                        class="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                        aria-label="Toggle sidebar">
+                    <span id="hamburgerIcon" class="text-xl leading-none">☰</span>
+                </button>
+                <h1 class="text-lg md:text-xl font-semibold text-gray-800">@yield('title', 'Dashboard')</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="hidden sm:block text-sm text-gray-600">{{ auth()->user()->display_name }}</span>
                 <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
                     {{ strtoupper(substr(auth()->user()->first_name ?? auth()->user()->email ?? 'A', 0, 1)) }}
                 </div>
@@ -95,7 +113,7 @@
         </header>
 
         {{-- Content --}}
-        <main class="flex-1 overflow-y-auto p-6">
+        <main class="flex-1 overflow-y-auto p-4 md:p-6">
 
             {{-- Flash Messages --}}
             @if(session('success'))
@@ -113,5 +131,32 @@
         </main>
     </div>
 
+    {{-- Sidebar JS Toggle --}}
+    <script>
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const hamburgerIcon = document.getElementById('hamburgerIcon');
+    let sidebarOpen = false;
+
+    function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+        hamburgerIcon.textContent = '✕';
+        sidebarOpen = true;
+    }
+
+    function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+        hamburgerIcon.textContent = '☰';
+        sidebarOpen = false;
+    }
+
+    function toggleSidebar() {
+        sidebarOpen ? closeSidebar() : openSidebar();
+    }
+    </script>
+
+    @stack('scripts')
 </body>
 </html>

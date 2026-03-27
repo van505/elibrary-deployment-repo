@@ -66,8 +66,22 @@ class EbookController extends Controller
 
     public function show($id)
     {
-        $ebook = Ebook::with('authors', 'category', 'reviews')->findOrFail($id);
-        return view('admin.ebooks.show', compact('ebook'));
+        $ebook = Ebook::with('authors', 'category', 'reviews.member')->findOrFail($id);
+
+        $totalAccesses   = $ebook->accesses()->count();
+        $recentAccessors = $ebook->accesses()
+            ->with('member')
+            ->latest()
+            ->limit(10)
+            ->get();
+        $avgRating = $ebook->reviews()->where('status', 'approved')->avg('rating');
+
+        return view('admin.ebooks.show', compact(
+            'ebook',
+            'totalAccesses',
+            'recentAccessors',
+            'avgRating'
+        ));
     }
 
     public function edit($id)

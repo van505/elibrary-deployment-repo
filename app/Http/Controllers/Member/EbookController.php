@@ -20,6 +20,7 @@ class EbookController extends BaseMemberController
             $search = request('search');
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('isbn', 'like', '%' . $search . '%')
                   ->orWhereHas('authors', fn ($a) => $a->where('first_name', 'like', '%' . $search . '%')
                                                         ->orWhere('last_name', 'like', '%' . $search . '%'));
             });
@@ -45,7 +46,11 @@ class EbookController extends BaseMemberController
 
         $ebook->load('authors', 'category');
 
-        $hasAccess = EbookAccess::where('member_id', $member->id)
+        $hasAccess = \App\Models\EbookAccess::where('member_id', $member->id)
+            ->where('ebook_id', $ebook->id)
+            ->exists();
+
+        $isBookmarked = \App\Models\EbookBookmark::where('member_id', $member->id)
             ->where('ebook_id', $ebook->id)
             ->exists();
 
@@ -65,6 +70,7 @@ class EbookController extends BaseMemberController
         return view('member.ebooks.show', compact(
             'ebook',
             'hasAccess',
+            'isBookmarked',
             'reviews',
             'pendingReviews'
         ));

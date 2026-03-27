@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\EbookBookmark;
 
 class Ebook extends Model
 {
@@ -41,5 +42,16 @@ class Ebook extends Model
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
+    }
+
+    // Alias used in admin analytics
+    public function accesses(): HasMany
+    {
+        return $this->hasMany(EbookAccess::class);
+    }
+
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(EbookBookmark::class);
     }
 }

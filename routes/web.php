@@ -46,6 +46,11 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('transactions',       Admin\TransactionController::class)->only(['index', 'show']);
 
         Route::resource('reviews', Admin\ReviewController::class)->only(['index', 'update', 'destroy']);
+        Route::post('reviews/bulk', [Admin\ReviewController::class, 'bulkAction'])->name('reviews.bulk');
+
+        Route::get('reports', [Admin\ReportController::class, 'index'])->name('reports.index');
+
+        Route::post('members/{id}/toggle-status', [Admin\MemberController::class, 'toggleStatus'])->name('members.toggle-status');
 
         Route::get('settings', [Admin\SettingController::class, 'index'])->name('settings.index');
         Route::put('settings', [Admin\SettingController::class, 'update'])->name('settings.update');
@@ -85,6 +90,14 @@ Route::middleware(['auth', 'role:member'])
         // Member Profile
         Route::get ('profile',        [Member\ProfileController::class, 'edit'])->name('profile.edit');
         Route::put ('profile/update', [Member\ProfileController::class, 'update'])->name('profile.update');
+
+        // Bookmarks
+        Route::get ('bookmarks',              [Member\BookmarkController::class, 'index'])->name('bookmarks.index');
+        Route::post('bookmarks/{ebook}/toggle',[Member\BookmarkController::class, 'toggle'])->name('bookmarks.toggle');
+
+        // Notifications
+        Route::post('notifications/{id}/read', [Member\NotificationController::class, 'markRead'])->name('notifications.read');
+        Route::post('notifications/read-all',  [Member\NotificationController::class, 'markAllRead'])->name('notifications.read-all');
     });
 
 require __DIR__ . '/auth.php';

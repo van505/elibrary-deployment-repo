@@ -35,7 +35,7 @@
                     {{ ucfirst($ebook->access_level) }} Plan Required
                 </span>
                 <h1 class="text-3xl font-bold text-gray-800 mt-2">{{ $ebook->title }}</h1>
-                <p class="text-gray-500 mt-1">by {{ $ebook->authors->pluck('name')->join(', ') ?: 'Unknown Author' }}</p>
+                <p class="text-gray-500 mt-1">by {{ $ebook->authors->pluck('full_name')->join(', ') ?: 'Unknown Author' }}</p>
             </div>
 
             <div class="flex flex-wrap gap-3 text-sm text-gray-600">
@@ -45,7 +45,7 @@
                 @if($ebook->isbn) <span>ISBN: {{ $ebook->isbn }}</span> @endif
             </div>
 
-            <div class="flex gap-3 pt-2">
+            <div class="flex flex-wrap gap-3 pt-2">
                 @if($hasAccess)
                     <a href="{{ route('member.ebooks.read', $ebook->id) }}"
                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors">
@@ -69,6 +69,18 @@
                         View Plans
                     </a>
                 @endif
+
+                {{-- Bookmark Toggle --}}
+                <form action="{{ route('member.bookmarks.toggle', $ebook->id) }}" method="POST">
+                    @csrf
+                    <button type="submit"
+                            class="px-4 py-2.5 rounded-lg text-sm font-medium transition-colors border
+                                   {{ $isBookmarked
+                                       ? 'bg-yellow-50 border-yellow-300 text-yellow-700 hover:bg-yellow-100'
+                                       : 'border-gray-300 text-gray-600 hover:bg-gray-50' }}">
+                        {{ $isBookmarked ? '★ Bookmarked' : '☆ Save to Bookmarks' }}
+                    </button>
+                </form>
             </div>
         </div>
     </div>

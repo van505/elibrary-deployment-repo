@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\EbookBookmark;
+use App\Models\MemberNotification;
 
 class Member extends Model
 {
@@ -55,6 +57,16 @@ class Member extends Model
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
+    }
+
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(EbookBookmark::class);
+    }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(MemberNotification::class);
     }
 
     // ── Subscription Helpers ──────────────────────────────────────────────────
