@@ -67,10 +67,16 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
 
-        ActivityLogger::log('deleted', 'categories', 'Deleted category: ' . $category->name);
+        // Guard: prevent archiving if category has active ebooks
+        if ($category->ebooks()->exists()) {
+            return redirect()->route('admin.categories.index')
+                ->with('error', 'Cannot archive this category because it has active ebooks. Remove or reassign the ebooks first.');
+        }
 
-        $category->delete();
+        ActivityLogger::log('deleted', 'categories', 'Archived category: ' . $category->name);
 
-        return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully.');
+        $category->delete(); // soft delete
+
+        return redirect()->route('admin.categories.index')->with('success', 'Category archived successfully.');
     }
 }

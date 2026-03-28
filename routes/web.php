@@ -46,6 +46,7 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('transactions',       Admin\TransactionController::class)->only(['index', 'show']);
 
         Route::resource('reviews', Admin\ReviewController::class)->only(['index', 'update', 'destroy']);
+        Route::patch('reviews/{review}/approve', [Admin\ReviewController::class, 'approve'])->name('reviews.approve');
         Route::post('reviews/bulk', [Admin\ReviewController::class, 'bulkAction'])->name('reviews.bulk');
 
         Route::get('reports', [Admin\ReportController::class, 'index'])->name('reports.index');
@@ -56,6 +57,11 @@ Route::middleware(['auth', 'role:admin'])
         Route::put('settings', [Admin\SettingController::class, 'update'])->name('settings.update');
 
         Route::get('activity-logs', [Admin\ActivityLogController::class, 'index'])->name('activity-logs.index');
+
+        // Archive (soft delete management)
+        Route::get   ('archive',                          [Admin\ArchiveController::class, 'index']      )->name('archive.index');
+        Route::patch ('archive/{type}/{id}/restore',      [Admin\ArchiveController::class, 'restore']    )->name('archive.restore');
+        Route::delete('archive/{type}/{id}/force-delete', [Admin\ArchiveController::class, 'forceDelete'])->name('archive.force-delete');
 
         // Admin Profile
         Route::get ('profile',        [Admin\ProfileController::class, 'edit'])->name('profile.edit');

@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\EbookBookmark;
 use App\Models\MemberNotification;
 
 class Member extends Model
 {
+    use SoftDeletes;
     protected $fillable = [
         'user_id',
         'member_code',
@@ -18,6 +20,7 @@ class Member extends Model
         'last_name',
         'phone',
         'address',
+        'avatar',
         'status',
     ];
 

@@ -88,6 +88,27 @@ class ReviewController extends Controller
         return redirect()->back()->with('success', count($request->review_ids) . ' reviews ' . $request->action . '.');
     }
 
+    public function approve(Review $review)
+    {
+        $review->load('member', 'ebook');
+
+        $review->update(['status' => 'approved']);
+
+        if ($review->member) {
+            $ebookTitle = $review->ebook->title ?? 'an ebook';
+            MemberNotification::create([
+                'member_id' => $review->member->id,
+                'type'      => 'review_approved',
+                'message'   => "✅ Your review for \"{$ebookTitle}\" has been approved and is now published!",
+                'is_read'   => false,
+            ]);
+        }
+
+        ActivityLogger::log('approved', 'reviews', 'Approved review ID ' . $review->id);
+
+        return back()->with('success', 'Review approved successfully.');
+    }
+
     public function destroy($id)
     {
         $review = Review::findOrFail($id);

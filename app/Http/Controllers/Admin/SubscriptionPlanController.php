@@ -72,8 +72,15 @@ class SubscriptionPlanController extends Controller
 
     public function destroy(SubscriptionPlan $subscriptionPlan)
     {
-        $subscriptionPlan->delete();
-        ActivityLogger::log('deleted', 'subscription_plans', 'Deleted plan: ' . $subscriptionPlan->name);
-        return redirect()->route('admin.subscription-plans.index')->with('success', 'Plan deleted successfully.');
+        // Guard: prevent archiving if plan has active subscriptions
+        $activeCount = $subscriptionPlan->subscriptions()->where('status', 'active')->count();
+        if ($activeCount > 0) {
+            return redirect()->route('admin.subscription-plans.index')
+                ->with('error', "Cannot archive this plan — it has {$activeCount} active subscriber(s). Cancel their subscriptions first.");
+        }
+
+        ActivityLogger::log('deleted', 'subscription_plans', 'Archived plan: ' . $subscriptionPlan->name);
+        $subscriptionPlan->delete(); // soft delete
+        return redirect()->route('admin.subscription-plans.index')->with('success', 'Plan archived successfully.');
     }
 }

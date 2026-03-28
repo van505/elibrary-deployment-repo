@@ -30,6 +30,10 @@ class SettingController extends Controller
         $inputs = $request->except(['_method', '_token', 'site_logo']);
 
         foreach ($inputs as $key => $value) {
+            // Skip null or empty values — don't overwrite DB with null
+            if ($value === null || $value === '') {
+                continue;
+            }
             Setting::where('key', $key)->update(['value' => $value]);
         }
 

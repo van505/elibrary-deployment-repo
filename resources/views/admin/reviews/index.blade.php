@@ -78,9 +78,8 @@
                             <td class="px-6 py-3">
                                 <div class="flex gap-2">
                                     @if($r->status === 'pending')
-                                    <form action="{{ route('admin.reviews.update', $r) }}" method="POST">
-                                        @csrf @method('PUT')
-                                        <input type="hidden" name="status" value="approved">
+                                    <form action="{{ route('admin.reviews.approve', $r) }}" method="POST">
+                                        @csrf @method('PATCH')
                                         <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs">Approve</button>
                                     </form>
                                     <form action="{{ route('admin.reviews.update', $r) }}" method="POST">

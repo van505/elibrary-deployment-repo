@@ -62,9 +62,15 @@
         {{-- User + Logout --}}
         <div class="px-4 py-4 border-t border-slate-700">
             <div class="flex items-center gap-3 mb-3">
-                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                    {{ strtoupper(substr(auth()->user()->member?->full_name ?: auth()->user()->email ?? 'M', 0, 1)) }}
-                </div>
+                @if(auth()->user()->member?->avatar)
+                    <img src="{{ Storage::url(auth()->user()->member->avatar) }}"
+                         alt="Avatar"
+                         class="w-8 h-8 rounded-full object-cover flex-shrink-0">
+                @else
+                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                        {{ strtoupper(substr(auth()->user()->member?->full_name ?: auth()->user()->email ?? 'M', 0, 1)) }}
+                    </div>
+                @endif
                 <div class="flex-1 min-w-0">
                     <p class="text-white text-sm font-medium truncate">{{ auth()->user()->member?->full_name ?: (auth()->user()->email ?? '') }}</p>
                     <p class="text-slate-400 text-xs truncate">Member</p>
@@ -141,9 +147,15 @@
                 </div>
 
                 <span class="hidden sm:block text-sm text-gray-600">{{ auth()->user()->member?->full_name ?: (auth()->user()->email ?? '') }}</span>
-                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                    {{ strtoupper(substr(auth()->user()->member?->full_name ?: auth()->user()->email ?? 'M', 0, 1)) }}
-                </div>
+                @if(auth()->user()->member?->avatar)
+                    <img src="{{ Storage::url(auth()->user()->member->avatar) }}"
+                         alt="Avatar"
+                         class="w-8 h-8 rounded-full object-cover">
+                @else
+                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                        {{ strtoupper(substr(auth()->user()->member?->full_name ?: auth()->user()->email ?? 'M', 0, 1)) }}
+                    </div>
+                @endif
             </div>
         </header>
 

@@ -9,8 +9,32 @@
     </div>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <form method="POST" action="{{ route('member.profile.update') }}">
+        <form method="POST" action="{{ route('member.profile.update') }}" enctype="multipart/form-data">
             @csrf @method('PUT')
+
+            {{-- Avatar Upload --}}
+            <div class="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
+                <div class="w-20 h-20 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center flex-shrink-0 ring-2 ring-blue-100">
+                    @if($member->avatar)
+                        <img src="{{ Storage::url($member->avatar) }}"
+                             alt="Profile Photo"
+                             class="w-full h-full object-cover">
+                    @else
+                        <span class="text-white text-2xl font-bold">
+                            {{ strtoupper(substr($member->first_name ?? auth()->user()->email, 0, 1)) }}
+                        </span>
+                    @endif
+                </div>
+                <div>
+                    <label class="cursor-pointer text-blue-600 hover:text-blue-700 text-sm font-medium hover:underline">
+                        Change Photo
+                        <input type="file" name="avatar" accept="image/*" class="hidden"
+                               onchange="this.closest('form').submit()">
+                    </label>
+                    <p class="text-gray-400 text-xs mt-1">JPG, PNG or GIF. Max 2MB.</p>
+                    @error('avatar') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+            </div>
 
             {{-- Personal Info --}}
             <div class="mb-6">
