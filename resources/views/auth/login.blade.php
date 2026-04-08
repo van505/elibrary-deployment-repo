@@ -1,5 +1,12 @@
+@section('title', 'Sign In')
 <x-guest-layout>
-    <!-- Session Status -->
+    {{-- Header --}}
+    <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Welcome Back!</h1>
+        <p class="text-gray-500 text-sm">Sign in to continue your reading journey</p>
+    </div>
+
+    {{-- Session Status --}}
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
     @php
@@ -18,17 +25,17 @@
     @endphp
 
     @if($retriesLeft !== null && $retriesLeft <= 2 && $retriesLeft > 0)
-        <div class="mb-4 font-medium text-sm text-yellow-600 bg-yellow-50 p-3 rounded-lg border border-yellow-200 flex items-center gap-2">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-            Warning: {{ $retriesLeft }} attempt{{ $retriesLeft === 1 ? '' : 's' }} remaining before lockout.
+        <div class="mb-4 font-medium text-sm text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-200 flex items-center gap-2">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Warning: {{ $retriesLeft }} attempt{{ $retriesLeft === 1 ? '' : 's' }} remaining before lockout.</span>
         </div>
     @endif
 
     @if($lockoutSeconds > 0)
-        <div class="mb-4 font-medium text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-200 flex items-center gap-2" id="lockout-container">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div class="mb-4 font-medium text-sm text-red-600 bg-red-50 p-3 rounded-xl border border-red-200 flex items-center gap-2" id="lockout-container">
+            <i class="fas fa-lock"></i>
             <div>
-                Account locked. Please try again in <strong id="lockout-timer">{{ gmdate("i:s", $lockoutSeconds) }}</strong> minutes.
+                Account locked. Please try again in <strong id="lockout-timer">{{ gmdate("i:s", $lockoutSeconds) }}</strong>.
             </div>
         </div>
 
@@ -38,7 +45,6 @@
                 const timerEl = document.getElementById('lockout-timer');
                 const btn = document.querySelector('button[type="submit"]');
                 
-                // Disable login button
                 if (btn) btn.disabled = true;
 
                 const interval = setInterval(() => {
@@ -48,7 +54,7 @@
                         timerEl.innerHTML = "00:00";
                         if (btn) btn.disabled = false;
                         document.getElementById('lockout-container').classList.add('hidden');
-                        location.reload(); // Reload to clear rate limit state cleanly
+                        location.reload();
                     } else {
                         let m = Math.floor(seconds / 60);
                         let s = seconds % 60;
@@ -59,46 +65,117 @@
         </script>
     @endif
 
-    <form method="POST" action="{{ route('login') }}">
+    {{-- Login Form --}}
+    <form method="POST" action="{{ route('login') }}" class="space-y-5">
         @csrf
 
-        <!-- Email Address -->
+        {{-- Email Address --}}
         <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+            <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+                Email Address
             </label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i class="fas fa-envelope text-gray-400 text-sm"></i>
+                </div>
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username"
+                       class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 focus:bg-white input-focus transition-all"
+                       placeholder="Enter your email">
+            </div>
+            @error('email')
+                <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
-        <div class="flex items-center justify-end mt-4">
+        {{-- Password --}}
+        <div>
+            <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
+                Password
+            </label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i class="fas fa-lock text-gray-400 text-sm"></i>
+                </div>
+                <input id="password" type="password" name="password" required autocomplete="current-password"
+                       class="w-full pl-11 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 focus:bg-white input-focus transition-all"
+                       placeholder="Enter your password">
+                <button type="button" onclick="togglePassword('password')" 
+                        class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-eye text-sm" id="password-eye"></i>
+                </button>
+            </div>
+            @error('password')
+                <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- Remember Me & Forgot Password --}}
+        <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="remember" id="remember" 
+                       class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                <span class="text-sm text-gray-600">Remember me</span>
+            </label>
             @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
+                <a href="{{ route('password.request') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">
+                    Forgot password?
                 </a>
             @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
         </div>
+
+        {{-- Submit Button --}}
+        <button type="submit" 
+                class="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group">
+            <span>Sign In</span>
+            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+        </button>
     </form>
+
+    {{-- Divider --}}
+    <div class="relative my-6">
+        <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-200"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+            <span class="px-4 bg-white text-gray-500">or continue with</span>
+        </div>
+    </div>
+
+    {{-- Social Login --}}
+    <div class="grid grid-cols-2 gap-3">
+        <button type="button" class="flex items-center justify-center gap-2 px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-5 h-5">
+            <span class="text-sm font-medium text-gray-700">Google</span>
+        </button>
+        <button type="button" class="flex items-center justify-center gap-2 px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+            <img src="https://www.svgrepo.com/show/475647/apple-color.svg" alt="Apple" class="w-5 h-5">
+            <span class="text-sm font-medium text-gray-700">Apple</span>
+        </button>
+    </div>
+
+    {{-- Register Link --}}
+    <div class="text-center mt-8">
+        <p class="text-sm text-gray-500">
+            Don't have an account?
+            <a href="{{ route('register') }}" class="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                Sign up free
+            </a>
+        </p>
+    </div>
+
+    <script>
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const eye = document.getElementById(inputId + '-eye');
+            if (input.type === 'password') {
+                input.type = 'text';
+                eye.classList.remove('fa-eye');
+                eye.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                eye.classList.remove('fa-eye-slash');
+                eye.classList.add('fa-eye');
+            }
+        }
+    </script>
 </x-guest-layout>

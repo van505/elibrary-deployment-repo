@@ -7,7 +7,22 @@ use Illuminate\Support\Facades\Route;
 
 // ── Public ───────────────────────────────────────────────────────────────────
 
-Route::get('/', fn () => view('welcome'));
+use App\Models\Ebook;
+use App\Models\Category;
+
+Route::get('/', function () {
+    $ebooks = Ebook::with(['authors', 'category'])
+        ->latest()
+        ->take(12)
+        ->get();
+    $categories = Category::take(6)->get();
+    $featuredEbooks = Ebook::with(['authors', 'category'])
+        ->inRandomOrder()
+        ->take(4)
+        ->get();
+    
+    return view('welcome', compact('ebooks', 'categories', 'featuredEbooks'));
+});
 
 // ── Role-based dashboard redirect ────────────────────────────────────────────
 
