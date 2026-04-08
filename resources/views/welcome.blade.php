@@ -29,9 +29,17 @@
         .book-shadow { box-shadow: 0 10px 40px -10px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.1); }
         .book-hover:hover { transform: translateY(-8px) scale(1.02); }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .category-pill { transition: all 0.3s ease; }
-        .category-pill:hover { transform: translateY(-2px); box-shadow: 0 8px 25px -5px rgba(37, 99, 235, 0.3); }
+        .category-pill { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .category-pill:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 12px 40px -8px rgba(37, 99, 235, 0.25); }
         .search-glow:focus { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15); }
+        .nav-link { transition: all 0.3s ease; }
+        .nav-link:hover { background-color: white; color: #111827; transform: translateY(-1px); }
+        .btn-primary { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -5px rgba(37, 99, 235, 0.4); }
+        .book-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .book-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2); }
+        .pricing-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .pricing-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15); }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -47,14 +55,14 @@
             </a>
             
             <div class="hidden md:flex items-center gap-1 bg-gray-100/80 rounded-full px-2 py-1.5">
-                <a href="#books" class="px-4 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-full hover:bg-white transition-all">Books</a>
-                <a href="#categories" class="px-4 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-full hover:bg-white transition-all">Categories</a>
-                <a href="#pricing" class="px-4 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 rounded-full hover:bg-white transition-all">Pricing</a>
+                <a href="#books" class="nav-link px-4 py-1.5 text-sm font-medium text-gray-600 rounded-full">Books</a>
+                <a href="#categories" class="nav-link px-4 py-1.5 text-sm font-medium text-gray-600 rounded-full">Categories</a>
+                <a href="#pricing" class="nav-link px-4 py-1.5 text-sm font-medium text-gray-600 rounded-full">Pricing</a>
             </div>
             
             <div class="flex items-center gap-3">
-                <a href="{{ route('login') }}" class="hidden sm:block text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors px-3 py-2">Sign In</a>
-                <a href="{{ route('register') }}" class="bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg">
+                <a href="{{ route('login') }}" class="hidden sm:block text-gray-600 hover:text-gray-900 text-sm font-medium transition-all duration-300 px-3 py-2 hover:scale-105">Sign In</a>
+                <a href="{{ route('register') }}" class="bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 hover:-translate-y-0.5">
                     Get Started
                 </a>
             </div>
@@ -89,11 +97,11 @@
                     </p>
                     
                     <div class="flex flex-wrap gap-3 justify-center lg:justify-start">
-                        <a href="{{ route('register') }}" class="bg-white text-gray-900 font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-100 transition-all shadow-xl text-sm inline-flex items-center gap-2">
+                        <a href="{{ route('register') }}" class="bg-white text-gray-900 font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-100 hover:scale-105 hover:shadow-2xl transition-all duration-300 ease-out shadow-xl text-sm inline-flex items-center gap-2">
                             <i class="fas fa-rocket text-blue-600"></i>
                             Start Free Trial
                         </a>
-                        <a href="#books" class="glass text-white font-medium px-8 py-3.5 rounded-xl hover:bg-white/10 transition-all text-sm inline-flex items-center gap-2">
+                        <a href="#books" class="glass text-white font-medium px-8 py-3.5 rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 ease-out text-sm inline-flex items-center gap-2">
                             <i class="fas fa-compass"></i>
                             Explore Books
                         </a>
@@ -224,9 +232,9 @@
                     <h2 class="text-3xl font-display font-bold text-gray-900 mb-2">Featured Books</h2>
                     <p class="text-gray-500">Handpicked selection from our library</p>
                 </div>
-                <a href="{{ route('login') }}" class="text-blue-600 font-medium text-sm hover:text-blue-700 inline-flex items-center gap-1 group">
+                <a href="{{ route('login') }}" class="text-blue-600 font-medium text-sm hover:text-blue-800 inline-flex items-center gap-1 group transition-all duration-300 hover:gap-2">
                     View All Books
-                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    <i class="fas fa-arrow-right transition-transform duration-300 group-hover:translate-x-1"></i>
                 </a>
             </div>
             
@@ -263,9 +271,9 @@
                     $levelColor = $levelColors[$ebook->access_level] ?? 'bg-gray-100 text-gray-600 border-gray-200';
                     $levelIcon = $ebook->access_level === 'free' ? 'fa-gift' : ($ebook->access_level === 'basic' ? 'fa-star' : 'fa-crown');
                 @endphp
-                <div class="group">
+                <div class="book-card group">
                     {{-- Book Cover --}}
-                    <div class="relative aspect-[2/3] rounded-xl overflow-hidden book-shadow book-hover transition-all duration-300 mb-3">
+                    <div class="relative aspect-[2/3] rounded-xl overflow-hidden book-shadow mb-3">
                         @if($ebook->cover_image)
                             <img src="{{ asset('storage/' . $ebook->cover_image) }}" alt="{{ $ebook->title }}" 
                                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
@@ -287,8 +295,8 @@
                         </div>
                         
                         {{-- Hover Overlay --}}
-                        <div class="absolute inset-0 bg-gray-900/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3 p-4">
-                            <a href="{{ route('login') }}" class="w-full bg-white text-gray-900 font-semibold py-2.5 rounded-lg text-sm text-center hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
+                        <div class="absolute inset-0 bg-gray-900/80 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4">
+                            <a href="{{ route('login') }}" class="w-full bg-white text-gray-900 font-semibold py-2.5 rounded-lg text-sm text-center hover:bg-gray-100 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
                                 <i class="fas fa-book-reader"></i>
                                 Read Now
                             </a>
@@ -315,7 +323,7 @@
             
             {{-- CTA to see more --}}
             <div class="text-center mt-12">
-                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-6 py-3 rounded-xl transition-colors">
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 hover:scale-105 text-gray-700 font-medium px-6 py-3 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md">
                     <i class="fas fa-th-large"></i>
                     Browse Full Library
                 </a>
@@ -332,27 +340,27 @@
             </div>
             
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white rounded-2xl p-8 border border-gray-100 text-center relative">
+                <div class="pricing-card bg-white rounded-2xl p-8 border border-gray-100 text-center relative hover:border-blue-200">
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">1</div>
-                    <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                    <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-5 transition-transform duration-300 hover:scale-110">
                         <i class="fas fa-user-plus text-blue-600 text-2xl"></i>
                     </div>
                     <h3 class="font-bold text-gray-900 text-lg mb-2">Create Account</h3>
                     <p class="text-gray-500 text-sm leading-relaxed">Sign up for free and unlock access to our digital library collection.</p>
                 </div>
                 
-                <div class="bg-white rounded-2xl p-8 border border-gray-100 text-center relative">
+                <div class="pricing-card bg-white rounded-2xl p-8 border border-gray-100 text-center relative hover:border-purple-200">
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">2</div>
-                    <div class="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                    <div class="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-5 transition-transform duration-300 hover:scale-110">
                         <i class="fas fa-crown text-purple-600 text-2xl"></i>
                     </div>
                     <h3 class="font-bold text-gray-900 text-lg mb-2">Choose Plan</h3>
                     <p class="text-gray-500 text-sm leading-relaxed">Select from Free, Basic, or Premium plans based on your reading needs.</p>
                 </div>
                 
-                <div class="bg-white rounded-2xl p-8 border border-gray-100 text-center relative">
+                <div class="pricing-card bg-white rounded-2xl p-8 border border-gray-100 text-center relative hover:border-green-200">
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">3</div>
-                    <div class="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                    <div class="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-5 transition-transform duration-300 hover:scale-110">
                         <i class="fas fa-book-open text-green-600 text-2xl"></i>
                     </div>
                     <h3 class="font-bold text-gray-900 text-lg mb-2">Start Reading</h3>
@@ -372,7 +380,7 @@
             
             <div class="grid md:grid-cols-3 gap-6">
                 {{-- Free Plan --}}
-                <div class="bg-white rounded-2xl border border-gray-200 p-6 flex flex-col hover:border-gray-300 transition-colors">
+                <div class="pricing-card bg-white rounded-2xl border border-gray-200 p-6 flex flex-col hover:border-blue-300">
                     <div class="mb-6">
                         <h3 class="font-bold text-gray-900 text-lg">Free</h3>
                         <p class="text-gray-500 text-sm mt-1">For casual readers</p>
@@ -401,7 +409,7 @@
                 </div>
                 
                 {{-- Basic Plan --}}
-                <div class="bg-white rounded-2xl border-2 border-blue-500 p-6 flex flex-col relative">
+                <div class="pricing-card bg-white rounded-2xl border-2 border-blue-500 p-6 flex flex-col relative hover:border-blue-600 hover:shadow-blue-100">
                     <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
                         Popular
                     </div>
@@ -433,7 +441,7 @@
                 </div>
                 
                 {{-- Premium Plan --}}
-                <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 flex flex-col text-white">
+                <div class="pricing-card bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 flex flex-col text-white hover:from-gray-800 hover:to-gray-700">
                     <div class="mb-6">
                         <h3 class="font-bold text-lg">Premium</h3>
                         <p class="text-gray-400 text-sm mt-1">For avid readers</p>
@@ -471,11 +479,11 @@
             <h2 class="text-3xl sm:text-4xl font-display font-bold text-white mb-4">Ready to Start Reading?</h2>
             <p class="text-lg text-gray-300 mb-8 max-w-xl mx-auto">Join thousands of readers discovering their next favorite book. No credit card required to get started.</p>
             <div class="flex flex-wrap gap-4 justify-center">
-                <a href="{{ route('register') }}" class="bg-white text-gray-900 font-bold px-8 py-4 rounded-xl hover:bg-gray-100 transition-all shadow-xl text-sm inline-flex items-center gap-2">
+                <a href="{{ route('register') }}" class="bg-white text-gray-900 font-bold px-8 py-4 rounded-xl hover:bg-gray-100 hover:scale-105 transition-all duration-300 ease-out shadow-xl hover:shadow-2xl text-sm inline-flex items-center gap-2">
                     <i class="fas fa-rocket"></i>
                     Create Free Account
                 </a>
-                <a href="{{ route('login') }}" class="glass text-white font-semibold px-8 py-4 rounded-xl hover:bg-white/10 transition-all text-sm inline-flex items-center gap-2">
+                <a href="{{ route('login') }}" class="glass text-white font-semibold px-8 py-4 rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 ease-out text-sm inline-flex items-center gap-2">
                     <i class="fas fa-sign-in-alt"></i>
                     Sign In
                 </a>
@@ -499,32 +507,32 @@
                 <div>
                     <h4 class="text-white font-semibold mb-4 text-sm">Quick Links</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#books" class="hover:text-white transition-colors">Browse Books</a></li>
-                        <li><a href="#pricing" class="hover:text-white transition-colors">Pricing</a></li>
-                        <li><a href="{{ route('login') }}" class="hover:text-white transition-colors">Login</a></li>
-                        <li><a href="{{ route('register') }}" class="hover:text-white transition-colors">Register</a></li>
+                        <li><a href="#books" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Browse Books</a></li>
+                        <li><a href="#pricing" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Pricing</a></li>
+                        <li><a href="{{ route('login') }}" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Login</a></li>
+                        <li><a href="{{ route('register') }}" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Register</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="text-white font-semibold mb-4 text-sm">Support</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Terms of Service</a></li>
                     </ul>
                 </div>
             </div>
             <div class="border-t border-gray-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p class="text-sm text-gray-500">© {{ date('Y') }} ELibrary. All rights reserved.</p>
                 <div class="flex items-center gap-4">
-                    <a href="#" class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors">
+                    <a href="#" class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 hover:scale-110 transition-all duration-300">
                         <i class="fab fa-twitter text-sm"></i>
                     </a>
-                    <a href="#" class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors">
+                    <a href="#" class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-800 hover:scale-110 transition-all duration-300">
                         <i class="fab fa-facebook-f text-sm"></i>
                     </a>
-                    <a href="#" class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-gray-700 transition-colors">
+                    <a href="#" class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-pink-600 hover:scale-110 transition-all duration-300">
                         <i class="fab fa-instagram text-sm"></i>
                     </a>
                 </div>
