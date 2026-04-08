@@ -20,11 +20,18 @@ class User extends Authenticatable
         'role',
         'first_name',
         'last_name',
+        'two_factor_enabled',
+        'google2fa_secret',
+        'two_factor_recovery_codes',
+        'email_otp_code',
+        'email_otp_expires_at',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
+        'google2fa_secret',
+        'two_factor_recovery_codes',
     ];
 
     protected function casts(): array
@@ -32,6 +39,10 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
+            'two_factor_enabled' => 'boolean',
+            'google2fa_secret'   => 'encrypted',
+            'two_factor_recovery_codes' => 'encrypted:array',
+            'email_otp_expires_at' => 'datetime',
         ];
     }
 
@@ -52,5 +63,10 @@ class User extends Authenticatable
     public function activityLogs(): HasMany
     {
         return $this->hasMany(ActivityLog::class);
+    }
+
+    public function passwordHistory(): HasMany
+    {
+        return $this->hasMany(PasswordHistory::class);
     }
 }

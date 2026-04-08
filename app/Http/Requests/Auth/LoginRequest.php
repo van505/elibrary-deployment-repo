@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Models\User;
+use App\Models\ActivityLog;
 
 class LoginRequest extends FormRequest
 {
@@ -42,8 +44,36 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
+        // Check suspension BEFORE attempting auth (avoids leaking user existence)
+        $existingUser = User::where('email', $this->email)->first();
+        if ($existingUser && $existingUser->member && $existingUser->member->status === 'suspended') {
+            // Log the blocked attempt
+            ActivityLog::create([
+                'user_id'    => $existingUser->id,
+                'action'     => 'login_blocked',
+                'module'     => 'auth',
+                'description'=> 'Login blocked: account suspended.',
+                'ip_address' => $this->ip(),
+                'user_agent' => $this->userAgent(),
+            ]);
+            throw ValidationException::withMessages([
+                'email' => 'Your account has been suspended. Reason: '
+                    . ($existingUser->member->suspension_reason ?? 'Contact admin for details.'),
+            ]);
+        }
+
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+            RateLimiter::hit($this->throttleKey(), 900); // 15 minutes lockout
+
+            // Log the failed attempt (no auth()->id() since login failed)
+            ActivityLog::create([
+                'user_id'    => $existingUser?->id,
+                'action'     => 'login_failed',
+                'module'     => 'auth',
+                'description'=> 'Failed login attempt for: ' . $this->email,
+                'ip_address' => $this->ip(),
+                'user_agent' => $this->userAgent(),
+            ]);
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),

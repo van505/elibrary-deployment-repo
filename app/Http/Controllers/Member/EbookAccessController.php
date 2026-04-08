@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Member;
 use App\Helpers\ActivityLogger;
 use App\Models\Ebook;
 use App\Models\EbookAccess;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class EbookAccessController extends BaseMemberController
 {
@@ -65,7 +67,75 @@ class EbookAccessController extends BaseMemberController
                 ->with('error', 'You do not have access to this ebook.');
         }
 
-        return view('member.ebooks.read', compact('ebook'));
+        // Resolve a direct URL for the file (public disk only — no streaming)
+        // If the file is in the public disk, serve it directly via asset URL
+        $fileUrl = null;
+
+        if (Storage::disk('public')->exists($ebook->file_path)) {
+            $fileUrl = Storage::disk('public')->url($ebook->file_path);
+        } elseif (Storage::disk('public')->exists('ebooks/' . basename($ebook->file_path))) {
+            $fileUrl = Storage::disk('public')->url('ebooks/' . basename($ebook->file_path));
+        }
+
+        // If file is on private disk, fall back to the stream route
+        if (! $fileUrl && Storage::disk('private')->exists($ebook->file_path)) {
+            $fileUrl = route('member.ebooks.stream', $ebook->id);
+        }
+
+        return view('member.ebooks.read', compact('ebook', 'fileUrl'));
+    }
+
+    public function stream(Ebook $ebook)
+    {
+        $member = $this->getOrCreateMember();
+
+        $hasAccess = EbookAccess::where('member_id', $member->id)
+            ->where('ebook_id', $ebook->id)
+            ->exists();
+
+        if (! $hasAccess) {
+            abort(403, 'Unauthorized access to this resource.');
+        }
+
+        // Try private disk first, then fall back to public, then raw storage path
+        $filePath = null;
+
+        if (Storage::disk('private')->exists($ebook->file_path)) {
+            $disk = 'private';
+            $filePath = Storage::disk('private')->path($ebook->file_path);
+        } elseif (Storage::disk('public')->exists($ebook->file_path)) {
+            $disk = 'public';
+            $filePath = Storage::disk('public')->path($ebook->file_path);
+        } else {
+            // Last resort: try absolute path under storage/app/
+            $absolute = storage_path('app/' . $ebook->file_path);
+            if (file_exists($absolute)) {
+                $filePath = $absolute;
+                $disk = null;
+            }
+        }
+
+        if (! $filePath || ! file_exists($filePath)) {
+            abort(404, 'Ebook file not found. Please contact the administrator.');
+        }
+
+        $contentType = match($ebook->file_type) {
+            'mp3'  => 'audio/mpeg',
+            'epub' => 'application/epub+zip',
+            default => 'application/pdf',
+        };
+
+        $headers = [
+            'Content-Type'        => $contentType,
+            'Content-Disposition' => 'inline; filename="' . Str::slug($ebook->title) . '.' . $ebook->file_type . '"',
+            'Cache-Control'       => 'no-store, no-cache, must-revalidate',
+            'Pragma'              => 'no-cache',
+            'Expires'             => '0',
+        ];
+
+        // Use response()->file() — sends proper Content-Length headers
+        // required by browsers to display PDFs inline in iframes
+        return response()->file($filePath, $headers);
     }
 
     public function removeAccess(Ebook $ebook)

@@ -22,6 +22,12 @@ class Member extends Model
         'address',
         'avatar',
         'status',
+        'suspension_reason',
+        'suspended_at',
+    ];
+
+    protected $hidden = [
+        'suspension_reason',
     ];
 
     // ── Name Accessor ─────────────────────────────────────────────────────────

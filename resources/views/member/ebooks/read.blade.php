@@ -24,11 +24,13 @@
         <div class="flex items-center gap-3">
             <span class="bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded">{{ strtoupper($ebook->file_type) }}</span>
 
-            {{-- Download button --}}
-            <a href="{{ Storage::url($ebook->file_path) }}" download
-               class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
-                ⬇ Download
-            </a>
+            {{-- Download link --}}
+            @if($fileUrl)
+                <a href="{{ $fileUrl }}" download
+                   class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
+                    ⬇ Download
+                </a>
+            @endif
 
             <form action="{{ route('member.ebooks.remove-access', $ebook->id) }}" method="POST">
                 @csrf @method('DELETE')
@@ -52,29 +54,45 @@
                     </svg>
                     <h2 class="text-white font-bold text-lg mb-1">{{ $ebook->title }}</h2>
                     <p class="text-gray-400 text-sm mb-6">{{ $ebook->authors->pluck('name')->join(', ') }}</p>
-                    <audio controls class="w-full">
-                        <source src="{{ Storage::url($ebook->file_path) }}" type="audio/mpeg">
-                        Your browser does not support audio playback.
-                    </audio>
+                    @if($fileUrl)
+                        <audio controls class="w-full">
+                            <source src="{{ $fileUrl }}" type="audio/mpeg">
+                            Your browser does not support audio playback.
+                        </audio>
+                    @else
+                        <p class="text-red-400 text-sm">Audio file not available. Please contact the administrator.</p>
+                    @endif
                 </div>
             </div>
-        @else
-            {{-- PDF / EPUB — use browser's built-in viewer via direct storage URL --}}
+
+        @elseif($fileUrl)
+            {{-- PDF / EPUB — direct public URL, no server-side streaming --}}
             <iframe
-                src="{{ Storage::url($ebook->file_path) }}"
+                src="{{ $fileUrl }}"
                 class="w-full border-0"
                 style="height: calc(100vh - 60px);"
                 title="{{ $ebook->title }}">
                 <div class="flex items-center justify-center h-full text-white p-10 text-center">
                     <div>
                         <p class="mb-4">Your browser cannot display this file inline.</p>
-                        <a href="{{ Storage::url($ebook->file_path) }}"
+                        <a href="{{ $fileUrl }}"
                            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
                             Download {{ strtoupper($ebook->file_type) }}
                         </a>
                     </div>
                 </div>
             </iframe>
+
+        @else
+            {{-- File not found --}}
+            <div class="flex items-center justify-center h-full text-center text-white p-10">
+                <div>
+                    <p class="text-2xl mb-2">📄</p>
+                    <p class="text-lg font-medium mb-2">File not available</p>
+                    <p class="text-gray-400 text-sm">The ebook file could not be located. Please contact the administrator.</p>
+                    <a href="{{ route('member.ebooks.show', $ebook->id) }}" class="mt-4 inline-block text-blue-400 hover:underline text-sm">← Back to ebook details</a>
+                </div>
+            </div>
         @endif
     </main>
 

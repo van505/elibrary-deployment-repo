@@ -11,7 +11,11 @@ Route::get('/', fn () => view('welcome'));
 
 // ── Role-based dashboard redirect ────────────────────────────────────────────
 
-Route::middleware('auth')->get('/dashboard', function () {
+Route::get ('2fa',        [App\Http\Controllers\Auth\TwoFactorController::class, 'challenge'])->name('2fa.challenge')->middleware('auth');
+Route::post('2fa',        [App\Http\Controllers\Auth\TwoFactorController::class, 'verify'])->name('2fa.verify')->middleware('auth');
+Route::post('2fa/resend', [App\Http\Controllers\Auth\TwoFactorController::class, 'resend'])->name('2fa.resend')->middleware('auth');
+
+Route::middleware(['auth', '2fa'])->get('/dashboard', function () {
     return auth()->user()->role === 'admin'
         ? redirect()->route('admin.dashboard')
         : redirect()->route('member.dashboard');
@@ -19,15 +23,19 @@ Route::middleware('auth')->get('/dashboard', function () {
 
 // ── Profile (Breeze) ─────────────────────────────────────────────────────────
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', '2fa'])->group(function () {
     Route::get('/profile',    [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile',  [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // 2FA Enable/Disable (email OTP mode)
+    Route::post  ('/2fa/enable',  [App\Http\Controllers\Auth\TwoFactorSetupController::class, 'enable'])->name('2fa.enable');
+    Route::delete('/2fa/disable', [App\Http\Controllers\Auth\TwoFactorSetupController::class, 'disable'])->name('2fa.disable');
 });
 
 // ── Admin ─────────────────────────────────────────────────────────────────────
 
-Route::middleware(['auth', 'role:admin'])
+Route::middleware(['auth', '2fa', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
@@ -70,7 +78,7 @@ Route::middleware(['auth', 'role:admin'])
 
 // ── Member ────────────────────────────────────────────────────────────────────
 
-Route::middleware(['auth', 'role:member'])
+Route::middleware(['auth', '2fa', 'role:member'])
     ->prefix('member')
     ->name('member.')
     ->group(function () {
@@ -82,6 +90,7 @@ Route::middleware(['auth', 'role:member'])
         // Ebook access
         Route::post  ('ebooks/{ebook}/access', [Member\EbookAccessController::class, 'access'])->name('ebooks.access');
         Route::get   ('ebooks/{ebook}/read',   [Member\EbookAccessController::class, 'read'])->name('ebooks.read');
+        Route::get   ('ebooks/{ebook}/stream', [Member\EbookAccessController::class, 'stream'])->name('ebooks.stream');
         Route::delete('ebooks/{ebook}/access', [Member\EbookAccessController::class, 'removeAccess'])->name('ebooks.remove-access');
 
         // Subscriptions

@@ -8,6 +8,10 @@ use App\Observers\UserObserver;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +24,24 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useTailwind();
         User::observe(UserObserver::class);
+
+        RateLimiter::for('login', function (Request $request) {
+            return Limit::perMinutes(15, 5)
+                ->by($request->email . '|' . $request->ip())
+                ->response(function() {
+                    return back()->withErrors([
+                        'email' => 'Too many login attempts. Please try again in 15 minutes.'
+                    ]);
+                });
+        });
+
+        Password::defaults(function () {
+            // Using basic rules rather than ->uncompromised() for local dev stability
+            return Password::min(8)
+                ->mixedCase()
+                ->numbers()
+                ->symbols();
+        });
 
         // ── Member Notifications ViewComposer ─────────────────────────────────
         // Automatically injects unread notification count & recent notifications

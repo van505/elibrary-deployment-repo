@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Helpers\ActivityLogger;
+use App\Services\ActivityLogger;
 use App\Http\Controllers\Controller;
 use App\Models\Member;
 use Illuminate\Http\Request;
@@ -62,16 +62,36 @@ class MemberController extends Controller
     }
 
     /**
-     * Quick status toggle (activate / suspend)
+     * Enhanced status toggle with suspension reason support.
      */
     public function toggleStatus(Request $request, $id)
     {
         $member = Member::findOrFail($id);
-        $member->status = $member->status === 'active' ? 'suspended' : 'active';
-        $member->save();
 
-        ActivityLogger::log('updated', 'members', 'Toggled status of member: ' . $member->member_code . ' → ' . $member->status);
+        $request->validate([
+            'status'             => 'required|in:active,suspended',
+            'suspension_reason'  => 'required_if:status,suspended|nullable|string|max:500',
+        ]);
 
-        return redirect()->back()->with('success', 'Member status updated to ' . $member->status . '.');
+        $isSuspending = $request->status === 'suspended';
+
+        $member->update([
+            'status'            => $request->status,
+            'suspension_reason' => $isSuspending ? $request->suspension_reason : null,
+            'suspended_at'      => $isSuspending ? now() : null,
+        ]);
+
+        $logDesc = $isSuspending
+            ? 'Suspended member: ' . $member->full_name . '. Reason: ' . ($request->suspension_reason ?? 'Not given')
+            : 'Activated member: ' . $member->full_name;
+
+        ActivityLogger::log(
+            $isSuspending ? 'suspended' : 'activated',
+            'members',
+            $logDesc
+        );
+
+        return redirect()->back()->with('success', 'Member ' . $request->status . ' successfully.');
     }
 }
+

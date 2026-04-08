@@ -4,15 +4,38 @@
 @section('content')
 <div class="mb-6 flex flex-wrap justify-between items-center gap-3">
     <a href="{{ route('admin.members.index') }}" class="text-blue-600 hover:underline text-sm">← Back to Members</a>
-    <div class="flex gap-2">
+    <div class="flex gap-2 items-start">
         {{-- Status Toggle --}}
-        <form action="{{ route('admin.members.toggle-status', $member->id) }}" method="POST">
-            @csrf
-            <button type="submit"
-                    class="px-4 py-2 rounded-lg text-sm font-medium {{ $member->status === 'active' ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-green-100 text-green-700 hover:bg-green-200' }}">
-                {{ $member->status === 'active' ? '⛔ Suspend Member' : '✅ Activate Member' }}
-            </button>
-        </form>
+        @if($member->status === 'active')
+            <form action="{{ route('admin.members.toggle-status', $member->id) }}" method="POST" class="flex flex-col gap-2">
+                @csrf
+                <input type="hidden" name="status" value="suspended">
+                <div>
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Suspension Reason <span class="text-red-500">*</span></label>
+                    <textarea name="suspension_reason" rows="2" required
+                              placeholder="Required: Enter reason for suspension..."
+                              class="w-64 border border-red-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-400 @error('suspension_reason') border-red-500 @enderror">{{ old('suspension_reason') }}</textarea>
+                    @error('suspension_reason')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <button type="submit"
+                        onclick="return confirm('Are you sure you want to suspend this member?')"
+                        class="px-4 py-2 rounded-lg text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors">
+                    ⛔ Suspend Member
+                </button>
+            </form>
+        @else
+            <form action="{{ route('admin.members.toggle-status', $member->id) }}" method="POST">
+                @csrf
+                <input type="hidden" name="status" value="active">
+                <button type="submit"
+                        class="px-4 py-2 rounded-lg text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors">
+                    ✅ Activate Member
+                </button>
+            </form>
+        @endif
+
         <a href="{{ route('admin.members.edit', $member) }}"
            class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm">Edit</a>
     </div>

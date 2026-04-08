@@ -40,7 +40,7 @@ class EbookController extends Controller
             'access_level' => 'required|in:free,basic,premium',
         ]);
 
-        $validated['file_path'] = $request->file('file_path')->store('ebooks', 'public');
+        $validated['file_path'] = $request->file('file_path')->store('ebooks', 'private');
 
         if ($request->hasFile('cover_image')) {
             $validated['cover_image'] = $request->file('cover_image')->store('covers', 'public');
@@ -111,7 +111,7 @@ class EbookController extends Controller
         ]);
 
         if ($request->hasFile('file_path')) {
-            $validated['file_path'] = $request->file('file_path')->store('ebooks', 'public');
+            $validated['file_path'] = $request->file('file_path')->store('ebooks', 'private');
         } else {
             unset($validated['file_path']);
         }

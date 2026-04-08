@@ -65,18 +65,6 @@
                 </label>
             </div>
 
-            {{-- Maintenance Mode --}}
-            <div class="flex items-center justify-between py-3 border-t border-gray-100">
-                <div>
-                    <p class="text-sm font-medium text-gray-700">Maintenance Mode</p>
-                    <p class="text-xs text-gray-400">{{ $settings->get('maintenance_mode')?->description }}</p>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" name="maintenance_mode" value="1" class="sr-only peer"
-                           {{ ($settings->get('maintenance_mode')?->value ?? '0') == '1' ? 'checked' : '' }}>
-                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
-                </label>
-            </div>
         </div>
 
         {{-- Subscription Settings --}}

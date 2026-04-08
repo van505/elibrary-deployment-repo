@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use App\Models\SubscriptionPlan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class SettingController extends Controller
@@ -20,32 +21,34 @@ class SettingController extends Controller
 
     public function update(Request $request)
     {
-        // Handle logo upload separately
+        $booleanKeys = ['allow_registration'];
+
+        // ── 1. Logo upload ────────────────────────────────────────────────────
         if ($request->hasFile('site_logo')) {
             $path = $request->file('site_logo')->store('settings', 'public');
-            Setting::where('key', 'site_logo')->update(['value' => $path]);
+            DB::table('settings')->where('key', 'site_logo')->update(['value' => $path, 'updated_at' => now()]);
         }
 
-        // Handle all other settings
-        $inputs = $request->except(['_method', '_token', 'site_logo']);
+        // ── 2. Boolean toggles (checkbox absent = unchecked = '0') ───────────
+        foreach ($booleanKeys as $key) {
+            $value = $request->has($key) ? '1' : '0';
+            DB::table('settings')->updateOrInsert(
+                ['key' => $key],
+                ['value' => $value, 'updated_at' => now()]
+            );
+        }
 
-        foreach ($inputs as $key => $value) {
-            // Skip null or empty values — don't overwrite DB with null
+        // ── 3. All other text/number settings (skip booleans & reserved keys) ─
+        $skip = array_merge($booleanKeys, ['_token', '_method', 'site_logo']);
+        foreach ($request->except($skip) as $key => $value) {
             if ($value === null || $value === '') {
                 continue;
             }
-            Setting::where('key', $key)->update(['value' => $value]);
+            DB::table('settings')->where('key', $key)->update(['value' => $value, 'updated_at' => now()]);
         }
 
-        // Handle boolean fields that are unchecked (checkboxes don't submit when unchecked)
-        foreach (['allow_registration', 'maintenance_mode'] as $boolKey) {
-            if (! $request->has($boolKey)) {
-                Setting::where('key', $boolKey)->update(['value' => '0']);
-            }
-        }
+        ActivityLogger::log('updated', 'settings', 'System settings updated.');
 
-        ActivityLogger::log('updated', 'settings', 'Updated system settings.');
-
-        return redirect()->back()->with('success', 'Settings updated successfully.');
+        return redirect()->back()->with('success', 'Settings saved successfully.');
     }
 }
