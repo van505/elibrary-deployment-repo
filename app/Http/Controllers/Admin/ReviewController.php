@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Helpers\ActivityLogger;
+use App\Services\ActivityLogger;
 use App\Http\Controllers\Controller;
 use App\Models\MemberNotification;
 use App\Models\Review;

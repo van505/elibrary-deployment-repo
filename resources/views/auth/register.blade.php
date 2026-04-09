@@ -1,205 +1,201 @@
 @section('title', 'Create Account')
+
 <x-guest-layout>
-    {{-- Progress Steps --}}
-    <div class="flex items-center justify-center gap-2 mb-6">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-full bg-purple-600 text-white flex items-center justify-center text-sm font-bold">1</div>
-            <span class="text-sm font-medium text-purple-600">Account</span>
-        </div>
-        <div class="w-8 h-px bg-gray-300"></div>
-        <div class="flex items-center gap-2 opacity-50">
-            <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-bold">2</div>
-            <span class="text-sm font-medium text-gray-500">Plan</span>
-        </div>
-    </div>
 
-    {{-- Header --}}
-    <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-900 mb-2">Create Your Account</h1>
-        <p class="text-gray-500 text-sm">Join thousands of readers discovering new books</p>
-    </div>
+    {{-- ===== LEFT PANEL ===== --}}
+    <x-slot name="leftPanel">
+        <h1 class="text-4xl lg:text-5xl font-extrabold text-white leading-tight mb-4 mt-[10%]">
+            Join ELibrary
+        </h1>
+        <p class="text-blue-100 text-lg leading-relaxed mb-12">
+            Create your account and start your<br>unlimited reading journey today.
+        </p>
 
-    {{-- Benefits Card --}}
-    <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-4 mb-6 border border-purple-100">
-        <h3 class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
-            <i class="fas fa-gift text-purple-600"></i>
-            Free Account Benefits
-        </h3>
-        <ul class="space-y-2 text-sm text-gray-600">
-            <li class="flex items-center gap-2">
-                <i class="fas fa-check-circle text-green-500 text-xs"></i>
-                <span>Access 3 free ebooks</span>
+        <ul class="space-y-6">
+            <li class="flex text-white font-medium text-base items-center">
+                <svg class="w-5 h-5 mr-4 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+                Free to join as a reader
             </li>
-            <li class="flex items-center gap-2">
-                <i class="fas fa-check-circle text-green-500 text-xs"></i>
-                <span>Save bookmarks & notes</span>
+            <li class="flex text-white font-medium text-base items-center">
+                <svg class="w-5 h-5 mr-4 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+                Browse thousands of ebooks
             </li>
-            <li class="flex items-center gap-2">
-                <i class="fas fa-check-circle text-green-500 text-xs"></i>
-                <span>No credit card required</span>
+            <li class="flex text-white font-medium text-base items-center">
+                <svg class="w-5 h-5 mr-4 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+                Safe and private community
             </li>
         </ul>
-    </div>
+    </x-slot>
 
-    {{-- Register Form --}}
+    <x-slot name="bottomLink">
+        Already have an account? <a href="{{ route('login') }}" class="text-white underline underline-offset-2 font-bold hover:text-blue-50 transition-colors">Sign in here</a>
+    </x-slot>
+
+    {{-- ===== RIGHT PANEL (FORM) ===== --}}
+
+    <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center lg:text-left">Create Account</h2>
+
     <form method="POST" action="{{ route('register') }}" class="space-y-4">
         @csrf
 
-        {{-- Email Address --}}
+        {{-- Email --}}
         <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">
-                Email Address
-            </label>
-            <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <i class="fas fa-envelope text-gray-400 text-sm"></i>
-                </div>
-                <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username"
-                       class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all"
-                       placeholder="you@example.com">
-            </div>
+            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1.5">Email *</label>
+            <input id="email" type="email" name="email" value="{{ old('email') }}"
+                   required autocomplete="username"
+                   class="auth-input" placeholder="">
             @error('email')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                <p class="mt-1.5 text-sm text-red-500">{{ $message }}</p>
             @enderror
         </div>
 
         {{-- Password --}}
         <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1.5">
-                Password
-            </label>
+            <label for="password" class="block text-sm font-semibold text-gray-700 mb-1.5">Password *</label>
             <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <i class="fas fa-lock text-gray-400 text-sm"></i>
-                </div>
-                <input id="password" type="password" name="password" required autocomplete="new-password"
-                       class="w-full pl-10 pr-10 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all"
-                       placeholder="Create a secure password" oninput="checkPasswordStrength(this.value)">
-                <button type="button" onclick="togglePassword('password')" 
-                        class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-purple-600 transition-colors">
-                    <i class="fas fa-eye text-sm" id="password-eye"></i>
+                <input id="password" type="password" name="password"
+                       required autocomplete="new-password"
+                       class="auth-input pr-10" placeholder=""
+                       oninput="checkPasswordStrength(this.value)">
+                <button type="button" onclick="togglePassword('password')"
+                        class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors focus:outline-none">
+                    <svg id="password-eye" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    <svg id="password-eye-slash" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    </svg>
                 </button>
             </div>
             @error('password')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                <p class="mt-1.5 text-sm text-red-500">{{ $message }}</p>
             @enderror
-            
-            {{-- Password Strength Indicator --}}
-            <div class="mt-2" id="password-strength" style="display: none;">
-                <div class="flex items-center gap-2 mb-1.5">
+
+            {{-- Password Strength --}}
+            <div class="mt-2.5 hidden" id="password-strength">
+                <div class="flex items-center gap-2 mb-2">
                     <div class="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                        <div id="strength-bar" class="h-full transition-all duration-300" style="width: 0%;"></div>
+                        <div id="strength-bar" class="h-full transition-all duration-300" style="width:0%"></div>
                     </div>
-                    <span id="strength-text" class="text-xs font-medium"></span>
                 </div>
-                <div class="flex gap-3 text-xs text-gray-500">
-                    <span id="req-length" class="flex items-center gap-1"><i class="fas fa-circle text-[5px]"></i> 8+ chars</span>
-                    <span id="req-number" class="flex items-center gap-1"><i class="fas fa-circle text-[5px]"></i> Number</span>
-                    <span id="req-special" class="flex items-center gap-1"><i class="fas fa-circle text-[5px]"></i> Special</span>
+                <div class="flex gap-4 text-xs text-gray-500">
+                    <span id="req-length" class="flex items-center gap-1">
+                        <svg id="icon-length" class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/></svg>
+                        8+ chars
+                    </span>
+                    <span id="req-number" class="flex items-center gap-1">
+                        <svg id="icon-number" class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/></svg>
+                        Number
+                    </span>
+                    <span id="req-special" class="flex items-center gap-1">
+                        <svg id="icon-special" class="w-3 h-3 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/></svg>
+                        Special
+                    </span>
                 </div>
             </div>
         </div>
 
         {{-- Confirm Password --}}
         <div>
-            <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1.5">
-                Confirm Password
-            </label>
+            <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 mb-1.5">Confirm Password *</label>
             <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <i class="fas fa-lock text-gray-400 text-sm"></i>
-                </div>
-                <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password"
-                       class="w-full pl-10 pr-10 py-2.5 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all"
-                       placeholder="Confirm your password">
-                <button type="button" onclick="togglePassword('password_confirmation')" 
-                        class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-purple-600 transition-colors">
-                    <i class="fas fa-eye text-sm" id="password_confirmation-eye"></i>
+                <input id="password_confirmation" type="password" name="password_confirmation"
+                       required autocomplete="new-password"
+                       class="auth-input pr-10" placeholder="">
+                <button type="button" onclick="togglePassword('password_confirmation')"
+                        class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-blue-600 transition-colors focus:outline-none">
+                    <svg id="password_confirmation-eye" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    <svg id="password_confirmation-eye-slash" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    </svg>
                 </button>
             </div>
             @error('password_confirmation')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                <p class="mt-1.5 text-sm text-red-500">{{ $message }}</p>
             @enderror
         </div>
 
-        {{-- Terms Agreement --}}
-        <div class="flex items-start gap-2.5">
+        {{-- Terms --}}
+        <div class="flex items-start gap-2.5 pt-3 pb-2">
             <input type="checkbox" id="terms" name="terms" required
-                   class="mt-0.5 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 cursor-pointer">
-            <label for="terms" class="text-xs text-gray-600 cursor-pointer leading-relaxed">
-                I agree to the 
-                <a href="#" class="text-purple-600 hover:text-purple-700 font-medium">Terms</a>
-                and 
-                <a href="#" class="text-purple-600 hover:text-purple-700 font-medium">Privacy Policy</a>
+                   class="mt-0.5 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+            <label for="terms" class="text-sm text-gray-600 cursor-pointer">
+                I agree to the
+                <a href="#" class="text-blue-600 hover:text-blue-800 font-semibold">Terms of Service</a>
+                and
+                <a href="#" class="text-blue-600 hover:text-blue-800 font-semibold">Privacy Policy</a>
             </label>
         </div>
 
-        {{-- Submit Button --}}
-        <button type="submit" 
-                class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2.5 rounded-lg transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 group">
-            <span>Create Free Account</span>
-            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-        </button>
+        {{-- Submit --}}
+        <button type="submit" class="auth-btn">Create Free Account</button>
     </form>
 
     {{-- Divider --}}
-    <div class="relative my-5">
-        <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-gray-200"></div>
-        </div>
+    <div class="relative my-7">
+        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
         <div class="relative flex justify-center text-xs">
-            <span class="px-2 bg-white text-gray-400">or sign up with</span>
+            <span class="px-3 bg-white text-gray-400">or sign up with</span>
         </div>
     </div>
 
-    {{-- Social Login --}}
-    <div class="grid grid-cols-2 gap-3">
-        <button type="button" class="flex items-center justify-center gap-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all">
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="w-4 h-4">
-            <span class="text-sm font-medium text-gray-700">Google</span>
+    {{-- Social --}}
+    <div class="grid grid-cols-2 gap-3 mb-4">
+        <button type="button" class="flex items-center justify-center gap-2 px-4 py-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all text-sm font-semibold text-gray-700">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                <path d="M1 1h22v22H1z" fill="none"/>
+            </svg>
+            Google
         </button>
-        <button type="button" class="flex items-center justify-center gap-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all">
-            <img src="https://www.svgrepo.com/show/475647/apple-color.svg" alt="Apple" class="w-4 h-4">
-            <span class="text-sm font-medium text-gray-700">Apple</span>
+        <button type="button" class="flex items-center justify-center gap-2 px-4 py-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition-all text-sm font-semibold text-gray-700">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.09 2.31-.93 3.57-.84 1.51.05 2.95.72 3.94 1.81-3.48 2.05-2.85 6.08.41 7.42-1.02 1.68-1.92 2.76-3 3.78zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.32 2.4-1.89 4.34-3.74 4.25z"/>
+            </svg>
+            Apple
         </button>
     </div>
 
-    {{-- Login Link --}}
-    <div class="text-center mt-6 pt-4 border-t border-gray-100">
-        <p class="text-sm text-gray-500">
-            Already have an account?
-            <a href="{{ route('login') }}" class="font-semibold text-purple-600 hover:text-purple-700 transition-colors">
-                Sign in here
-            </a>
-        </p>
-    </div>
+    {{-- Mobile login link --}}
+    <p class="lg:hidden text-center text-sm text-gray-500 mt-8">
+        Already have an account?
+        <a href="{{ route('login') }}" class="font-bold text-blue-600 hover:text-blue-800 transition-colors">Sign in here</a>
+    </p>
 
     <script>
-        function togglePassword(inputId) {
-            const input = document.getElementById(inputId);
-            const eye = document.getElementById(inputId + '-eye');
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            const eye = document.getElementById(id + '-eye');
+            const slash = document.getElementById(id + '-eye-slash');
             if (input.type === 'password') {
-                input.type = 'text';
-                eye.classList.remove('fa-eye');
-                eye.classList.add('fa-eye-slash');
+                input.type = 'text'; eye.classList.add('hidden'); slash.classList.remove('hidden');
             } else {
-                input.type = 'password';
-                eye.classList.remove('fa-eye-slash');
-                eye.classList.add('fa-eye');
+                input.type = 'password'; slash.classList.add('hidden'); eye.classList.remove('hidden');
             }
         }
 
         function checkPasswordStrength(password) {
             const strengthDiv = document.getElementById('password-strength');
             const strengthBar = document.getElementById('strength-bar');
-            const strengthText = document.getElementById('strength-text');
-            
-            const reqLength = document.getElementById('req-length');
-            const reqNumber = document.getElementById('req-number');
-            const reqSpecial = document.getElementById('req-special');
 
             if (password.length > 0) {
-                strengthDiv.style.display = 'block';
+                strengthDiv.classList.remove('hidden');
+            } else {
+                strengthDiv.classList.add('hidden');
+                return;
             }
 
             let strength = 0;
@@ -211,33 +207,37 @@
             if (hasNumber) strength++;
             if (hasSpecial) strength++;
 
-            // Update requirement indicators
-            updateRequirement(reqLength, hasLength);
-            updateRequirement(reqNumber, hasNumber);
-            updateRequirement(reqSpecial, hasSpecial);
+            updateRequirement('req-length', 'icon-length', hasLength);
+            updateRequirement('req-number', 'icon-number', hasNumber);
+            updateRequirement('req-special', 'icon-special', hasSpecial);
 
-            // Update strength bar
             const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500'];
-            const texts = ['Weak', 'Fair', 'Good', 'Strong'];
             const widths = ['25%', '50%', '75%', '100%'];
 
             strengthBar.className = 'h-full transition-all duration-300 ' + colors[strength];
             strengthBar.style.width = widths[strength];
-            strengthText.textContent = texts[strength];
-            strengthText.className = 'text-xs font-medium ' + (strength >= 2 ? 'text-green-600' : 'text-gray-500');
         }
 
-        function updateRequirement(element, met) {
-            const icon = element.querySelector('i');
+        function updateRequirement(elId, iconId, met) {
+            const el = document.getElementById(elId);
+            const icon = document.getElementById(iconId);
+            const checkPath = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>';
+            const dotPath = '<circle cx="12" cy="12" r="5"/>';
+
             if (met) {
-                icon.className = 'fas fa-check text-green-500 text-xs';
-                element.classList.add('text-green-600');
-                element.classList.remove('text-gray-500');
+                icon.setAttribute('stroke', 'currentColor');
+                icon.setAttribute('fill', 'none');
+                icon.innerHTML = checkPath;
+                icon.className = 'w-3 h-3 text-green-500';
+                el.className = el.className.replace('text-gray-500', 'text-green-600');
             } else {
-                icon.className = 'fas fa-circle text-[5px]';
-                element.classList.remove('text-green-600');
-                element.classList.add('text-gray-500');
+                icon.setAttribute('fill', 'currentColor');
+                icon.removeAttribute('stroke');
+                icon.innerHTML = dotPath;
+                icon.className = 'w-3 h-3 text-gray-300';
+                el.className = el.className.replace('text-green-600', 'text-gray-500');
             }
         }
     </script>
+
 </x-guest-layout>

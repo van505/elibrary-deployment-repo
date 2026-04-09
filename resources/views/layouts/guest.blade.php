@@ -3,60 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ELibrary &mdash; Access Your Account</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style> 
-        body { font-family: 'Inter', sans-serif; background-color: #F7F7F7; color: #333333; }
-        .text-primary { color: #3A69A1; }
-        .bg-primary { background-color: #3A69A1; }
-        .border-primary { border-color: #3A69A1; }
-        .hover-bg-primary:hover { background-color: #2F5685; }
-        
-        .card-shadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); }
-    </style>
+    <title>ELibrary &mdash; @yield('title', 'Access Your Account')</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+
+        /* Left panel gradient with background image */
+        .auth-left-panel {
+            background-color: #1e3a8a;
+            background-image: linear-gradient(to bottom right, rgba(30, 64, 175, 0.85), rgba(15, 23, 42, 0.95)), url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=1000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-blend-mode: multiply;
+            position: relative;
+        }
+
+        /* Decorative blobs on the left panel (optional subtle background) */
+        .blob-1 {
+            position: absolute;
+            bottom: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+        }
+        .blob-2 {
+            position: absolute;
+            top: -50px;
+            right: 50px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+        }
+
+        /* Right panel form inputs */
+        .auth-input {
+            width: 100%;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 0.75rem; /* rounded-xl */
+            padding: 11px 16px;
+            font-size: 0.95rem;
+            color: #111827;
+            background: #f9fafb; /* bg-gray-50 */
+            outline: none;
+            transition: all 0.2s ease-in-out;
+        }
+        .auth-input:focus {
+            background: #ffffff;
+            border-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); /* ring-blue-500 */
+        }
+        
+        .auth-btn {
+            width: 100%;
+            background: #2563eb;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 12px;
+            border-radius: 0.75rem; /* rounded-xl */
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .auth-btn:hover { 
+            background: #1d4ed8; 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+        }
+        .auth-btn:active { transform: translateY(1px); }
+        .auth-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+
+        /* Scrollable right panel for register */
+        .auth-right-scroll {
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+        .auth-right-scroll::-webkit-scrollbar { width: 5px; }
+        .auth-right-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center py-10 px-4">
+<body class="min-h-screen bg-white text-gray-900">
 
-    {{-- Logo --}}
-    <div class="mb-8">
-        <a href="/" class="flex items-center gap-2 group">
-            <div class="w-10 h-10 rounded bg-primary flex items-center justify-center transition-transform group-hover:scale-105">
-                <i class="fas fa-book-open text-white text-sm"></i>
+    <div class="flex min-h-screen flex-col lg:flex-row">
+
+        {{-- ===== LEFT PANEL (Desktop only) ===== --}}
+        <div class="auth-left-panel hidden lg:flex flex-col justify-between w-full lg:w-[45%] flex-shrink-0 p-12 overflow-hidden">
+            {{-- Decorative layout (removing blobs overlaying the image) --}}
+
+            <div class="relative z-10 w-full max-w-md mx-auto h-full flex flex-col justify-between">
+                <div>
+                    {{-- Logo part --}}
+                    {{-- Left panel content specific to route --}}
+                    @if(isset($leftPanel))
+                        {{ $leftPanel }}
+                    @endif
+                </div>
+
+                {{-- Bottom link --}}
+                <div class="mt-12 text-sm text-blue-100 font-medium">
+                    @if(isset($bottomLink))
+                        {{ $bottomLink }}
+                    @endif
+                </div>
             </div>
-            <span class="font-bold text-2xl tracking-tight text-[#333333]">ELibrary</span>
-        </a>
-    </div>
-
-    {{-- Form Container --}}
-    <div class="w-full max-w-md bg-white rounded-2xl p-8 card-shadow border border-gray-100">
-        
-        <div class="text-center mb-8">
-            @if(request()->routeIs('login'))
-                <h1 class="text-2xl font-bold text-[#333333] mb-2">Welcome Back</h1>
-                <p class="text-sm text-[#777777]">Please enter your details to sign in.</p>
-            @elseif(request()->routeIs('register'))
-                <h1 class="text-2xl font-bold text-[#333333] mb-2">Create Account</h1>
-                <p class="text-sm text-[#777777]">Start your unlimited reading journey.</p>
-            @endif
         </div>
 
-        {{-- Breeze Slot --}}
-        <div>
-            {{ $slot }}
-        </div>
-        
-    </div>
+        {{-- ===== RIGHT PANEL ===== --}}
+        <div class="flex-1 auth-right-scroll flex flex-col lg:w-[55%]">
+            <div class="flex-1 flex flex-col items-center justify-center p-6 lg:p-12 w-full max-w-md mx-auto">
 
-    {{-- Footer Links --}}
-    <div class="mt-8 text-center text-sm text-[#777777]">
-        @if(request()->routeIs('login'))
-            Don't have an account? <a href="{{ route('register') }}" class="font-medium text-primary hover:underline">Sign up free</a>
-        @elseif(request()->routeIs('register'))
-            Already have an account? <a href="{{ route('login') }}" class="font-medium text-primary hover:underline">Log in</a>
-        @endif
+                {{-- Mobile Logo/Header Area --}}
+                <div class="lg:hidden w-full text-center mb-8">
+                     <p class="text-3xl font-bold text-blue-700 tracking-tight">ELibrary</p>
+                     <p class="text-sm text-gray-500 mt-1">Your Digital Reading Companion</p>
+                </div>
+
+                {{-- Desktop Logo --}}
+                <div class="hidden lg:flex w-full justify-center mb-8">
+                     <div class="text-center">
+                         <p class="text-3xl font-bold text-blue-700 tracking-tight">ELibrary</p>
+                         <p class="text-xs text-gray-500 mt-1 uppercase tracking-widest font-semibold">Your Digital Reading Companion</p>
+                     </div>
+                </div>
+
+                {{-- Form Slot --}}
+                <div class="w-full">
+                    {{ $slot }}
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </body>

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Member;
 
-use App\Helpers\ActivityLogger;
+use App\Services\ActivityLogger;
 use App\Models\Ebook;
 use App\Models\EbookAccess;
 use Illuminate\Support\Facades\Storage;
