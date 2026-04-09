@@ -11,18 +11,15 @@ use App\Models\Ebook;
 use App\Models\Category;
 
 Route::get('/', function () {
-    $ebooks = Ebook::with(['authors', 'category'])
-        ->latest()
-        ->take(12)
-        ->get();
-    $categories = Category::take(6)->get();
-    $featuredEbooks = Ebook::with(['authors', 'category'])
-        ->inRandomOrder()
-        ->take(4)
-        ->get();
-    
-    return view('welcome', compact('ebooks', 'categories', 'featuredEbooks'));
+    $categories = Category::orderBy('name')->get();
+
+    // Load all books with category for client-side filtering
+    $featuredBooks = Ebook::with(['authors', 'category'])->latest()->get();
+
+    return view('welcome', compact('categories', 'featuredBooks'));
 });
+
+
 
 // ── Role-based dashboard redirect ────────────────────────────────────────────
 

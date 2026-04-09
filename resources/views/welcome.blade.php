@@ -1,544 +1,823 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ELibrary — Discover, Read, Enjoy</title>
-    <meta name="description" content="Access thousands of ebooks with a single subscription. Choose from Free, Basic, or Premium plans.">
+    <title>ELibrary — Discover Your Next Great Read</title>
+    <meta name="description"
+        content="Access thousands of ebooks with a single subscription. Choose from Free, Basic, or Premium plans.">
+
+    {{-- Google Fonts --}}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    {{-- Tailwind CDN --}}
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    {{-- Vite compiled CSS --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-display { font-family: 'Playfair Display', serif; }
-        .gradient-bg { background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #7c3aed 100%); }
-        .gradient-hero { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 30%, #312e81 100%); }
-        .glass { background: rgba(255,255,255,0.08); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.15); }
-        .glass-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); }
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        .float { animation: float 4s ease-in-out infinite; }
-        @keyframes shimmer {
-            0% { background-position: -1000px 0; }
-            100% { background-position: 1000px 0; }
+        body {
+            font-family: 'Inter', sans-serif;
         }
-        .shimmer { 
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            background-size: 1000px 100%;
-            animation: shimmer 3s infinite linear;
+
+        html {
+            scroll-behavior: smooth;
         }
-        .book-shadow { box-shadow: 0 10px 40px -10px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.1); }
-        .book-hover:hover { transform: translateY(-8px) scale(1.02); }
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .category-pill { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .category-pill:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 12px 40px -8px rgba(37, 99, 235, 0.25); }
-        .search-glow:focus { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15); }
-        .nav-link { transition: all 0.3s ease; }
-        .nav-link:hover { background-color: white; color: #111827; transform: translateY(-1px); }
-        .btn-primary { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -5px rgba(37, 99, 235, 0.4); }
-        .book-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .book-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2); }
-        .pricing-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .pricing-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15); }
+
+        .navbar-blur {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #1e40af, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .book-card {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .book-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.10);
+        }
+
+        @keyframes floatLeft {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(-4deg);
+            }
+
+            50% {
+                transform: translateY(-14px) rotate(-4deg);
+            }
+        }
+
+        @keyframes floatRight {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(4deg);
+            }
+
+            50% {
+                transform: translateY(-14px) rotate(4deg);
+            }
+        }
+
+        .float-left {
+            animation: floatLeft 4s ease-in-out infinite;
+        }
+
+        .float-right {
+            animation: floatRight 4.5s ease-in-out infinite;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.65s ease forwards;
+        }
+
+        .fade-in-delay-1 {
+            animation: fadeInUp 0.65s 0.15s ease both;
+        }
+
+        .fade-in-delay-2 {
+            animation: fadeInUp 0.65s 0.30s ease both;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2563eb;
+            border-radius: 3px;
+        }
+
+        .badge-popular {
+            background-color: #E99E8F;
+            color: #7c2d12;
+        }
+
+        .book-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
     </style>
 </head>
-<body class="bg-gray-50">
 
-    {{-- Navbar --}}
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200/80 px-4 sm:px-6 py-3">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <a href="/" class="flex items-center gap-2.5 group">
-                <div class="w-9 h-9 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
-                    <i class="fas fa-book-open text-white text-sm"></i>
-                </div>
-                <span class="font-bold text-gray-900 text-xl tracking-tight">ELibrary</span>
-            </a>
-            
-            <div class="hidden md:flex items-center gap-1 bg-gray-100/80 rounded-full px-2 py-1.5">
-                <a href="#books" class="nav-link px-4 py-1.5 text-sm font-medium text-gray-600 rounded-full">Books</a>
-                <a href="#categories" class="nav-link px-4 py-1.5 text-sm font-medium text-gray-600 rounded-full">Categories</a>
-                <a href="#pricing" class="nav-link px-4 py-1.5 text-sm font-medium text-gray-600 rounded-full">Pricing</a>
-            </div>
-            
-            <div class="flex items-center gap-3">
-                <a href="{{ route('login') }}" class="hidden sm:block text-gray-600 hover:text-gray-900 text-sm font-medium transition-all duration-300 px-3 py-2 hover:scale-105">Sign In</a>
-                <a href="{{ route('register') }}" class="bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 hover:-translate-y-0.5">
-                    Get Started
+<body class="bg-white text-gray-900 antialiased">
+
+    {{-- ============================================================
+    NAVBAR
+    ============================================================ --}}
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 navbar-blur border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+
+                {{-- Logo --}}
+                <a href="/" class="flex items-center gap-2 shrink-0">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <span class="font-bold text-xl text-gray-900 tracking-tight">ELibrary</span>
                 </a>
+
+                {{-- Center Search --}}
+                <div class="hidden md:flex flex-1 max-w-sm mx-8">
+                    <div class="relative w-full">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0" />
+                            </svg>
+                        </span>
+                        <input type="text" placeholder="Search books, authors..."
+                            class="w-full bg-gray-50 border border-gray-200 rounded-full pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-blue-400 transition-colors">
+                    </div>
+                </div>
+
+                {{-- Desktop Right --}}
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="#books"
+                        class="text-gray-600 hover:text-blue-600 text-sm font-medium transition-colors">Books</a>
+                    <a href="#categories"
+                        class="text-gray-600 hover:text-blue-600 text-sm font-medium transition-colors">Categories</a>
+                    <a href="#pricing"
+                        class="text-gray-600 hover:text-blue-600 text-sm font-medium transition-colors">Pricing</a>
+                    <div class="h-4 w-px bg-gray-200"></div>
+                    <a href="{{ route('login') }}"
+                        class="text-gray-600 hover:text-blue-600 text-sm font-medium transition-colors">Sign In</a>
+                    <a href="{{ route('register') }}"
+                        class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Get
+                        Started</a>
+                </div>
+
+                {{-- Mobile Hamburger --}}
+                <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-600 hover:text-blue-600"
+                    aria-label="Open menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Mobile menu --}}
+            <div id="mobile-menu" class="hidden md:hidden pb-4 border-t border-gray-100 mt-0">
+                <div class="flex flex-col gap-3 pt-3 px-1">
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0" />
+                            </svg>
+                        </span>
+                        <input type="text" placeholder="Search..."
+                            class="w-full bg-gray-50 border border-gray-200 rounded-full pl-9 pr-4 py-2 text-sm focus:outline-none">
+                    </div>
+                    <a href="#books" class="text-gray-700 text-sm py-1">Books</a>
+                    <a href="#categories" class="text-gray-700 text-sm py-1">Categories</a>
+                    <a href="#pricing" class="text-gray-700 text-sm py-1">Pricing</a>
+                    <a href="{{ route('login') }}" class="text-gray-700 text-sm py-1">Sign In</a>
+                    <a href="{{ route('register') }}"
+                        class="bg-blue-600 text-white text-sm font-semibold px-4 py-2.5 rounded-lg text-center">Get
+                        Started</a>
+                </div>
             </div>
         </div>
     </nav>
 
-    {{-- Hero Section --}}
-    <section class="gradient-hero min-h-[85vh] flex items-center justify-center px-4 sm:px-6 pt-24 pb-16 relative overflow-hidden">
-        {{-- Background Effects --}}
-        <div class="absolute inset-0 overflow-hidden">
-            <div class="absolute -top-40 -right-40 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
-            <div class="absolute top-1/2 -left-20 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div class="max-w-7xl mx-auto w-full relative z-10">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                {{-- Left Content --}}
-                <div class="text-center lg:text-left">
-                    <div class="inline-flex items-center gap-2 glass px-4 py-2 rounded-full text-blue-200 text-xs font-semibold mb-6">
-                        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                        Digital Library Platform
+    {{-- ============================================================
+    HERO
+    ============================================================ --}}
+    <section class="bg-white min-h-screen flex items-center pt-16 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 w-full">
+            <div class="relative flex items-center justify-center">
+
+                {{-- Floating Book LEFT --}}
+                <div class="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 float-left fade-in-delay-1">
+                    <div class="w-44 h-64 rounded-2xl overflow-hidden shadow-2xl border border-gray-100">
+                        <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&q=80"
+                            alt="Pride and Prejudice" loading="lazy" class="w-full h-full object-cover"
+                            onerror="this.style.display='none'; this.parentElement.style.background='#dbeafe';">
                     </div>
-                    
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-white leading-tight mb-6">
-                        Discover Your Next
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-300">Great Read</span>
+                </div>
+
+                {{-- Center Text --}}
+                <div class="text-center max-w-2xl mx-auto fade-in">
+                    <span
+                        class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-yellow-500" fill="currentColor"
+                            viewBox="0 0 24 24">
+                            <path
+                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                        </svg>
+                        #1 Digital Library Platform
+                    </span>
+
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-5">
+                        Discover Your<br>
+                        <span class="gradient-text">Next Great Read</span>
                     </h1>
-                    
-                    <p class="text-lg text-gray-300 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                        Access thousands of ebooks, audiobooks, and magazines. Start your reading journey today with our flexible subscription plans.
+
+                    <p class="text-lg text-gray-500 mb-8 leading-relaxed">
+                        Access thousands of ebooks, audiobooks, and magazines. Start your journey today in our flexible
+                        subscription plans.
                     </p>
-                    
-                    <div class="flex flex-wrap gap-3 justify-center lg:justify-start">
-                        <a href="{{ route('register') }}" class="bg-white text-gray-900 font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-100 hover:scale-105 hover:shadow-2xl transition-all duration-300 ease-out shadow-xl text-sm inline-flex items-center gap-2">
-                            <i class="fas fa-rocket text-blue-600"></i>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+                        <a href="{{ route('register') }}"
+                            class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
                             Start Free Trial
                         </a>
-                        <a href="#books" class="glass text-white font-medium px-8 py-3.5 rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 ease-out text-sm inline-flex items-center gap-2">
-                            <i class="fas fa-compass"></i>
+                        <a href="#books"
+                            class="w-full sm:w-auto border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold px-7 py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
                             Explore Books
                         </a>
                     </div>
-                    
-                    <div class="flex items-center gap-6 mt-10 justify-center lg:justify-start text-sm text-gray-400">
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-check-circle text-green-400"></i>
-                            <span>No credit card required</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-check-circle text-green-400"></i>
-                            <span>Cancel anytime</span>
-                        </div>
+
+                    <div class="flex items-center justify-center gap-6 text-sm text-gray-500">
+                        <span class="flex items-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-500 flex-shrink-0"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            No credit card required
+                        </span>
+                        <span class="flex items-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-500 flex-shrink-0"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Cancel anytime
+                        </span>
                     </div>
                 </div>
-                
-                {{-- Right Content - Featured Books --}}
-                <div class="hidden lg:block relative">
-                    <div class="relative w-full h-[500px]">
-                        @forelse($featuredEbooks->take(4) as $index => $ebook)
-                        @php
-                            $positions = [
-                                ['top' => '5%', 'left' => '10%', 'rotate' => '-8deg', 'z' => 30, 'delay' => '0s'],
-                                ['top' => '15%', 'right' => '5%', 'rotate' => '6deg', 'z' => 20, 'delay' => '0.5s'],
-                                ['bottom' => '20%', 'left' => '5%', 'rotate' => '5deg', 'z' => 25, 'delay' => '1s'],
-                                ['bottom' => '10%', 'right' => '15%', 'rotate' => '-3deg', 'z' => 35, 'delay' => '1.5s'],
-                            ];
-                            $pos = $positions[$index % 4];
-                        @endphp
-                        <div class="absolute w-36 h-52 rounded-lg overflow-hidden book-shadow float" 
-                             style="top: {{ $pos['top'] ?? 'auto' }}; bottom: {{ $pos['bottom'] ?? 'auto' }}; left: {{ $pos['left'] ?? 'auto' }}; right: {{ $pos['right'] ?? 'auto' }}; transform: rotate({{ $pos['rotate'] }}); z-index: {{ $pos['z'] }}; animation-delay: {{ $pos['delay'] }};">
-                            @if($ebook->cover_image)
-                                <img src="{{ asset('storage/' . $ebook->cover_image) }}" alt="{{ $ebook->title }}" class="w-full h-full object-cover">
+
+                {{-- Floating Book RIGHT --}}
+                <div class="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 float-right fade-in-delay-2">
+                    <div class="w-44 h-64 rounded-2xl overflow-hidden shadow-2xl border border-gray-100">
+                        <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&q=80"
+                            alt="Alice in Wonderland" loading="lazy" class="w-full h-full object-cover"
+                            onerror="this.style.display='none'; this.parentElement.style.background='#dbeafe';">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================================
+    METRICS BAR
+    ============================================================ --}}
+    <section class="bg-gray-50 py-12 border-y border-gray-100">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                @foreach([['10K+', 'Ebooks Available'], ['500+', 'Authors'], ['50+', 'Categories'], ['24/7', 'Access']] as $m)
+                    <div class="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100 book-card">
+                        <div class="text-3xl font-bold text-gray-900 mb-1">{{ $m[0] }}</div>
+                        <div class="text-sm text-gray-500 font-medium">{{ $m[1] }}</div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================================
+    COMBINED: CATEGORIES + FEATURED BOOKS (with filter pills)
+    ============================================================ --}}
+    <section id="books" class="bg-gray-50 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            {{-- Section header --}}
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-1">Featured Books</h2>
+                    <p class="text-gray-500 text-sm">Browse by category or search to find your next read</p>
+                </div>
+                {{-- Search bar --}}
+                <div class="relative sm:w-72">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0" />
+                        </svg>
+                    </span>
+                    <input id="book-search" type="text" placeholder="Search books, authors..."
+                        class="w-full bg-white border border-gray-200 rounded-full pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all shadow-sm">
+                </div>
+            </div>
+
+            {{-- Category filter pills --}}
+            <div id="category-filters" class="flex flex-wrap gap-2 mb-8">
+                {{-- "All" pill --}}
+                <button data-category="all"
+                    class="filter-pill active-pill px-4 py-1.5 rounded-full text-sm font-semibold border-2 border-gray-900 bg-gray-900 text-white transition-all">
+                    All Books
+                </button>
+                {{-- DB categories --}}
+                @foreach($categories as $cat)
+                    <button data-category="{{ strtolower($cat->name) }}"
+                        class="filter-pill px-4 py-1.5 rounded-full text-sm font-medium border-2 border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:text-blue-600 transition-all">
+                        {{ $cat->name }}
+                    </button>
+                @endforeach
+            </div>
+
+            {{-- Book grid --}}
+            <div id="books-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+                @forelse($featuredBooks as $book)
+                    @php
+                        $badgeColor = match ($book->access_level ?? 'free') {
+                            'free' => 'bg-green-100 text-green-700',
+                            'basic' => 'bg-blue-100 text-blue-700',
+                            'premium' => 'bg-purple-100 text-purple-700',
+                            default => 'bg-gray-100 text-gray-600',
+                        };
+                        $badgeText = ucfirst($book->access_level ?? 'free');
+                        $authorName = $book->authors->pluck('full_name')->filter()->join(', ')
+                            ?: $book->authors->pluck('name')->filter()->join(', ')
+                            ?: 'Unknown Author';
+                        $categorySlug = $book->category ? strtolower($book->category->name) : '';
+                    @endphp
+                    <div class="book-item book-card group cursor-pointer bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm"
+                        data-category="{{ $categorySlug }}" data-title="{{ strtolower($book->title) }}"
+                        data-author="{{ strtolower($authorName) }}" onclick="window.location='{{ route('login') }}'">
+                        <div class="relative w-full overflow-hidden bg-gray-100" style="aspect-ratio:3/4;">
+                            @if($book->cover_image)
+                                <img src="{{ asset('storage/' . $book->cover_image) }}" alt="{{ $book->title }}" loading="lazy"
+                                    class="book-img group-hover:scale-105 transition-transform duration-500"
+                                    onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=400&fit=crop';">
                             @else
-                                <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center p-4 text-center">
-                                    <span class="text-white text-xs font-medium line-clamp-2">{{ $ebook->title }}</span>
+                                <div
+                                    class="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-14 h-14 text-blue-400" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
                                 </div>
                             @endif
-                        </div>
-                        @empty
-                        {{-- Default decorative books --}}
-                        <div class="absolute top-[5%] left-[10%] w-36 h-52 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg book-shadow float" style="transform: rotate(-8deg); z-index: 30;"></div>
-                        <div class="absolute top-[15%] right-[5%] w-36 h-52 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-lg book-shadow float" style="transform: rotate(6deg); z-index: 20; animation-delay: 0.5s;"></div>
-                        <div class="absolute bottom-[20%] left-[5%] w-36 h-52 bg-gradient-to-br from-rose-400 to-pink-500 rounded-lg book-shadow float" style="transform: rotate(5deg); z-index: 25; animation-delay: 1s;"></div>
-                        <div class="absolute bottom-[10%] right-[15%] w-36 h-52 bg-gradient-to-br from-violet-400 to-purple-500 rounded-lg book-shadow float" style="transform: rotate(-3deg); z-index: 35; animation-delay: 1.5s;"></div>
-                        @endforelse
-                        
-                        {{-- Center glow --}}
-                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-500/30 rounded-full blur-3xl"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- Stats Section --}}
-    <section class="bg-white border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-                <div class="p-4">
-                    <div class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">10K+</div>
-                    <div class="text-sm text-gray-500">Ebooks Available</div>
-                </div>
-                <div class="p-4">
-                    <div class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">500+</div>
-                    <div class="text-sm text-gray-500">Authors</div>
-                </div>
-                <div class="p-4">
-                    <div class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">50+</div>
-                    <div class="text-sm text-gray-500">Categories</div>
-                </div>
-                <div class="p-4">
-                    <div class="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">24/7</div>
-                    <div class="text-sm text-gray-500">Access Anytime</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- Categories Section --}}
-    <section id="categories" class="py-16 px-4 sm:px-6 bg-gray-50">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-display font-bold text-gray-900 mb-3">Browse by Category</h2>
-                <p class="text-gray-500 max-w-md mx-auto">Explore our extensive collection across various genres and topics</p>
-            </div>
-            
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-                @forelse($categories as $category)
-                <a href="{{ route('login') }}" class="category-pill bg-white rounded-2xl p-5 text-center border border-gray-100 hover:border-blue-200 group">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:from-blue-100 group-hover:to-blue-200 transition-all">
-                        <i class="fas fa-folder-open text-blue-600 text-lg"></i>
-                    </div>
-                    <h3 class="font-semibold text-gray-800 text-sm mb-1">{{ $category->name }}</h3>
-                    <p class="text-xs text-gray-400">Explore</p>
-                </a>
-                @empty
-                @php
-                $defaultCategories = [
-                    ['name' => 'Fiction', 'icon' => 'fa-book', 'color' => 'from-purple-50 to-purple-100', 'iconColor' => 'text-purple-600'],
-                    ['name' => 'Technology', 'icon' => 'fa-laptop-code', 'color' => 'from-blue-50 to-blue-100', 'iconColor' => 'text-blue-600'],
-                    ['name' => 'Business', 'icon' => 'fa-briefcase', 'color' => 'from-amber-50 to-amber-100', 'iconColor' => 'text-amber-600'],
-                    ['name' => 'Science', 'icon' => 'fa-flask', 'color' => 'from-emerald-50 to-emerald-100', 'iconColor' => 'text-emerald-600'],
-                    ['name' => 'History', 'icon' => 'fa-landmark', 'color' => 'from-rose-50 to-rose-100', 'iconColor' => 'text-rose-600'],
-                    ['name' => 'Arts', 'icon' => 'fa-palette', 'color' => 'from-pink-50 to-pink-100', 'iconColor' => 'text-pink-600'],
-                ];
-                @endphp
-                @foreach($defaultCategories as $cat)
-                <a href="{{ route('login') }}" class="category-pill bg-white rounded-2xl p-5 text-center border border-gray-100 hover:border-blue-200 group">
-                    <div class="w-12 h-12 bg-gradient-to-br {{ $cat['color'] }} rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-all">
-                        <i class="fas {{ $cat['icon'] }} {{ $cat['iconColor'] }} text-lg"></i>
-                    </div>
-                    <h3 class="font-semibold text-gray-800 text-sm mb-1">{{ $cat['name'] }}</h3>
-                    <p class="text-xs text-gray-400">Explore</p>
-                </a>
-                @endforeach
-                @endforelse
-            </div>
-        </div>
-    </section>
-
-    {{-- Books Gallery Section --}}
-    <section id="books" class="py-20 px-4 sm:px-6 bg-white">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
-                <div>
-                    <h2 class="text-3xl font-display font-bold text-gray-900 mb-2">Featured Books</h2>
-                    <p class="text-gray-500">Handpicked selection from our library</p>
-                </div>
-                <a href="{{ route('login') }}" class="text-blue-600 font-medium text-sm hover:text-blue-800 inline-flex items-center gap-1 group transition-all duration-300 hover:gap-2">
-                    View All Books
-                    <i class="fas fa-arrow-right transition-transform duration-300 group-hover:translate-x-1"></i>
-                </a>
-            </div>
-            
-            {{-- Search Bar --}}
-            <div class="max-w-2xl mx-auto mb-12">
-                <form action="{{ route('login') }}" method="GET" class="relative">
-                    <input type="text" placeholder="Search for books, authors, or genres..." 
-                           class="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-12 pr-4 py-4 text-sm search-glow focus:outline-none focus:border-blue-400 transition-all">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors">
-                        Search
-                    </button>
-                </form>
-            </div>
-
-            {{-- Books Grid --}}
-            @if($ebooks->isEmpty())
-            <div class="text-center py-16 bg-gray-50 rounded-3xl">
-                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-books text-gray-300 text-2xl"></i>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">Books Coming Soon</h3>
-                <p class="text-gray-500 max-w-md mx-auto">Our library is being curated. Check back soon for amazing content!</p>
-            </div>
-            @else
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
-                @foreach($ebooks as $ebook)
-                @php
-                    $levelColors = [
-                        'free' => 'bg-green-100 text-green-700 border-green-200',
-                        'basic' => 'bg-blue-100 text-blue-700 border-blue-200',
-                        'premium' => 'bg-purple-100 text-purple-700 border-purple-200'
-                    ];
-                    $levelColor = $levelColors[$ebook->access_level] ?? 'bg-gray-100 text-gray-600 border-gray-200';
-                    $levelIcon = $ebook->access_level === 'free' ? 'fa-gift' : ($ebook->access_level === 'basic' ? 'fa-star' : 'fa-crown');
-                @endphp
-                <div class="book-card group">
-                    {{-- Book Cover --}}
-                    <div class="relative aspect-[2/3] rounded-xl overflow-hidden book-shadow mb-3">
-                        @if($ebook->cover_image)
-                            <img src="{{ asset('storage/' . $ebook->cover_image) }}" alt="{{ $ebook->title }}" 
-                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                        @else
-                            <div class="w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center p-4">
-                                <div class="text-center">
-                                    <i class="fas fa-book text-blue-300 text-3xl mb-2"></i>
-                                    <p class="text-blue-400 text-xs font-medium line-clamp-2">{{ $ebook->title }}</p>
-                                </div>
-                            </div>
-                        @endif
-                        
-                        {{-- Access Level Badge --}}
-                        <div class="absolute top-2 left-2">
-                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold border {{ $levelColor }}">
-                                <i class="fas {{ $levelIcon }} text-[10px]"></i>
-                                {{ ucfirst($ebook->access_level) }}
+                            <span
+                                class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md text-[11px] font-bold {{ $badgeColor }}">
+                                {{ $badgeText }}
                             </span>
                         </div>
-                        
-                        {{-- Hover Overlay --}}
-                        <div class="absolute inset-0 bg-gray-900/80 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4">
-                            <a href="{{ route('login') }}" class="w-full bg-white text-gray-900 font-semibold py-2.5 rounded-lg text-sm text-center hover:bg-gray-100 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
-                                <i class="fas fa-book-reader"></i>
-                                Read Now
-                            </a>
-                            <span class="text-white/70 text-xs text-center">Login required to read</span>
+                        <div class="p-3">
+                            <h3 class="font-semibold text-gray-900 text-sm truncate">{{ $book->title }}</h3>
+                            <p class="text-gray-500 text-xs mt-0.5 truncate">{{ $authorName }}</p>
                         </div>
                     </div>
-                    
-                    {{-- Book Info --}}
-                    <div>
-                        <h3 class="font-semibold text-gray-900 text-sm line-clamp-2 mb-1 group-hover:text-blue-600 transition-colors">
-                            {{ $ebook->title }}
-                        </h3>
-                        <p class="text-xs text-gray-500 truncate">
-                            {{ $ebook->authors->pluck('full_name')->join(', ') ?: 'Unknown Author' }}
-                        </p>
-                        @if($ebook->category)
-                        <p class="text-xs text-blue-500 mt-1">{{ $ebook->category->name }}</p>
-                        @endif
-                    </div>
-                </div>
-                @endforeach
+                @empty
+                    {{-- Static fallback when DB is empty --}}
+                    @php
+                        $staticBooks = [
+                            ['title' => 'Pride and Prejudice', 'author' => 'Jane Austen', 'badge' => 'Basic', 'cls' => 'bg-blue-100 text-blue-700', 'img' => 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&q=80', 'cat' => 'classic'],
+                            ['title' => 'Alice in Wonderland', 'author' => 'Lewis Carroll', 'badge' => 'Free', 'cls' => 'bg-green-100 text-green-700', 'img' => 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&q=80', 'cat' => 'fantasy'],
+                            ['title' => 'Romeo and Juliet', 'author' => 'W. Shakespeare', 'badge' => 'Basic', 'cls' => 'bg-blue-100 text-blue-700', 'img' => 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&q=80', 'cat' => 'romance'],
+                            ['title' => 'Moby Dick', 'author' => 'Herman Melville', 'badge' => 'Premium', 'cls' => 'bg-purple-100 text-purple-700', 'img' => 'https://images.unsplash.com/photo-1495640388908-05fa85288e61?w=400&q=80', 'cat' => 'action'],
+                        ];
+                    @endphp
+                    @foreach($staticBooks as $sb)
+                        <div class="book-item book-card group cursor-pointer bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm"
+                            data-category="{{ $sb['cat'] }}" data-title="{{ strtolower($sb['title']) }}"
+                            data-author="{{ strtolower($sb['author']) }}" onclick="window.location='{{ route('login') }}'">
+                            <div class="relative w-full overflow-hidden bg-gray-100" style="aspect-ratio:3/4;">
+                                <img src="{{ $sb['img'] }}" alt="{{ $sb['title'] }}" loading="lazy"
+                                    class="book-img group-hover:scale-105 transition-transform duration-500"
+                                    onerror="this.style.display='none'; this.parentElement.style.background='#dbeafe';">
+                                <span
+                                    class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md text-[11px] font-bold {{ $sb['cls'] }}">
+                                    {{ $sb['badge'] }}
+                                </span>
+                            </div>
+                            <div class="p-3">
+                                <h3 class="font-semibold text-gray-900 text-sm truncate">{{ $sb['title'] }}</h3>
+                                <p class="text-gray-500 text-xs mt-0.5 truncate">{{ $sb['author'] }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                @endforelse
             </div>
-            @endif
-            
-            {{-- CTA to see more --}}
-            <div class="text-center mt-12">
-                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 hover:scale-105 text-gray-700 font-medium px-6 py-3 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md">
-                    <i class="fas fa-th-large"></i>
-                    Browse Full Library
+
+            {{-- Empty state (shown by JS when no results match) --}}
+            <div id="no-results" class="hidden text-center py-16">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0" />
+                </svg>
+                <p class="text-gray-400 font-medium">No books found.</p>
+                <p class="text-gray-400 text-sm mt-1">Try a different category or search term.</p>
+            </div>
+
+            <div class="text-center mt-8">
+                <a href="{{ route('login') }}"
+                    class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm">
+                    Sign in to see all books
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
                 </a>
             </div>
         </div>
     </section>
 
-    {{-- How It Works --}}
-    <section class="py-20 px-4 sm:px-6 bg-gray-50">
-        <div class="max-w-7xl mx-auto">
+    {{-- ============================================================
+    HOW IT WORKS
+    ============================================================ --}}
+    <section id="how-it-works" class="bg-gray-50 py-20 border-t border-gray-100">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-14">
-                <h2 class="text-3xl font-display font-bold text-gray-900 mb-3">How It Works</h2>
-                <p class="text-gray-500 max-w-md mx-auto">Get started with ELibrary in three simple steps</p>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">How It Works</h2>
+                <p class="text-gray-500">Get started in 3 simple steps</p>
             </div>
-            
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="pricing-card bg-white rounded-2xl p-8 border border-gray-100 text-center relative hover:border-blue-200">
-                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">1</div>
-                    <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-5 transition-transform duration-300 hover:scale-110">
-                        <i class="fas fa-user-plus text-blue-600 text-2xl"></i>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                {{-- Step 1 --}}
+                <div class="bg-white rounded-2xl p-8 text-center border border-gray-100 shadow-sm book-card relative">
+                    <div
+                        class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow">
+                        1</div>
+                    <div
+                        class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-5 mt-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-blue-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
                     </div>
                     <h3 class="font-bold text-gray-900 text-lg mb-2">Create Account</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Sign up for free and unlock access to our digital library collection.</p>
+                    <p class="text-gray-500 text-sm leading-relaxed">Sign up for free and unlock access to our digital
+                        librection.</p>
                 </div>
-                
-                <div class="pricing-card bg-white rounded-2xl p-8 border border-gray-100 text-center relative hover:border-purple-200">
-                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">2</div>
-                    <div class="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-5 transition-transform duration-300 hover:scale-110">
-                        <i class="fas fa-crown text-purple-600 text-2xl"></i>
+
+                {{-- Step 2 --}}
+                <div class="bg-white rounded-2xl p-8 text-center border border-gray-100 shadow-sm book-card relative">
+                    <div
+                        class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow">
+                        2</div>
+                    <div
+                        class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-5 mt-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-blue-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
                     </div>
                     <h3 class="font-bold text-gray-900 text-lg mb-2">Choose Plan</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Select from Free, Basic, or Premium plans based on your reading needs.</p>
+                    <p class="text-gray-500 text-sm leading-relaxed">Select from Free, Basic, or Premium plans based on
+                        your reading needs.</p>
                 </div>
-                
-                <div class="pricing-card bg-white rounded-2xl p-8 border border-gray-100 text-center relative hover:border-green-200">
-                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">3</div>
-                    <div class="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-5 transition-transform duration-300 hover:scale-110">
-                        <i class="fas fa-book-open text-green-600 text-2xl"></i>
+
+                {{-- Step 3 --}}
+                <div class="bg-white rounded-2xl p-8 text-center border border-gray-100 shadow-sm book-card relative">
+                    <div
+                        class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm shadow">
+                        3</div>
+                    <div
+                        class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-5 mt-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-blue-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
                     </div>
                     <h3 class="font-bold text-gray-900 text-lg mb-2">Start Reading</h3>
-                    <p class="text-gray-500 text-sm leading-relaxed">Browse thousands of books and start reading instantly on any device.</p>
+                    <p class="text-gray-500 text-sm leading-relaxed">Browse thousands of books and start reading
+                        instantly on any device.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    {{-- Pricing Section --}}
-    <section id="pricing" class="py-20 px-4 sm:px-6 bg-white">
-        <div class="max-w-5xl mx-auto">
+    {{-- ============================================================
+    PRICING
+    ============================================================ --}}
+    <section id="pricing" class="bg-white py-20">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-14">
-                <h2 class="text-3xl font-display font-bold text-gray-900 mb-3">Simple, Transparent Pricing</h2>
-                <p class="text-gray-500">Choose the perfect plan for your reading journey</p>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Simple, Transparent Pricing</h2>
+                <p class="text-gray-500">Choose the plan that works for you</p>
             </div>
-            
-            <div class="grid md:grid-cols-3 gap-6">
-                {{-- Free Plan --}}
-                <div class="pricing-card bg-white rounded-2xl border border-gray-200 p-6 flex flex-col hover:border-blue-300">
-                    <div class="mb-6">
-                        <h3 class="font-bold text-gray-900 text-lg">Free</h3>
-                        <p class="text-gray-500 text-sm mt-1">For casual readers</p>
-                    </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+
+                {{-- FREE --}}
+                <div class="bg-white rounded-2xl p-7 border-2 border-gray-100 shadow-sm book-card flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-900 mb-1">Free</h3>
+                    <p class="text-gray-500 text-sm mb-5">Perfect to get started</p>
                     <div class="mb-6">
                         <span class="text-4xl font-bold text-gray-900">₱0</span>
                         <span class="text-gray-400 text-sm">/month</span>
                     </div>
-                    <ul class="text-sm text-gray-600 space-y-3 mb-8 flex-1">
-                        <li class="flex items-center gap-2">
-                            <i class="fas fa-check text-green-500 text-xs"></i>
-                            <span>Up to 3 ebooks</span>
+                    <ul class="space-y-3 mb-7 flex-1">
+                        <li class="flex items-center gap-2.5 text-sm text-gray-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-500 flex-shrink-0"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Free ebooks
                         </li>
-                        <li class="flex items-center gap-2">
-                            <i class="fas fa-check text-green-500 text-xs"></i>
-                            <span>Free ebooks only</span>
-                        </li>
-                        <li class="flex items-center gap-2">
-                            <i class="fas fa-check text-green-500 text-xs"></i>
-                            <span>PDF, EPUB formats</span>
+                        <li class="flex items-center gap-2.5 text-sm text-gray-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-500 flex-shrink-0"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Standard access
                         </li>
                     </ul>
-                    <a href="{{ route('register') }}" class="block text-center border-2 border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50 font-semibold py-3 rounded-xl text-sm transition-all">
-                        Get Started Free
+                    <a href="{{ route('register') }}"
+                        class="block text-center border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-3 rounded-xl transition-colors text-sm">
+                        Get Started
                     </a>
                 </div>
-                
-                {{-- Basic Plan --}}
-                <div class="pricing-card bg-white rounded-2xl border-2 border-blue-500 p-6 flex flex-col relative hover:border-blue-600 hover:shadow-blue-100">
-                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                        Popular
+
+                {{-- BASIC (highlighted) --}}
+                <div
+                    class="bg-white rounded-2xl p-7 border-2 border-blue-600 shadow-lg book-card flex flex-col relative">
+                    <div class="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                        <span
+                            class="badge-popular text-xs font-bold px-3.5 py-1 rounded-full whitespace-nowrap">Popular</span>
                     </div>
-                    <div class="mb-6">
-                        <h3 class="font-bold text-blue-600 text-lg">Basic</h3>
-                        <p class="text-gray-500 text-sm mt-1">For book lovers</p>
-                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-1 mt-2">Basic</h3>
+                    <p class="text-gray-500 text-sm mb-5">For regular readers</p>
                     <div class="mb-6">
                         <span class="text-4xl font-bold text-gray-900">₱99</span>
                         <span class="text-gray-400 text-sm">/month</span>
                     </div>
-                    <ul class="text-sm text-gray-600 space-y-3 mb-8 flex-1">
-                        <li class="flex items-center gap-2">
-                            <i class="fas fa-check text-blue-500 text-xs"></i>
-                            <span>Up to 10 ebooks</span>
+                    <ul class="space-y-3 mb-7 flex-1">
+                        <li class="flex items-center gap-2.5 text-sm text-gray-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-600 flex-shrink-0"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Basic tier ebooks
                         </li>
-                        <li class="flex items-center gap-2">
-                            <i class="fas fa-check text-blue-500 text-xs"></i>
-                            <span>Free + Basic ebooks</span>
-                        </li>
-                        <li class="flex items-center gap-2">
-                            <i class="fas fa-check text-blue-500 text-xs"></i>
-                            <span>All formats supported</span>
+                        <li class="flex items-center gap-2.5 text-sm text-gray-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-600 flex-shrink-0"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Premium Features
                         </li>
                     </ul>
-                    <a href="{{ route('register') }}" class="block text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl text-sm transition-colors">
-                        Subscribe Now
+                    <a href="{{ route('register') }}"
+                        class="block text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-colors text-sm">
+                        Choose Basic
                     </a>
                 </div>
-                
-                {{-- Premium Plan --}}
-                <div class="pricing-card bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 flex flex-col text-white hover:from-gray-800 hover:to-gray-700">
+
+                {{-- PREMIUM --}}
+                <div class="bg-white rounded-2xl p-7 border-2 border-gray-100 shadow-sm book-card flex flex-col">
+                    <h3 class="text-xl font-bold text-gray-900 mb-1">Premium</h3>
+                    <p class="text-gray-500 text-sm mb-5">For power readers</p>
                     <div class="mb-6">
-                        <h3 class="font-bold text-lg">Premium</h3>
-                        <p class="text-gray-400 text-sm mt-1">For avid readers</p>
-                    </div>
-                    <div class="mb-6">
-                        <span class="text-4xl font-bold">₱199</span>
+                        <span class="text-4xl font-bold text-gray-900">₱199</span>
                         <span class="text-gray-400 text-sm">/month</span>
                     </div>
-                    <ul class="text-sm text-gray-300 space-y-3 mb-8 flex-1">
-                        <li class="flex items-center gap-2">
-                            <i class="fas fa-check text-yellow-400 text-xs"></i>
-                            <span>Unlimited ebooks</span>
+                    <ul class="space-y-3 mb-7 flex-1">
+                        <li class="flex items-center gap-2.5 text-sm text-gray-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-500 flex-shrink-0"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Premium ebooks
                         </li>
-                        <li class="flex items-center gap-2">
-                            <i class="fas fa-check text-yellow-400 text-xs"></i>
-                            <span>All access levels</span>
-                        </li>
-                        <li class="flex items-center gap-2">
-                            <i class="fas fa-check text-yellow-400 text-xs"></i>
-                            <span>Audiobooks included</span>
+                        <li class="flex items-center gap-2.5 text-sm text-gray-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-500 flex-shrink-0"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            All Features
                         </li>
                     </ul>
-                    <a href="{{ route('register') }}" class="block text-center bg-white text-gray-900 hover:bg-gray-100 font-bold py-3 rounded-xl text-sm transition-colors">
-                        Go Premium
+                    <a href="{{ route('register') }}"
+                        class="block text-center border-2 border-gray-200 text-gray-700 hover:border-blue-400 hover:text-blue-600 font-semibold py-3 rounded-xl transition-colors text-sm">
+                        Upgrade
                     </a>
                 </div>
             </div>
         </div>
     </section>
 
-    {{-- CTA Section --}}
-    <section class="gradient-hero py-20 px-4 sm:px-6 relative overflow-hidden">
-        <div class="absolute inset-0 shimmer opacity-30"></div>
-        <div class="max-w-4xl mx-auto text-center relative z-10">
-            <h2 class="text-3xl sm:text-4xl font-display font-bold text-white mb-4">Ready to Start Reading?</h2>
-            <p class="text-lg text-gray-300 mb-8 max-w-xl mx-auto">Join thousands of readers discovering their next favorite book. No credit card required to get started.</p>
-            <div class="flex flex-wrap gap-4 justify-center">
-                <a href="{{ route('register') }}" class="bg-white text-gray-900 font-bold px-8 py-4 rounded-xl hover:bg-gray-100 hover:scale-105 transition-all duration-300 ease-out shadow-xl hover:shadow-2xl text-sm inline-flex items-center gap-2">
-                    <i class="fas fa-rocket"></i>
-                    Create Free Account
-                </a>
-                <a href="{{ route('login') }}" class="glass text-white font-semibold px-8 py-4 rounded-xl hover:bg-white/20 hover:scale-105 transition-all duration-300 ease-out text-sm inline-flex items-center gap-2">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Sign In
-                </a>
-            </div>
-        </div>
-    </section>
+    {{-- ============================================================
+    FOOTER
+    ============================================================ --}}
+    <footer class="bg-gray-50 border-t border-gray-100 pt-14 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
 
-    {{-- Footer --}}
-    <footer class="bg-gray-900 text-gray-400 py-12 px-4 sm:px-6">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                {{-- Brand --}}
                 <div class="md:col-span-2">
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-book-open text-white text-sm"></i>
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
                         </div>
-                        <span class="font-bold text-white text-lg">ELibrary</span>
+                        <span class="font-bold text-lg text-gray-900 tracking-tight">ELibrary</span>
                     </div>
-                    <p class="text-sm text-gray-500 max-w-sm">Your gateway to unlimited knowledge. Access thousands of ebooks, audiobooks, and magazines from anywhere.</p>
+                    <p class="text-sm text-gray-500 leading-relaxed max-w-xs">
+                        Access thousands of ebooks from anywhere, anytime. Your digital library, always open.
+                    </p>
                 </div>
+
+                {{-- Quick Links --}}
                 <div>
-                    <h4 class="text-white font-semibold mb-4 text-sm">Quick Links</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#books" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Browse Books</a></li>
-                        <li><a href="#pricing" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Pricing</a></li>
-                        <li><a href="{{ route('login') }}" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Login</a></li>
-                        <li><a href="{{ route('register') }}" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Register</a></li>
+                    <h4 class="font-bold text-gray-800 text-sm mb-4">Quick Links</h4>
+                    <ul class="space-y-2.5 text-sm text-gray-500">
+                        <li><a href="#books" class="hover:text-blue-600 transition-colors">Browse Books</a></li>
+                        <li><a href="#pricing" class="hover:text-blue-600 transition-colors">Pricing</a></li>
+                        <li><a href="{{ route('login') }}" class="hover:text-blue-600 transition-colors">Login</a></li>
+                        <li><a href="{{ route('register') }}" class="hover:text-blue-600 transition-colors">Register</a>
+                        </li>
                     </ul>
                 </div>
+
+                {{-- Support --}}
                 <div>
-                    <h4 class="text-white font-semibold mb-4 text-sm">Support</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Help Center</a></li>
-                        <li><a href="#" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Contact Us</a></li>
-                        <li><a href="#" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Privacy Policy</a></li>
-                        <li><a href="#" class="hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Terms of Service</a></li>
+                    <h4 class="font-bold text-gray-800 text-sm mb-4">Support</h4>
+                    <ul class="space-y-2.5 text-sm text-gray-500">
+                        <li><a href="#" class="hover:text-blue-600 transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-blue-600 transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-blue-600 transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-blue-600 transition-colors">Terms of Service</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="border-t border-gray-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="text-sm text-gray-500">© {{ date('Y') }} ELibrary. All rights reserved.</p>
-                <div class="flex items-center gap-4">
-                    <a href="#" class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-600 hover:scale-110 transition-all duration-300">
-                        <i class="fab fa-twitter text-sm"></i>
+
+            {{-- Bottom bar --}}
+            <div class="border-t border-gray-200 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-xs text-gray-400">© {{ date('Y') }} ELibrary. All rights reserved.</p>
+                <div class="flex items-center gap-3">
+                    {{-- Facebook --}}
+                    <a href="#"
+                        class="w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-300 transition-colors shadow-sm">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                        </svg>
                     </a>
-                    <a href="#" class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-blue-800 hover:scale-110 transition-all duration-300">
-                        <i class="fab fa-facebook-f text-sm"></i>
+                    {{-- Instagram --}}
+                    <a href="#"
+                        class="w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-gray-500 hover:text-pink-600 hover:border-pink-300 transition-colors shadow-sm">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                        </svg>
                     </a>
-                    <a href="#" class="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-pink-600 hover:scale-110 transition-all duration-300">
-                        <i class="fab fa-instagram text-sm"></i>
+                    {{-- LinkedIn --}}
+                    <a href="#"
+                        class="w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-gray-500 hover:text-blue-700 hover:border-blue-300 transition-colors shadow-sm">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                        </svg>
+                    </a>
+                    {{-- YouTube --}}
+                    <a href="#"
+                        class="w-8 h-8 bg-white border border-gray-200 rounded-lg flex items-center justify-center text-gray-500 hover:text-red-600 hover:border-red-300 transition-colors shadow-sm">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z" />
+                        </svg>
                     </a>
                 </div>
             </div>
         </div>
     </footer>
 
+    {{-- JAVASCRIPT --}}
+    <script>
+        // ── Mobile menu ──────────────────────────────────────────────────────────
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        btn?.addEventListener('click', () => menu.classList.toggle('hidden'));
+        menu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu.classList.add('hidden')));
+
+        // ── Navbar scroll shadow ─────────────────────────────────────────────────
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => navbar.classList.toggle('shadow-md', window.scrollY > 10));
+
+        // ── Book filter (category pills + search) ────────────────────────────────
+        const pills = document.querySelectorAll('.filter-pill');
+        const books = document.querySelectorAll('.book-item');
+        const searchEl = document.getElementById('book-search');
+        const noResults = document.getElementById('no-results');
+
+        let activeCategory = 'all';
+        let searchTerm = '';
+
+        function applyFilters() {
+            let visible = 0;
+            books.forEach(book => {
+                const cat = book.dataset.category || '';
+                const title = book.dataset.title || '';
+                const author = book.dataset.author || '';
+
+                const catMatch = activeCategory === 'all' || cat === activeCategory;
+                const searchMatch = searchTerm === '' || title.includes(searchTerm) || author.includes(searchTerm);
+
+                if (catMatch && searchMatch) {
+                    book.classList.remove('hidden');
+                    visible++;
+                } else {
+                    book.classList.add('hidden');
+                }
+            });
+
+            noResults?.classList.toggle('hidden', visible > 0);
+        }
+
+        // Pill click
+        pills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                activeCategory = pill.dataset.category;
+
+                // Update pill styles
+                pills.forEach(p => {
+                    p.classList.remove('active-pill', 'bg-gray-900', 'text-white', 'border-gray-900');
+                    p.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+                });
+                pill.classList.add('active-pill', 'bg-gray-900', 'text-white', 'border-gray-900');
+                pill.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
+
+                applyFilters();
+            });
+        });
+
+        // Search input
+        searchEl?.addEventListener('input', () => {
+            searchTerm = searchEl.value.toLowerCase().trim();
+            applyFilters();
+        });
+    </script>
+
 </body>
+
 </html>
