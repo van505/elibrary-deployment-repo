@@ -27,4 +27,10 @@ class ActivityLogController extends Controller
 
         return view('admin.activity-logs.index', compact('logs'));
     }
+
+    public function clear()
+    {
+        ActivityLog::truncate();
+        return back()->with('success', 'All activity logs have been successfully cleared.');
+    }
 }

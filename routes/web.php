@@ -80,6 +80,7 @@ Route::middleware(['auth', '2fa', 'role:admin'])
         Route::put('settings', [Admin\SettingController::class, 'update'])->name('settings.update');
 
         Route::get('activity-logs', [Admin\ActivityLogController::class, 'index'])->name('activity-logs.index');
+        Route::delete('activity-logs/clear', [Admin\ActivityLogController::class, 'clear'])->name('activity-logs.clear');
 
         // Archive (soft delete management)
         Route::get   ('archive',                          [Admin\ArchiveController::class, 'index']      )->name('archive.index');

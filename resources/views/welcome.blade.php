@@ -9,7 +9,7 @@
         content="Access thousands of ebooks with a single subscription. Choose from Free, Basic, or Premium plans.">
 
     {{-- Google Fonts --}}
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     {{-- Tailwind CDN --}}
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,7 +17,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }
                 }
             }
         }
