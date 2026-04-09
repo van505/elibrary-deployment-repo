@@ -114,8 +114,19 @@
         </div>
 
         {{-- ===== RIGHT PANEL ===== --}}
-        <div class="flex-1 auth-right-scroll flex flex-col lg:w-[55%]">
-            <div class="flex-1 flex flex-col items-center justify-center p-6 lg:p-12 w-full max-w-md mx-auto">
+        <div class="flex-1 auth-right-scroll flex flex-col lg:w-[55%] relative">
+            
+            {{-- Back to Home Link --}}
+            <div class="absolute top-6 right-6 lg:top-8 lg:right-10 z-50">
+                <a href="{{ url('/') }}" class="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-blue-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Back to Home
+                </a>
+            </div>
+
+            <div class="flex-1 flex flex-col items-center justify-center mt-12 mb-12 p-6 lg:p-12 w-full max-w-md mx-auto">
 
                 {{-- Mobile Logo/Header Area --}}
                 <div class="lg:hidden w-full text-center mb-8">

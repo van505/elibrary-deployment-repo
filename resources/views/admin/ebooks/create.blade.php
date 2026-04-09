@@ -9,6 +9,20 @@
     <form action="{{ route('admin.ebooks.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
         @csrf
 
+        @if ($errors->any())
+            <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6">
+                <div class="flex items-center gap-2 font-semibold mb-1">
+                    <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>Please fix the following errors:</span>
+                </div>
+                <ul class="list-disc list-inside text-sm space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Title <span class="text-red-500">*</span></label>
