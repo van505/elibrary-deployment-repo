@@ -38,6 +38,7 @@ class EbookController extends Controller
             'cover_image'  => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'file_type'    => 'required|in:pdf,epub,mp3',
             'access_level' => 'required|in:free,basic,premium',
+            'is_featured'  => 'nullable|boolean',
         ]);
 
         $validated['file_path'] = $request->file('file_path')->store('ebooks', 'private');
@@ -56,6 +57,7 @@ class EbookController extends Controller
             'cover_image'  => $validated['cover_image'] ?? null,
             'file_type'    => $validated['file_type'],
             'access_level' => $validated['access_level'],
+            'is_featured'  => $request->has('is_featured'),
         ]);
 
         $ebook->authors()->sync($request->author_ids);
@@ -108,6 +110,7 @@ class EbookController extends Controller
             'cover_image'  => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'file_type'    => 'required|in:pdf,epub,mp3',
             'access_level' => 'required|in:free,basic,premium',
+            'is_featured'  => 'nullable|boolean',
         ]);
 
         if ($request->hasFile('file_path')) {
@@ -132,6 +135,7 @@ class EbookController extends Controller
             'cover_image'  => $validated['cover_image'] ?? $ebook->cover_image,
             'file_type'    => $validated['file_type'],
             'access_level' => $validated['access_level'],
+            'is_featured'  => $request->has('is_featured'),
         ]);
 
         $ebook->authors()->sync($request->author_ids);

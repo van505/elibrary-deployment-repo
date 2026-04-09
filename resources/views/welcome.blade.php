@@ -316,14 +316,14 @@
                         {{-- Book 1: Left Background --}}
                         <div class="absolute w-56 aspect-[3/4] rounded-xl shadow-2xl overflow-hidden z-10 transform transition-transform duration-500 hover:-rotate-12 -rotate-[8deg] -translate-x-[110px] translate-y-[30px]"
                             style="box-shadow: -15px 15px 35px rgba(0,0,0,0.2);">
-                            @if(isset($featuredBooks[1]) && $featuredBooks[1]->cover_image)
-                                <img src="{{ asset('storage/' . $featuredBooks[1]->cover_image) }}" alt="Book 1"
+                            @if(isset($heroBooks[1]) && $heroBooks[1]->cover_image)
+                                <img src="{{ asset('storage/' . $heroBooks[1]->cover_image) }}" alt="Book 1"
                                     class="w-full h-full object-cover relative z-0">
                             @else
                                 <div
                                     class="w-full h-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center relative z-0">
                                     <span
-                                        class="text-blue-300 font-bold text-center px-4">{{ $featuredBooks[1]->title ?? 'Book 1' }}</span>
+                                        class="text-blue-300 font-bold text-center px-4">{{ $heroBooks[1]->title ?? 'Book 1' }}</span>
                                 </div>
                             @endif
                             <div class="absolute inset-0 border border-white/20 rounded-xl z-20"></div>
@@ -332,14 +332,14 @@
                         {{-- Book 2: Right Background --}}
                         <div class="absolute w-56 aspect-[3/4] rounded-xl shadow-2xl overflow-hidden z-10 transform transition-transform duration-500 hover:rotate-12 rotate-[10deg] translate-x-[120px] translate-y-[45px]"
                             style="box-shadow: 15px 15px 35px rgba(0,0,0,0.2);">
-                            @if(isset($featuredBooks[2]) && $featuredBooks[2]->cover_image)
-                                <img src="{{ asset('storage/' . $featuredBooks[2]->cover_image) }}" alt="Book 2"
+                            @if(isset($heroBooks[2]) && $heroBooks[2]->cover_image)
+                                <img src="{{ asset('storage/' . $heroBooks[2]->cover_image) }}" alt="Book 2"
                                     class="w-full h-full object-cover relative z-0">
                             @else
                                 <div
                                     class="w-full h-full bg-gradient-to-br from-sky-100 to-blue-200 flex items-center justify-center relative z-0">
                                     <span
-                                        class="text-blue-400 font-bold text-center px-4">{{ $featuredBooks[2]->title ?? 'Book 2' }}</span>
+                                        class="text-blue-400 font-bold text-center px-4">{{ $heroBooks[2]->title ?? 'Book 2' }}</span>
                                 </div>
                             @endif
                             <div class="absolute inset-0 border border-white/20 rounded-xl z-20"></div>
@@ -348,14 +348,14 @@
                         {{-- Book 3: Foreground Main --}}
                         <div
                             class="absolute w-64 aspect-[3/4] rounded-xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.35)] overflow-hidden z-20 transform transition-transform duration-500 hover:-translate-y-3 -translate-y-4">
-                            @if(isset($featuredBooks[0]) && $featuredBooks[0]->cover_image)
-                                <img src="{{ asset('storage/' . $featuredBooks[0]->cover_image) }}" alt="Book 3"
+                            @if(isset($heroBooks[0]) && $heroBooks[0]->cover_image)
+                                <img src="{{ asset('storage/' . $heroBooks[0]->cover_image) }}" alt="Book 3"
                                     class="w-full h-full object-cover relative z-0">
                             @else
                                 <div
                                     class="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center relative z-0">
                                     <span
-                                        class="text-white font-bold text-center px-4 text-xl">{{ $featuredBooks[0]->title ?? 'Featured Book' }}</span>
+                                        class="text-white font-bold text-center px-4 text-xl">{{ $heroBooks[0]->title ?? 'Featured Book' }}</span>
                                 </div>
                             @endif
                             <div

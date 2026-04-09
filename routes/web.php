@@ -13,10 +13,13 @@ use App\Models\Category;
 Route::get('/', function () {
     $categories = Category::orderBy('name')->get();
 
+    // Load up to 3 featured books for the hero section
+    $heroBooks = Ebook::where('is_featured', true)->latest()->limit(3)->get();
+
     // Load all books with category for client-side filtering, sorted by access level
     $featuredBooks = Ebook::with(['authors', 'category'])->orderByRaw("FIELD(access_level, 'free', 'basic', 'premium')")->latest()->get();
 
-    return view('welcome', compact('categories', 'featuredBooks'));
+    return view('welcome', compact('categories', 'featuredBooks', 'heroBooks'));
 });
 
 

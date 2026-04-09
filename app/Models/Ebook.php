@@ -22,6 +22,11 @@ class Ebook extends Model
         'cover_image',
         'file_type',
         'access_level',
+        'is_featured',
+    ];
+
+    protected $casts = [
+        'is_featured' => 'boolean',
     ];
 
     // ── Relationships ─────────────────────────────────────────────────────────
