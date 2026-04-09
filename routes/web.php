@@ -13,8 +13,8 @@ use App\Models\Category;
 Route::get('/', function () {
     $categories = Category::orderBy('name')->get();
 
-    // Load all books with category for client-side filtering
-    $featuredBooks = Ebook::with(['authors', 'category'])->latest()->get();
+    // Load all books with category for client-side filtering, sorted by access level
+    $featuredBooks = Ebook::with(['authors', 'category'])->orderByRaw("FIELD(access_level, 'free', 'basic', 'premium')")->latest()->get();
 
     return view('welcome', compact('categories', 'featuredBooks'));
 });

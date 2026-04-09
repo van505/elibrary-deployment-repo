@@ -165,15 +165,15 @@
                 {{-- Center Search --}}
                 <div class="hidden md:flex flex-1 max-w-sm mx-8">
                     <div class="relative w-full">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0" />
                             </svg>
                         </span>
-                        <input type="text" placeholder="Search books, authors..."
-                            class="w-full bg-slate-800 border border-slate-700 rounded-full pl-9 pr-4 py-2 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-colors">
+                        <input type="text" id="main-header-search" placeholder="Search books, authors..."
+                            class="w-full bg-white border border-gray-200 rounded-full pl-9 pr-4 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors shadow-sm">
                     </div>
                 </div>
 
@@ -214,8 +214,8 @@
                                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0" />
                             </svg>
                         </span>
-                        <input type="text" placeholder="Search..."
-                            class="w-full bg-slate-800 border border-slate-700 rounded-full pl-9 pr-4 py-2 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-blue-500">
+                        <input type="text" id="mobile-header-search" placeholder="Search books, authors..."
+                            class="w-full bg-white border border-gray-200 rounded-full pl-9 pr-4 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 shadow-sm">
                     </div>
                     <a href="#books" class="text-slate-300 hover:text-white text-sm py-1 mt-2">Books</a>
                     <a href="#pricing" class="text-slate-300 hover:text-white text-sm py-1">Pricing</a>
@@ -414,7 +414,7 @@
             </div>
 
             {{-- Category filter pills --}}
-            <div id="category-filters" class="flex flex-wrap gap-2 mb-8">
+            <div id="category-filters" class="flex flex-wrap gap-2 mb-4">
                 {{-- "All" pill --}}
                 <button data-category="all"
                     class="filter-pill active-pill px-4 py-1.5 rounded-full text-sm font-semibold border-2 border-gray-900 bg-gray-900 text-white transition-all">
@@ -427,6 +427,27 @@
                         {{ $cat->name }}
                     </button>
                 @endforeach
+            </div>
+
+            {{-- Access filter pills --}}
+            <div id="access-filters" class="flex flex-wrap items-center gap-2 mb-8">
+                <span class="text-sm font-medium text-gray-500 mr-1">Access Level:</span>
+                <button data-access="all"
+                    class="access-pill active-pill px-4 py-1.5 rounded-full text-sm font-semibold border-2 border-blue-600 bg-blue-50 text-blue-700 transition-all">
+                    All
+                </button>
+                <button data-access="free"
+                    class="access-pill px-4 py-1.5 rounded-full text-sm font-medium border-2 border-gray-200 bg-white text-gray-600 hover:border-green-300 hover:text-green-600 transition-all">
+                    Free
+                </button>
+                <button data-access="basic"
+                    class="access-pill px-4 py-1.5 rounded-full text-sm font-medium border-2 border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:text-blue-600 transition-all">
+                    Basic
+                </button>
+                <button data-access="premium"
+                    class="access-pill px-4 py-1.5 rounded-full text-sm font-medium border-2 border-gray-200 bg-white text-gray-600 hover:border-purple-300 hover:text-purple-600 transition-all">
+                    Premium
+                </button>
             </div>
 
             {{-- Book grid --}}
@@ -446,7 +467,7 @@
                         $categorySlug = $book->category ? strtolower($book->category->name) : '';
                     @endphp
                     <div class="book-item book-card group cursor-pointer bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm"
-                        data-category="{{ $categorySlug }}" data-title="{{ strtolower($book->title) }}"
+                        data-category="{{ $categorySlug }}" data-access="{{ strtolower($book->access_level ?? 'free') }}" data-title="{{ strtolower($book->title) }}"
                         data-author="{{ strtolower($authorName) }}" onclick="window.location='{{ route('login') }}'">
                         <div class="relative w-full overflow-hidden bg-gray-100" style="aspect-ratio:3/4;">
                             @if($book->cover_image)
@@ -818,24 +839,30 @@
 
         // ── Book filter (category pills + search) ────────────────────────────────
         const pills = document.querySelectorAll('.filter-pill');
+        const accessPills = document.querySelectorAll('.access-pill');
         const books = document.querySelectorAll('.book-item');
         const searchEl = document.getElementById('book-search');
+        const headerSearchDesktop = document.getElementById('main-header-search');
+        const headerSearchMobile = document.getElementById('mobile-header-search');
         const noResults = document.getElementById('no-results');
 
         let activeCategory = 'all';
+        let activeAccess = 'all';
         let searchTerm = '';
 
         function applyFilters() {
             let visible = 0;
             books.forEach(book => {
                 const cat = book.dataset.category || '';
+                const access = book.dataset.access || '';
                 const title = book.dataset.title || '';
                 const author = book.dataset.author || '';
 
                 const catMatch = activeCategory === 'all' || cat === activeCategory;
+                const accessMatch = activeAccess === 'all' || access === activeAccess;
                 const searchMatch = searchTerm === '' || title.includes(searchTerm) || author.includes(searchTerm);
 
-                if (catMatch && searchMatch) {
+                if (catMatch && accessMatch && searchMatch) {
                     book.classList.remove('hidden');
                     visible++;
                 } else {
@@ -863,11 +890,44 @@
             });
         });
 
-        // Search input
-        searchEl?.addEventListener('input', () => {
-            searchTerm = searchEl.value.toLowerCase().trim();
-            applyFilters();
+        // Access Pill click
+        accessPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                activeAccess = pill.dataset.access;
+
+                // Update pill styles
+                accessPills.forEach(p => {
+                    p.classList.remove('active-pill', 'bg-blue-50', 'text-blue-700', 'border-blue-600');
+                    p.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+                });
+                pill.classList.add('active-pill', 'bg-blue-50', 'text-blue-700', 'border-blue-600');
+                pill.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
+
+                applyFilters();
+            });
         });
+
+        // Search Sync Handler
+        function handleSearch(e) {
+            searchTerm = e.target.value.toLowerCase().trim();
+            if (searchEl && searchEl !== e.target) searchEl.value = e.target.value;
+            if (headerSearchDesktop && headerSearchDesktop !== e.target) headerSearchDesktop.value = e.target.value;
+            if (headerSearchMobile && headerSearchMobile !== e.target) headerSearchMobile.value = e.target.value;
+            
+            applyFilters();
+            
+            // Scroll to books section on typing if from header
+            if (e.target.id === 'main-header-search' || e.target.id === 'mobile-header-search') {
+                if (searchTerm.length > 0) {
+                    const booksSection = document.getElementById('books');
+                    if (booksSection) booksSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+
+        searchEl?.addEventListener('input', handleSearch);
+        headerSearchDesktop?.addEventListener('input', handleSearch);
+        headerSearchMobile?.addEventListener('input', handleSearch);
     </script>
 
 </body>
