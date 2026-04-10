@@ -36,6 +36,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('verification.notice')
+            ->with('status', 'Please verify your email address before continuing.');
     }
 }

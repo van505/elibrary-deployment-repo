@@ -36,6 +36,8 @@ Route::middleware(['auth', '2fa'])->get('/dashboard', function () {
         : redirect()->route('member.dashboard');
 })->name('dashboard');
 
+
+
 // ── Profile (Breeze) ─────────────────────────────────────────────────────────
 
 Route::middleware(['auth', '2fa'])->group(function () {
@@ -96,7 +98,7 @@ Route::middleware(['auth', '2fa', 'role:admin'])
 
 // ── Member ────────────────────────────────────────────────────────────────────
 
-Route::middleware(['auth', '2fa', 'role:member'])
+Route::middleware(['auth', '2fa', 'verified', 'role:member'])
     ->prefix('member')
     ->name('member.')
     ->group(function () {
