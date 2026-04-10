@@ -3,9 +3,6 @@
 
 @section('content')
 <div class="space-y-5">
-    <div class="flex items-center justify-between mb-2">
-        <h1 class="text-xl font-bold text-gray-800">Transactions</h1>
-    </div>
 
     <x-admin.filter-bar 
         :action="route('admin.transactions.index')" 

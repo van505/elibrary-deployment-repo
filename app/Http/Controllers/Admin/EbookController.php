@@ -102,11 +102,32 @@ class EbookController extends Controller
             ->get();
         $avgRating = $ebook->reviews()->where('status', 'approved')->avg('rating');
 
+        // Fetch related ebooks
+        $authorIds = $ebook->authors->pluck('id');
+        
+        $sameCatSameAuthor = Ebook::with('authors', 'category')->where('id', '!=', $ebook->id)
+            ->where('category_id', $ebook->category_id)
+            ->whereHas('authors', fn($q) => $q->whereIn('authors.id', $authorIds))
+            ->latest()->get();
+
+        $sameAuthor = Ebook::with('authors', 'category')->where('id', '!=', $ebook->id)
+            ->whereHas('authors', fn($q) => $q->whereIn('authors.id', $authorIds))
+            ->whereNotIn('id', $sameCatSameAuthor->pluck('id'))
+            ->latest()->get();
+            
+        $sameCat = Ebook::with('authors', 'category')->where('id', '!=', $ebook->id)
+            ->where('category_id', $ebook->category_id)
+            ->whereNotIn('id', $sameCatSameAuthor->pluck('id')->merge($sameAuthor->pluck('id')))
+            ->latest()->get();
+
+        $relatedEbooks = $sameCatSameAuthor->concat($sameAuthor)->concat($sameCat)->take(4);
+
         return view('admin.ebooks.show', compact(
             'ebook',
             'totalAccesses',
             'recentAccessors',
-            'avgRating'
+            'avgRating',
+            'relatedEbooks'
         ));
     }
 
@@ -184,5 +205,32 @@ class EbookController extends Controller
         ActivityLogger::log('deleted', 'ebooks', 'Deleted ebook: ' . $ebook->title);
         $ebook->delete();
         return redirect()->route('admin.ebooks.index')->with('success', 'Ebook deleted successfully.');
+    }
+
+    public function stream(Ebook $ebook)
+    {
+        $filePath = null;
+
+        if (\Illuminate\Support\Facades\Storage::disk('private')->exists($ebook->file_path)) {
+            $filePath = \Illuminate\Support\Facades\Storage::disk('private')->path($ebook->file_path);
+        } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($ebook->file_path)) {
+            $filePath = \Illuminate\Support\Facades\Storage::disk('public')->path($ebook->file_path);
+        } else {
+            $absolute = storage_path('app/' . $ebook->file_path);
+            if (file_exists($absolute)) {
+                $filePath = $absolute;
+            }
+        }
+
+        if (! $filePath) {
+            abort(404, 'File not found on server.');
+        }
+
+        $headers = [];
+        if ($ebook->file_type === 'pdf') {
+            $headers = ['Content-Type' => 'application/pdf'];
+        }
+
+        return response()->file($filePath, $headers);
     }
 }

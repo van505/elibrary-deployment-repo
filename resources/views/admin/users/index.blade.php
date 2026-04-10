@@ -2,9 +2,6 @@
 @section('title', 'Users')
 
 @section('content')
-    <div class="flex items-center justify-between mb-2">
-        <h1 class="text-xl font-bold text-gray-800">User Management</h1>
-    </div>
 
     <x-admin.filter-bar 
         :action="route('admin.users.index')" 

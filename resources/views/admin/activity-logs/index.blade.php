@@ -2,8 +2,7 @@
 @section('title', 'Activity Logs')
 
 @section('content')
-    <div class="flex items-center justify-between mb-2">
-        <h1 class="text-xl font-bold text-gray-800">System Activity Logs</h1>
+    <div class="flex items-center justify-end mb-2">
         <form action="{{ route('admin.activity-logs.clear') }}" method="POST" onsubmit="return confirm('Are you sure you want to clear ALL activity logs? This action cannot be undone.');">
             @csrf
             @method('DELETE')

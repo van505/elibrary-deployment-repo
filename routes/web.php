@@ -60,6 +60,8 @@ Route::middleware(['auth', '2fa', 'role:admin'])
         Route::resource('users',      Admin\UserController::class)->except(['create', 'store']);
         Route::resource('authors',    Admin\AuthorController::class);
         Route::resource('categories', Admin\CategoryController::class);
+        
+        Route::get('ebooks/{ebook}/stream', [Admin\EbookController::class, 'stream'])->name('ebooks.stream');
         Route::resource('ebooks',     Admin\EbookController::class);
 
         Route::resource('members', Admin\MemberController::class)->except(['create', 'store']);

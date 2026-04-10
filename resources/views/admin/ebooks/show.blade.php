@@ -140,18 +140,38 @@
     @endforelse
 </div>
 
+{{-- Related Ebooks --}}
+@if($relatedEbooks->isNotEmpty())
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">Related Ebooks ({{ $relatedEbooks->count() }})</h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        @foreach($relatedEbooks as $related)
+        <a href="{{ route('admin.ebooks.show', $related) }}" class="block border border-gray-100 rounded-lg p-3 hover:bg-gray-50 flex flex-col items-center text-center transition-colors">
+            <div class="w-full aspect-[3/4] bg-gray-100 rounded mb-3 overflow-hidden">
+                @if($related->cover_image)
+                    <img src="{{ Storage::url($related->cover_image) }}" alt="{{ $related->title }}" class="w-full h-full object-cover">
+                @endif
+            </div>
+            <h4 class="font-semibold text-xs text-gray-800 line-clamp-2">{{ $related->title }}</h4>
+            <p class="text-[10px] text-gray-500 mt-1 line-clamp-1">{{ $related->authors->pluck('full_name')->join(', ') }}</p>
+        </a>
+        @endforeach
+    </div>
+</div>
+@endif
+
 {{-- File Preview --}}
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
     <h3 class="text-lg font-semibold text-gray-800 mb-4">File Preview</h3>
     @if($ebook->file_path)
         <div class="flex gap-3 mb-4">
-            <a href="{{ Storage::url($ebook->file_path) }}" target="_blank"
+            <a href="{{ route('admin.ebooks.stream', $ebook) }}" target="_blank"
                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">Open in New Tab</a>
-            <a href="{{ Storage::url($ebook->file_path) }}" download
+            <a href="{{ route('admin.ebooks.stream', $ebook) }}" download
                class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">Download</a>
         </div>
         @if($ebook->file_type === 'pdf')
-            <iframe src="{{ Storage::url($ebook->file_path) }}" class="w-full rounded-lg border border-gray-200" style="height:600px" title="{{ $ebook->title }}"></iframe>
+            <iframe src="{{ route('admin.ebooks.stream', $ebook) }}" class="w-full rounded-lg border border-gray-200" style="height:600px" title="{{ $ebook->title }}"></iframe>
         @else
             <div class="bg-gray-50 rounded-lg border border-gray-200 p-6 text-center text-gray-400 text-sm">
                 Preview not available for {{ strtoupper($ebook->file_type) }} files. Use the download button.

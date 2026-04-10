@@ -221,5 +221,50 @@
         @endif
     </div>
 
+    @if($relatedEbooks->isNotEmpty())
+    <div class="pt-8 border-t border-gray-100">
+        <h2 class="text-xl font-bold text-gray-800 mb-6">You Might Also Like</h2>
+        
+        {{-- Horizontal scroll on mobile, grid on desktop --}}
+        <div class="flex overflow-x-auto md:grid md:grid-cols-4 gap-4 pb-4 md:pb-0 snap-x">
+            @foreach($relatedEbooks as $related)
+            <div class="bg-white border text-center border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group shrink-0 w-[180px] md:w-auto snap-center flex flex-col">
+                {{-- Cover Image --}}
+                <div class="aspect-[3/4] bg-gray-50 relative overflow-hidden flex-none">
+                    @if($related->cover_image)
+                        <img src="{{ asset('storage/' . $related->cover_image) }}" alt="{{ $related->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    @else
+                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 group-hover:scale-105 transition-transform duration-300">
+                            <svg class="w-12 h-12 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        </div>
+                    @endif
+                    
+                    {{-- Access Badge Overlay --}}
+                    @php
+                        $levelColors = ['free'=>'bg-green-500','basic'=>'bg-blue-500','premium'=>'bg-purple-500'];
+                    @endphp
+                    <div class="absolute top-2 right-2">
+                        <span class="text-[10px] font-bold text-white px-2 py-0.5 rounded-full {{ $levelColors[$related->access_level] ?? 'bg-gray-500' }} shadow-sm">
+                            {{ strtoupper($related->access_level) }}
+                        </span>
+                    </div>
+                </div>
+
+                {{-- Content Info --}}
+                <div class="p-4 flex flex-col flex-1 justify-between gap-3">
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-sm line-clamp-2 leading-tight" title="{{ $related->title }}">{{ $related->title }}</h3>
+                        <p class="text-xs text-gray-500 mt-1 line-clamp-1" title="{{ $related->authors->pluck('full_name')->join(', ') }}">{{ $related->authors->pluck('full_name')->join(', ') ?: 'Unknown Author' }}</p>
+                    </div>
+                    <a href="{{ route('member.ebooks.show', $related) }}" class="block w-full py-2 bg-gray-50 text-blue-600 hover:bg-blue-50 hover:text-blue-700 text-xs font-semibold rounded-lg transition-colors border border-gray-100">
+                        View Book
+                    </a>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
 </div>
 @endsection

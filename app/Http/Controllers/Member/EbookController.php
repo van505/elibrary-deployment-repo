@@ -73,12 +73,33 @@ class EbookController extends BaseMemberController
             ->latest()
             ->get();
 
+        // Fetch related ebooks
+        $authorIds = $ebook->authors->pluck('id');
+        
+        $sameCatSameAuthor = Ebook::with('authors', 'category')->where('id', '!=', $ebook->id)
+            ->where('category_id', $ebook->category_id)
+            ->whereHas('authors', fn($q) => $q->whereIn('authors.id', $authorIds))
+            ->latest()->get();
+
+        $sameAuthor = Ebook::with('authors', 'category')->where('id', '!=', $ebook->id)
+            ->whereHas('authors', fn($q) => $q->whereIn('authors.id', $authorIds))
+            ->whereNotIn('id', $sameCatSameAuthor->pluck('id'))
+            ->latest()->get();
+            
+        $sameCat = Ebook::with('authors', 'category')->where('id', '!=', $ebook->id)
+            ->where('category_id', $ebook->category_id)
+            ->whereNotIn('id', $sameCatSameAuthor->pluck('id')->merge($sameAuthor->pluck('id')))
+            ->latest()->get();
+
+        $relatedEbooks = $sameCatSameAuthor->concat($sameAuthor)->concat($sameCat)->take(4);
+
         return view('member.ebooks.show', compact(
             'ebook',
             'hasAccess',
             'isBookmarked',
             'reviews',
-            'pendingReviews'
+            'pendingReviews',
+            'relatedEbooks'
         ));
     }
 }

@@ -2,9 +2,6 @@
 @section('title', 'Categories')
 
 @section('content')
-    <div class="flex items-center justify-between mb-2">
-        <h1 class="text-xl font-bold text-gray-800">Category Management</h1>
-    </div>
 
     <x-admin.filter-bar 
         :action="route('admin.categories.index')" 
