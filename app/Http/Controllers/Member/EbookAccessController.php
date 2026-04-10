@@ -82,6 +82,9 @@ class EbookAccessController extends BaseMemberController
             $fileUrl = route('member.ebooks.stream', $ebook->id);
         }
 
+        // Update Reading Streak
+        \App\Services\StreakService::updateStreak($member);
+
         return view('member.ebooks.read', compact('ebook', 'fileUrl'));
     }
 

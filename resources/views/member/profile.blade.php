@@ -12,27 +12,39 @@
         <form method="POST" action="{{ route('member.profile.update') }}" enctype="multipart/form-data">
             @csrf @method('PUT')
 
-            {{-- Avatar Upload --}}
-            <div class="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
-                <div class="w-20 h-20 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center flex-shrink-0 ring-2 ring-blue-100">
-                    @if($member->avatar)
-                        <img src="{{ Storage::url($member->avatar) }}"
-                             alt="Profile Photo"
-                             class="w-full h-full object-cover">
-                    @else
-                        <span class="text-white text-2xl font-bold">
-                            {{ strtoupper(substr($member->first_name ?? auth()->user()->email, 0, 1)) }}
-                        </span>
-                    @endif
+            {{-- Header: Avatar Upload & Streak Info --}}
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 pb-6 border-b border-gray-100">
+                <div class="flex items-center gap-4">
+                    <div class="w-20 h-20 rounded-full overflow-hidden bg-blue-600 flex items-center justify-center flex-shrink-0 ring-2 ring-blue-100">
+                        @if($member->avatar)
+                            <img src="{{ Storage::url($member->avatar) }}"
+                                 alt="Profile Photo"
+                                 class="w-full h-full object-cover">
+                        @else
+                            <span class="text-white text-2xl font-bold">
+                                {{ strtoupper(substr($member->first_name ?? auth()->user()->email, 0, 1)) }}
+                            </span>
+                        @endif
+                    </div>
+                    <div>
+                        <label class="cursor-pointer text-blue-600 hover:text-blue-700 text-sm font-medium hover:underline">
+                            Change Photo
+                            <input type="file" name="avatar" accept="image/*" class="hidden"
+                                   onchange="this.closest('form').submit()">
+                        </label>
+                        <p class="text-gray-400 text-xs mt-1">JPG, PNG or GIF. Max 2MB.</p>
+                        @error('avatar') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
                 </div>
-                <div>
-                    <label class="cursor-pointer text-blue-600 hover:text-blue-700 text-sm font-medium hover:underline">
-                        Change Photo
-                        <input type="file" name="avatar" accept="image/*" class="hidden"
-                               onchange="this.closest('form').submit()">
-                    </label>
-                    <p class="text-gray-400 text-xs mt-1">JPG, PNG or GIF. Max 2MB.</p>
-                    @error('avatar') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+
+                {{-- Reading Streak Summary --}}
+                <div class="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-xl p-4 flex items-center gap-4 shadow-sm min-w-[200px]">
+                    <div class="text-3xl filter drop-shadow-sm">🔥</div>
+                    <div>
+                        <p class="font-bold text-orange-600 leading-tight">{{ $member->current_streak ?? 0 }}-Day Streak</p>
+                        <p class="text-[10px] text-gray-500 mt-1 uppercase tracking-wider font-semibold">Longest: {{ $member->longest_streak ?? 0 }} Days</p>
+                        <p class="text-[10px] text-gray-400 mt-0.5">Last read: {{ $member->last_read_date ? \Carbon\Carbon::parse($member->last_read_date)->format('M d, Y') : 'Never' }}</p>
+                    </div>
                 </div>
             </div>
 

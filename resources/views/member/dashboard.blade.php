@@ -49,6 +49,58 @@
         </div>
     </div>
 
+    {{-- Reading Streak Widget --}}
+    @php
+        $member = auth()->user()->member;
+        $currentStreak = $member->current_streak ?? 0;
+        $longestStreak = $member->longest_streak ?? 0;
+        $isCelebration = $currentStreak >= 7;
+    @endphp
+    <div class="bg-white rounded-xl shadow-sm border {{ $isCelebration ? 'border-yellow-300' : 'border-gray-100' }} p-6 relative overflow-hidden mb-6">
+        {{-- Celebration background glow --}}
+        @if($isCelebration)
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-100 rounded-full blur-3xl opacity-50"></div>
+        @endif
+        
+        <div class="relative z-10 flex flex-col md:flex-row items-center gap-6">
+            {{-- Flame Icon --}}
+            <div class="flex-shrink-0 w-16 h-16 rounded-full flex items-center justify-center {{ $isCelebration ? 'bg-gradient-to-br from-yellow-300 to-orange-400 shadow-orange-200 shadow-lg' : ($currentStreak > 0 ? 'bg-orange-100 text-orange-500' : 'bg-gray-100 text-gray-400') }}">
+                <span class="text-3xl">🔥</span>
+            </div>
+            
+            {{-- Streak Details --}}
+            <div class="flex-1 text-center md:text-left">
+                @if($currentStreak > 0)
+                    <h2 class="text-xl font-bold {{ $isCelebration ? 'text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-500' : 'text-gray-800' }}">
+                        {{ $currentStreak }}-day reading streak!
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-1">Keep it up! You're on fire.</p>
+                @else
+                    <h2 class="text-xl font-bold text-gray-800">Start reading to build your streak!</h2>
+                    <p class="text-sm text-gray-500 mt-1">Consistency is key to forming a habit.</p>
+                @endif
+                
+                {{-- Progress Bar (Visual indicator out of 7 days) --}}
+                <div class="mt-4 flex items-center gap-2 max-w-sm mx-auto md:mx-0">
+                    @for($i = 1; $i <= 7; $i++)
+                        @php
+                            // Calculate display based on current streak modulo 7 (or full if exactly multiple of 7)
+                            $filledIcons = $currentStreak % 7;
+                            if ($filledIcons == 0 && $currentStreak > 0) $filledIcons = 7;
+                            
+                            $isActive = $i <= $filledIcons;
+                        @endphp
+                        <div class="flex-1 h-2 rounded-full {{ $isActive ? ($isCelebration ? 'bg-yellow-400' : 'bg-orange-400') : 'bg-gray-200' }}"></div>
+                    @endfor
+                </div>
+
+                <div class="mt-3 text-xs font-semibold {{ $isCelebration ? 'text-yellow-600' : 'text-gray-400' }}">
+                    Longest streak: {{ $longestStreak }} {{ \Illuminate\Support\Str::plural('day', $longestStreak) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
     {{-- Subscription Info Card --}}
     @if($subscription)
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">

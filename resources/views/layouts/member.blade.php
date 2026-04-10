@@ -159,6 +159,91 @@
             </div>
         </header>
 
+        {{-- Subscription Expiry Banner --}}
+        @if(!request()->routeIs('member.subscriptions.*'))
+        @php
+            $member = auth()->user()->member;
+            $subscription = $member ? $member->subscriptions()->latest()->first() : null;
+            $showBanner = false;
+            
+            if (!$subscription || ($subscription->status !== 'active' && !$subscription->expires_at)) {
+                // No subscription at all
+                $showBanner = true;
+                $bannerClass = 'bg-blue-50 border-blue-200 text-blue-800';
+                $bannerIconClass = 'text-blue-500';
+                $bannerMsg = "You don't have an active subscription. Browse our plans to get started.";
+                $bannerBtn = 'See Plans';
+                $btnClass = 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm';
+            } else {
+                if ($subscription->status !== 'active' || ($subscription->expires_at && \Carbon\Carbon::parse($subscription->expires_at)->isPast())) {
+                    // Expired
+                    $showBanner = true;
+                    $bannerClass = 'bg-red-900 border-red-800 text-red-50';
+                    $bannerIconClass = 'text-red-400';
+                    $bannerMsg = "Your subscription has expired. Subscribe again to continue reading.";
+                    $bannerBtn = 'Subscribe Now';
+                    $btnClass = 'bg-red-500 hover:bg-red-600 text-white shadow-sm shadow-red-900/50';
+                } elseif ($subscription->expires_at) {
+                    $daysLeft = now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($subscription->expires_at)->startOfDay(), false);
+                    
+                    if ($daysLeft <= 1) {
+                        $showBanner = true;
+                        $bannerClass = 'bg-red-50 border-red-200 text-red-800';
+                        $bannerIconClass = 'text-red-500';
+                        $bannerMsg = "Your subscription expires TODAY! Renew immediately to avoid losing access.";
+                        $bannerBtn = 'Renew Now';
+                        $btnClass = 'bg-red-600 hover:bg-red-700 text-white shadow-sm shadow-red-200';
+                    } elseif ($daysLeft <= 3) {
+                        $showBanner = true;
+                        $bannerClass = 'bg-orange-50 border-orange-200 text-orange-800';
+                        $bannerIconClass = 'text-orange-500';
+                        $bannerMsg = "Your subscription expires in {$daysLeft} days! Renew now to keep your access.";
+                        $bannerBtn = 'Renew Now';
+                        $btnClass = 'bg-orange-500 hover:bg-orange-600 text-white shadow-sm shadow-orange-200';
+                    } elseif ($daysLeft <= 7) {
+                        $showBanner = true;
+                        $bannerClass = 'bg-yellow-50 border-yellow-200 text-yellow-800';
+                        $bannerIconClass = 'text-yellow-600';
+                        $bannerMsg = "Your subscription expires in {$daysLeft} days. Consider renewing soon.";
+                        $bannerBtn = 'View Plans';
+                        $btnClass = 'bg-yellow-500 hover:bg-yellow-600 text-white shadow-sm shadow-yellow-200';
+                    }
+                }
+            }
+        @endphp
+
+        @if($showBanner)
+            <div id="subscriptionExpirBanner" style="display: none;" class="{{ $bannerClass }} border-b px-4 py-3 flex items-center justify-between shadow-sm relative z-10 transition-opacity duration-300">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 flex-shrink-0 {{ $bannerIconClass ?? '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <p class="text-sm font-medium">{{ $bannerMsg }}</p>
+                </div>
+                <div class="flex items-center gap-4 flex-shrink-0">
+                    <a href="{{ route('member.subscriptions.index') }}" class="{{ $btnClass }} px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors">
+                        {{ $bannerBtn }}
+                    </a>
+                    <button onclick="dismissSubBanner()" class="p-1 hover:bg-black/10 rounded-md transition-colors" aria-label="Dismiss">
+                        <svg class="w-4 h-4 opacity-70 hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <script>
+                if(!sessionStorage.getItem('hideSubBanner')) {
+                    document.getElementById('subscriptionExpirBanner').style.display = 'flex';
+                }
+                function dismissSubBanner() {
+                    const banner = document.getElementById('subscriptionExpirBanner');
+                    if(banner) {
+                        banner.style.opacity = '0';
+                        setTimeout(() => banner.style.display = 'none', 300);
+                        sessionStorage.setItem('hideSubBanner', 'true');
+                    }
+                }
+            </script>
+        @endif
+        @endif
+
         {{-- Content --}}
         <main class="flex-1 overflow-y-auto p-4 md:p-6">
             @if(session('success'))
