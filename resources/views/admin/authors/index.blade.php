@@ -2,10 +2,17 @@
 @section('title', 'Authors')
 
 @section('content')
-<div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl font-bold text-gray-800">Authors</h2>
-    <a href="{{ route('admin.authors.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">+ Add Author</a>
-</div>
+    <div class="flex items-center justify-between mb-2">
+        <h1 class="text-xl font-bold text-gray-800">Author Management</h1>
+    </div>
+
+    <x-admin.filter-bar 
+        :action="route('admin.authors.index')" 
+        searchPlaceholder="Search author name..."
+        :sortable="['created_at' => 'Date Added', 'first_name' => 'First Name', 'last_name' => 'Last Name']"
+        :createRoute="route('admin.authors.create')"
+        createLabel="Add Author">
+    </x-admin.filter-bar>
 
 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
     <table class="w-full text-sm text-left">

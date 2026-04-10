@@ -5,13 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Services\ActivityLogger;
 use App\Http\Controllers\Controller;
 use App\Models\Author;
+use App\Traits\HandlesAdminFilters;
 use Illuminate\Http\Request;
 
 class AuthorController extends Controller
 {
-    public function index()
+    use HandlesAdminFilters;
+
+    public function index(Request $request)
     {
-        $authors = Author::withCount('ebooks')->orderBy('last_name')->paginate(10);
+        $query = Author::withCount('ebooks');
+        $query = $this->applyFilters($query, $request, 'filter_authors', ['first_name', 'last_name']);
+
+        $authors = $query->paginate(10)->appends($request->query());
 
         return view('admin.authors.index', compact('authors'));
     }

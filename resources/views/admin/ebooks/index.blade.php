@@ -3,10 +3,32 @@
 
 @section('content')
 <div class="space-y-5">
-    <div class="flex items-center justify-between">
-        <h1 class="text-xl font-bold text-gray-800">Ebooks</h1>
-        <a href="{{ route('admin.ebooks.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">+ Add Ebook</a>
+    <div class="flex items-center justify-between mb-2">
+        <h1 class="text-xl font-bold text-gray-800">Ebooks Management</h1>
     </div>
+
+    <x-admin.filter-bar 
+        :action="route('admin.ebooks.index')" 
+        searchPlaceholder="Search by title or author..."
+        :sortable="['created_at' => 'Date Added', 'title' => 'Title', 'publish_year' => 'Publish Year']"
+        :createRoute="route('admin.ebooks.create')"
+        createLabel="Add Ebook">
+        
+        <select name="category_id" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">All Categories</option>
+            @foreach($categories as $cat)
+                <option value="{{ $cat->id }}" @selected(request('category_id') == $cat->id)>{{ $cat->name }}</option>
+            @endforeach
+        </select>
+        
+        <select name="access_level" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">All Access Levels</option>
+            <option value="free" @selected(request('access_level') === 'free')>Free</option>
+            <option value="basic" @selected(request('access_level') === 'basic')>Basic</option>
+            <option value="premium" @selected(request('access_level') === 'premium')>Premium</option>
+        </select>
+        
+    </x-admin.filter-bar>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <table class="w-full text-sm">

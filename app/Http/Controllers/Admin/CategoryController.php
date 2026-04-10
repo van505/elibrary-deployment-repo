@@ -5,14 +5,20 @@ namespace App\Http\Controllers\Admin;
 use App\Services\ActivityLogger;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Traits\HandlesAdminFilters;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
-    public function index()
+    use HandlesAdminFilters;
+
+    public function index(Request $request)
     {
-        $categories = Category::paginate(10);
+        $query = Category::query();
+        $query = $this->applyFilters($query, $request, 'filter_categories', ['name']);
+
+        $categories = $query->paginate(10)->appends($request->query());
 
         return view('admin.categories.index', compact('categories'));
     }

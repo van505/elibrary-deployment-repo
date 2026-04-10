@@ -3,7 +3,35 @@
 
 @section('content')
 <div class="space-y-5">
-    <h1 class="text-xl font-bold text-gray-800">Transactions</h1>
+    <div class="flex items-center justify-between mb-2">
+        <h1 class="text-xl font-bold text-gray-800">Transactions</h1>
+    </div>
+
+    <x-admin.filter-bar 
+        :action="route('admin.transactions.index')" 
+        searchPlaceholder="Search ID or member..."
+        :sortable="['created_at' => 'Date Processed', 'amount' => 'Amount']">
+        
+        <input type="date" name="created_at_start" value="{{ request('created_at_start') }}" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" title="Start Date">
+        <input type="date" name="created_at_end" value="{{ request('created_at_end') }}" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" title="End Date">
+
+        <select name="status" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">All Statuses</option>
+            <option value="completed" @selected(request('status') === 'completed')>Completed</option>
+            <option value="pending" @selected(request('status') === 'pending')>Pending</option>
+            <option value="failed" @selected(request('status') === 'failed')>Failed</option>
+        </select>
+
+        <select name="payment_method" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">All Methods</option>
+            <option value="credit_card" @selected(request('payment_method') === 'credit_card')>Credit Card</option>
+            <option value="paypal" @selected(request('payment_method') === 'paypal')>PayPal</option>
+            <option value="gcash" @selected(request('payment_method') === 'gcash')>GCash</option>
+            <option value="maya" @selected(request('payment_method') === 'maya')>Maya</option>
+            <option value="bank_transfer" @selected(request('payment_method') === 'bank_transfer')>Bank Transfer</option>
+        </select>
+        
+    </x-admin.filter-bar>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <table class="w-full text-sm">

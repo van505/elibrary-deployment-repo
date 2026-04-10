@@ -7,36 +7,58 @@ use App\Models\EbookAccess;
 use App\Models\Member;
 use App\Models\Review;
 use App\Models\Transaction;
+use App\Models\Category;
+use App\Traits\HandlesAdminFilters;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    public function index()
+    use HandlesAdminFilters;
+
+    public function index(Request $request)
     {
-        // Total ebooks accessed this month
-        $accessesThisMonth = EbookAccess::whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
+        // Use a dummy query just to trigger the trait's session tracking and Clear logic
+        $dummyQuery = Member::query();
+        $this->applyFilters($dummyQuery, $request, 'filter_reports', [], ['category_id'], ['report_date']);
+
+        $startDate = $request->filled('report_date_start') ? Carbon::parse($request->get('report_date_start'))->startOfDay() : now()->startOfMonth();
+        $endDate = $request->filled('report_date_end') ? Carbon::parse($request->get('report_date_end'))->endOfDay() : now()->endOfDay();
+        $categoryId = $request->get('category_id');
+
+        $categories = Category::orderBy('name')->get();
+
+        // Total accesses within range
+        $accessesThisMonth = EbookAccess::whereBetween('created_at', [$startDate, $endDate])
+            ->when($categoryId, fn($q, $cat) => $q->whereHas('ebook', fn($eq) => $eq->where('category_id', $cat)))
             ->count();
 
-        // Most read ebooks — top 5
+        // Most read ebooks within range
         $topEbooks = EbookAccess::selectRaw('ebook_id, count(*) as access_count')
             ->with('ebook')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($categoryId, fn($q, $cat) => $q->whereHas('ebook', fn($eq) => $eq->where('category_id', $cat)))
             ->groupBy('ebook_id')
             ->orderByDesc('access_count')
             ->limit(5)
             ->get();
 
-        // Most active members — top 5
+        // Most active members within range
         $topMembers = EbookAccess::selectRaw('member_id, count(*) as access_count')
             ->with('member')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($categoryId, fn($q, $cat) => $q->whereHas('ebook', fn($eq) => $eq->where('category_id', $cat)))
             ->groupBy('member_id')
             ->orderByDesc('access_count')
             ->limit(5)
             ->get();
 
-        // Review approval rate
-        $totalReviews    = Review::count();
-        $approvedReviews = Review::where('status', 'approved')->count();
+        // Review approval rate within range
+        $reviewQuery = Review::whereBetween('created_at', [$startDate, $endDate])
+            ->when($categoryId, fn($q, $cat) => $q->whereHas('ebook', fn($eq) => $eq->where('category_id', $cat)));
+            
+        $totalReviews    = (clone $reviewQuery)->count();
+        $approvedReviews = (clone $reviewQuery)->where('status', 'approved')->count();
         $approvalRate    = $totalReviews > 0 ? round(($approvedReviews / $totalReviews) * 100, 1) : 0;
 
         // Revenue last 6 months (bar chart)
@@ -72,7 +94,8 @@ class ReportController extends Controller
             'revenueLabels',
             'revenueData',
             'memberLabels',
-            'memberData'
+            'memberData',
+            'categories'
         ));
     }
 }

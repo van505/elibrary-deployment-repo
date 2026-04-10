@@ -2,10 +2,17 @@
 @section('title', 'Categories')
 
 @section('content')
-<div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl font-bold text-gray-800">Categories</h2>
-    <a href="{{ route('admin.categories.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">+ Add Category</a>
-</div>
+    <div class="flex items-center justify-between mb-2">
+        <h1 class="text-xl font-bold text-gray-800">Category Management</h1>
+    </div>
+
+    <x-admin.filter-bar 
+        :action="route('admin.categories.index')" 
+        searchPlaceholder="Search category name..."
+        :sortable="['created_at' => 'Date Added', 'name' => 'Name']"
+        :createRoute="route('admin.categories.create')"
+        createLabel="Add Category">
+    </x-admin.filter-bar>
 
 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
     <table class="w-full text-sm text-left">

@@ -2,16 +2,8 @@
 @section('title', 'Activity Logs')
 
 @section('content')
-<h2 class="text-2xl font-bold text-gray-800 mb-6">Activity Logs</h2>
-
-<div class="bg-white rounded-xl shadow-sm overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center flex-wrap gap-4">
-        <form method="GET" class="flex flex-wrap gap-3">
-            <input type="text" name="module" value="{{ request('module') }}" placeholder="Filter by module…" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <input type="text" name="action" value="{{ request('action') }}" placeholder="Filter by action…" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg text-sm transition-colors">Filter</button>
-            <a href="{{ route('admin.activity-logs.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-600 px-4 py-1.5 rounded-lg text-sm transition-colors">Clear Filters</a>
-        </form>
+    <div class="flex items-center justify-between mb-2">
+        <h1 class="text-xl font-bold text-gray-800">System Activity Logs</h1>
         <form action="{{ route('admin.activity-logs.clear') }}" method="POST" onsubmit="return confirm('Are you sure you want to clear ALL activity logs? This action cannot be undone.');">
             @csrf
             @method('DELETE')
@@ -21,7 +13,37 @@
             </button>
         </form>
     </div>
-    <table class="w-full text-sm text-left">
+
+    <x-admin.filter-bar 
+        :action="route('admin.activity-logs.index')" 
+        searchPlaceholder="Search description..."
+        :sortable="['created_at' => 'Date Logged']">
+        
+        <select name="user_id" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none max-w-xs">
+            <option value="">All Users</option>
+            @foreach($users as $user)
+                <option value="{{ $user->id }}" @selected(request('user_id') == $user->id)>{{ $user->name }} ({{ $user->email }})</option>
+            @endforeach
+        </select>
+        
+        <select name="module" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">All Modules</option>
+            @foreach($modules as $module)
+                <option value="{{ $module }}" @selected(request('module') == $module)>{{ ucfirst($module) }}</option>
+            @endforeach
+        </select>
+
+        <select name="action" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">All Actions</option>
+            @foreach($actions as $action)
+                <option value="{{ $action }}" @selected(request('action') == $action)>{{ ucfirst($action) }}</option>
+            @endforeach
+        </select>
+        
+    </x-admin.filter-bar>
+
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <table class="w-full text-sm text-left">
         <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
             <tr>
                 <th class="px-6 py-3">User</th>

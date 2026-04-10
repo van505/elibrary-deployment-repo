@@ -5,13 +5,26 @@ namespace App\Http\Controllers\Admin;
 use App\Services\ActivityLogger;
 use App\Http\Controllers\Controller;
 use App\Models\Member;
+use App\Traits\HandlesAdminFilters;
 use Illuminate\Http\Request;
 
 class MemberController extends Controller
 {
-    public function index()
+    use HandlesAdminFilters;
+
+    public function index(Request $request)
     {
-        $members = Member::with('user')->paginate(10);
+        $query = Member::with('user');
+
+        $query = $this->applyFilters(
+            $query,
+            $request,
+            'filter_members',
+            ['full_name', 'user.email'], // searchableFields
+            ['status'] // filterableFields
+        );
+
+        $members = $query->paginate(10)->appends($request->query());
         return view('admin.members.index', compact('members'));
     }
 

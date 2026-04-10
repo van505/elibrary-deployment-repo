@@ -2,9 +2,22 @@
 @section('title', 'Users')
 
 @section('content')
-<div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl font-bold text-gray-800">Users</h2>
-</div>
+    <div class="flex items-center justify-between mb-2">
+        <h1 class="text-xl font-bold text-gray-800">User Management</h1>
+    </div>
+
+    <x-admin.filter-bar 
+        :action="route('admin.users.index')" 
+        searchPlaceholder="Search name or email..."
+        :sortable="['created_at' => 'Date Joined', 'email' => 'Email Address']">
+        
+        <select name="role" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">All Roles</option>
+            <option value="admin" @selected(request('role') === 'admin')>Admin</option>
+            <option value="member" @selected(request('role') === 'member')>Member</option>
+        </select>
+        
+    </x-admin.filter-bar>
 
 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
     <table class="w-full text-sm text-left">

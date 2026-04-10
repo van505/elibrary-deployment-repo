@@ -88,6 +88,11 @@
             </div>
 
             <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tags / Keywords <span class="text-xs text-gray-400 font-normal ml-2">(comma separated)</span></label>
+                <input type="text" name="tags" value="{{ old('tags', $ebook->tags->pluck('tag_name')->join(', ')) }}" placeholder="e.g. classic, adventure, fiction" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+
+            <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Ebook File (PDF / EPUB / MP3)</label>
                 <input type="file" name="file_path" accept=".pdf,.epub,.mp3" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
                 <p class="text-xs text-gray-400 mt-1">Leave blank to keep the current file.</p>

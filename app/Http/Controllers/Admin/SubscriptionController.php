@@ -5,16 +5,23 @@ namespace App\Http\Controllers\Admin;
 use App\Services\ActivityLogger;
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
+use App\Models\SubscriptionPlan;
+use App\Traits\HandlesAdminFilters;
 use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller
 {
-    public function index()
+    use HandlesAdminFilters;
+
+    public function index(Request $request)
     {
-        $subscriptions = Subscription::with(['member.user', 'plan'])
-            ->latest()
-            ->paginate(15);
-        return view('admin.subscriptions.index', compact('subscriptions'));
+        $query = Subscription::with(['member.user', 'plan']);
+        $query = $this->applyFilters($query, $request, 'filter_subscriptions', ['member.full_name'], ['plan_id', 'status']);
+
+        $subscriptions = $query->paginate(15)->appends($request->query());
+        $plans = SubscriptionPlan::orderBy('name')->get();
+
+        return view('admin.subscriptions.index', compact('subscriptions', 'plans'));
     }
 
     public function show(Subscription $subscription)

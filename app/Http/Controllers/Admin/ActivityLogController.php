@@ -4,28 +4,34 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use App\Models\User;
+use App\Traits\HandlesAdminFilters;
+use Illuminate\Http\Request;
 
 class ActivityLogController extends Controller
 {
-    public function index()
+    use HandlesAdminFilters;
+
+    public function index(Request $request)
     {
         $query = ActivityLog::with('user');
 
-        if (request('user_id')) {
-            $query->where('user_id', request('user_id'));
-        }
+        $query = $this->applyFilters(
+            $query,
+            $request,
+            'filter_logs',
+            ['description'], // searchable
+            ['user_id', 'module', 'action'] // filterable
+        );
 
-        if (request('module')) {
-            $query->where('module', request('module'));
-        }
+        $logs = $query->paginate(15)->appends($request->query());
 
-        if (request('action')) {
-            $query->where('action', request('action'));
-        }
+        // For dropdowns (could be optimized if tables get huge, but this works generally)
+        $users = User::orderBy('name')->get();
+        $modules = ActivityLog::select('module')->distinct()->pluck('module');
+        $actions = ActivityLog::select('action')->distinct()->pluck('action');
 
-        $logs = $query->latest('created_at')->paginate(15);
-
-        return view('admin.activity-logs.index', compact('logs'));
+        return view('admin.activity-logs.index', compact('logs', 'users', 'modules', 'actions'));
     }
 
     public function clear()

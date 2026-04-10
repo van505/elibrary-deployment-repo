@@ -23,8 +23,14 @@
                 <option value="premium" @selected(request('access_level') === 'premium')>Premium</option>
             </select>
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors">Search</button>
-            @if(request()->hasAny(['search','category_id','access_level']))
+            @if(request()->hasAny(['search','category_id','access_level','tag']))
                 <a href="{{ route('member.ebooks.index') }}" class="text-gray-500 hover:text-gray-700 px-4 py-2 text-sm">Clear</a>
+            @endif
+            @if(request('tag'))
+                <input type="hidden" name="tag" value="{{ request('tag') }}">
+                <span class="flex items-center gap-1 bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-sm border border-blue-200">
+                    Tag: <strong class="font-medium">{{ request('tag') }}</strong>
+                </span>
             @endif
         </div>
     </form>
@@ -71,9 +77,22 @@
                             {{ $ebook->title }}
                         </a>
                     </h3>
-                    <p class="text-xs text-gray-500 truncate mb-3">
+                    <p class="text-xs text-gray-500 truncate mb-2">
                         {{ $ebook->authors->pluck('full_name')->join(', ') ?: 'Unknown Author' }}
                     </p>
+
+                    @if($ebook->tags->isNotEmpty())
+                    <div class="flex flex-wrap gap-1 mb-3 max-h-12 overflow-hidden relative">
+                        @foreach($ebook->tags as $tag)
+                            <a href="{{ route('member.ebooks.index', array_merge(request()->query(), ['tag' => $tag->tag_name])) }}" 
+                               class="bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-700 text-[10px] px-2 py-0.5 rounded transition-colors whitespace-nowrap">
+                                {{ $tag->tag_name }}
+                            </a>
+                        @endforeach
+                    </div>
+                    @else
+                    <div class="mb-3 h-5"></div>
+                    @endif
 
                     @if($accessed)
                         <a href="{{ route('member.ebooks.read', $ebook->id) }}"

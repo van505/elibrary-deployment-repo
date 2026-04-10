@@ -3,10 +3,17 @@
 
 @section('content')
 <div class="space-y-5">
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between mb-2">
         <h1 class="text-xl font-bold text-gray-800">Subscription Plans</h1>
-        <a href="{{ route('admin.subscription-plans.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">+ Add Plan</a>
     </div>
+
+    <x-admin.filter-bar 
+        :action="route('admin.subscription-plans.index')" 
+        searchPlaceholder="Search plan name..."
+        :sortable="['created_at' => 'Date Added', 'name' => 'Name', 'price' => 'Price']"
+        :createRoute="route('admin.subscription-plans.create')"
+        createLabel="Add Plan">
+    </x-admin.filter-bar>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <table class="w-full text-sm">

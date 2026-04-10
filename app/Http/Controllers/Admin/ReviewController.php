@@ -6,20 +6,34 @@ use App\Services\ActivityLogger;
 use App\Http\Controllers\Controller;
 use App\Models\MemberNotification;
 use App\Models\Review;
+use App\Traits\HandlesAdminFilters;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
-    public function index()
-    {
-        $status = request('status', 'all');
-        $query  = Review::with('member.user', 'ebook');
+    use HandlesAdminFilters;
 
-        if ($status !== 'all') {
-            $query->where('status', $status);
+    public function index(Request $request)
+    {
+        $query = Review::with('member.user', 'ebook');
+
+        // Handle specific "all" status logic by ignoring it or transforming
+        if ($request->get('status') === 'all') {
+            $request->merge(['status' => null]);
         }
 
-        $reviews = $query->latest()->paginate(10);
+        $query = $this->applyFilters(
+            $query,
+            $request,
+            'filter_reviews',
+            ['ebook.title'], // searchableFields
+            ['status', 'rating'] // filterableFields
+        );
+
+        $reviews = $query->paginate(10)->appends($request->query());
+
+        // For backward compatibility in view, or just default to 'all' if empty
+        $status = $request->get('status', 'all');
 
         return view('admin.reviews.index', compact('reviews', 'status'));
     }

@@ -4,10 +4,18 @@
 @section('content')
 <div class="space-y-5">
 
-    <div>
-        <h2 class="text-2xl font-bold text-gray-800">Archive</h2>
-        <p class="text-sm text-gray-500 mt-1">Soft-deleted records. You can restore or permanently delete them here.</p>
+    <div class="flex items-center justify-between mb-2">
+        <h1 class="text-xl font-bold text-gray-800">Archive Management</h1>
     </div>
+    
+    <x-admin.filter-bar 
+        :action="route('admin.archive.index')" 
+        searchPlaceholder="Search archived record..."
+        :sortable="['deleted_at' => 'Date Archived']">
+        
+        <input type="hidden" name="type" value="{{ $type }}">
+        
+    </x-admin.filter-bar>
 
     {{-- Tab Navigation --}}
     @php

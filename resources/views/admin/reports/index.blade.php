@@ -8,6 +8,27 @@
 @section('content')
 <div class="space-y-6">
 
+    <div class="flex items-center justify-between mb-2">
+        <h1 class="text-xl font-bold text-gray-800">Analytics & Reports</h1>
+    </div>
+
+    <x-admin.filter-bar 
+        :action="route('admin.reports.index')" 
+        :showSearch="false"
+        :showSort="false">
+        
+        <input type="date" name="report_date_start" value="{{ request('report_date_start') }}" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" title="Start Date">
+        <input type="date" name="report_date_end" value="{{ request('report_date_end') }}" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" title="End Date">
+
+        <select name="category_id" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none max-w-xs">
+            <option value="">All Categories</option>
+            @foreach($categories as $category)
+                <option value="{{ $category->id }}" @selected(request('category_id') == $category->id)>{{ $category->name }}</option>
+            @endforeach
+        </select>
+        
+    </x-admin.filter-bar>
+
     {{-- Overview Stats --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-100">

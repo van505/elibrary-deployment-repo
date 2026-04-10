@@ -3,22 +3,30 @@
 
 @section('content')
 <div class="space-y-4">
-    {{-- Header + Filter Tabs --}}
-    <div class="flex flex-wrap items-center justify-between gap-3">
-        <h2 class="text-2xl font-bold text-gray-800">Reviews</h2>
-        <div class="flex flex-wrap gap-2">
-            @php $pendingCount = \App\Models\Review::where('status','pending')->count(); @endphp
-            @foreach(['all','pending','approved','rejected'] as $s)
-            <a href="{{ route('admin.reviews.index', ['status' => $s]) }}"
-               class="px-3 py-1.5 rounded text-sm flex items-center gap-1.5 {{ $status === $s ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-100 shadow-sm' }}">
-                {{ ucfirst($s) }}
-                @if($s === 'pending' && $pendingCount > 0)
-                    <span class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full {{ $status === 'pending' ? 'bg-white text-blue-700' : 'bg-red-500 text-white' }}">{{ $pendingCount }}</span>
-                @endif
-            </a>
-            @endforeach
-        </div>
+    <div class="flex items-center justify-between mb-2">
+        <h1 class="text-xl font-bold text-gray-800">Reviews Management</h1>
     </div>
+
+    <x-admin.filter-bar 
+        :action="route('admin.reviews.index')" 
+        searchPlaceholder="Search by ebook title..."
+        :sortable="['created_at' => 'Date Submitted', 'rating' => 'Rating']">
+        
+        <select name="status" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">All Statuses</option>
+            <option value="pending" @selected(request('status') === 'pending')>Pending</option>
+            <option value="approved" @selected(request('status') === 'approved')>Approved</option>
+            <option value="rejected" @selected(request('status') === 'rejected')>Rejected</option>
+        </select>
+
+        <select name="rating" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">All Ratings</option>
+            @for($i = 5; $i >= 1; $i--)
+                <option value="{{ $i }}" @selected(request('rating') == $i)>{{ $i }} Stars</option>
+            @endfor
+        </select>
+        
+    </x-admin.filter-bar>
 
     {{-- Bulk Action Form --}}
     <form id="bulkForm" action="{{ route('admin.reviews.bulk') }}" method="POST">

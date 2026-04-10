@@ -7,14 +7,29 @@ use App\Http\Controllers\Controller;
 use App\Models\Author;
 use App\Models\Category;
 use App\Models\Ebook;
+use App\Traits\HandlesAdminFilters;
 use Illuminate\Http\Request;
 
 class EbookController extends Controller
 {
-    public function index()
+    use HandlesAdminFilters;
+
+    public function index(Request $request)
     {
-        $ebooks = Ebook::with('authors', 'category')->paginate(10);
-        return view('admin.ebooks.index', compact('ebooks'));
+        $query = Ebook::with('authors', 'category');
+
+        $query = $this->applyFilters(
+            $query,
+            $request,
+            'filter_ebooks',
+            ['title', 'authors.first_name', 'authors.last_name'], // searchableFields
+            ['access_level', 'category_id'] // filterableFields
+        );
+
+        $ebooks = $query->paginate(10)->appends($request->query());
+        $categories = Category::orderBy('name')->get();
+
+        return view('admin.ebooks.index', compact('ebooks', 'categories'));
     }
 
     public function create()
@@ -39,6 +54,7 @@ class EbookController extends Controller
             'file_type'    => 'required|in:pdf,epub,mp3',
             'access_level' => 'required|in:free,basic,premium',
             'is_featured'  => 'nullable|boolean',
+            'tags'         => 'nullable|string',
         ]);
 
         $validated['file_path'] = $request->file('file_path')->store('ebooks', 'private');
@@ -62,13 +78,21 @@ class EbookController extends Controller
 
         $ebook->authors()->sync($request->author_ids);
 
+        // Handle Tags
+        if ($request->filled('tags')) {
+            $tagNames = array_unique(array_filter(array_map('trim', explode(',', $request->tags))));
+            foreach ($tagNames as $tag) {
+                $ebook->tags()->create(['tag_name' => $tag]);
+            }
+        }
+
         ActivityLogger::log('created', 'ebooks', 'Created new ebook: ' . $ebook->title);
         return redirect()->route('admin.ebooks.index')->with('success', 'Ebook created successfully.');
     }
 
     public function show($id)
     {
-        $ebook = Ebook::with('authors', 'category', 'reviews.member')->findOrFail($id);
+        $ebook = Ebook::with('authors', 'category', 'reviews.member', 'tags')->findOrFail($id);
 
         $totalAccesses   = $ebook->accesses()->count();
         $recentAccessors = $ebook->accesses()
@@ -88,7 +112,7 @@ class EbookController extends Controller
 
     public function edit($id)
     {
-        $ebook      = Ebook::with('authors')->findOrFail($id);
+        $ebook      = Ebook::with('authors', 'tags')->findOrFail($id);
         $authors    = Author::orderBy('last_name')->get();
         $categories = Category::orderBy('name')->get();
         return view('admin.ebooks.edit', compact('ebook', 'authors', 'categories'));
@@ -111,6 +135,7 @@ class EbookController extends Controller
             'file_type'    => 'required|in:pdf,epub,mp3',
             'access_level' => 'required|in:free,basic,premium',
             'is_featured'  => 'nullable|boolean',
+            'tags'         => 'nullable|string',
         ]);
 
         if ($request->hasFile('file_path')) {
@@ -139,6 +164,15 @@ class EbookController extends Controller
         ]);
 
         $ebook->authors()->sync($request->author_ids);
+
+        // Update Tags
+        $ebook->tags()->delete();
+        if ($request->filled('tags')) {
+            $tagNames = array_unique(array_filter(array_map('trim', explode(',', $request->tags))));
+            foreach ($tagNames as $tag) {
+                $ebook->tags()->create(['tag_name' => $tag]);
+            }
+        }
 
         ActivityLogger::log('updated', 'ebooks', 'Updated ebook: ' . $ebook->title);
         return redirect()->route('admin.ebooks.index')->with('success', 'Ebook updated successfully.');

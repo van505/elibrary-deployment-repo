@@ -45,6 +45,17 @@
                 @if($ebook->isbn) <span>ISBN: {{ $ebook->isbn }}</span> @endif
             </div>
 
+            @if($ebook->tags->isNotEmpty())
+            <div class="flex flex-wrap gap-2 pt-1">
+                @foreach($ebook->tags as $tag)
+                    <a href="{{ route('member.ebooks.index', ['tag' => $tag->tag_name]) }}" 
+                       class="bg-gray-100 hover:bg-gray-200 transition-colors text-gray-600 px-3 py-1 text-xs rounded-full border border-gray-200">
+                        #{{ $tag->tag_name }}
+                    </a>
+                @endforeach
+            </div>
+            @endif
+
             <div class="flex flex-wrap gap-3 pt-2">
                 @if($hasAccess)
                     <a href="{{ route('member.ebooks.read', $ebook->id) }}"

@@ -4,13 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Traits\HandlesAdminFilters;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function index()
+    use HandlesAdminFilters;
+
+    public function index(Request $request)
     {
-        $users = User::with('member')->paginate(10);
+        $query = User::with('member');
+        $query = $this->applyFilters($query, $request, 'filter_users', ['email', 'member.full_name'], ['role']);
+
+        $users = $query->paginate(10)->appends($request->query());
 
         return view('admin.users.index', compact('users'));
     }

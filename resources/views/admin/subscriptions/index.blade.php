@@ -3,7 +3,30 @@
 
 @section('content')
 <div class="space-y-5">
-    <h1 class="text-xl font-bold text-gray-800">Member Subscriptions</h1>
+    <div class="flex items-center justify-between mb-2">
+        <h1 class="text-xl font-bold text-gray-800">Member Subscriptions</h1>
+    </div>
+
+    <x-admin.filter-bar 
+        :action="route('admin.subscriptions.index')" 
+        searchPlaceholder="Search member name..."
+        :sortable="['created_at' => 'Date Subscribed', 'started_at' => 'Date Started', 'expires_at' => 'Expiry Date']">
+        
+        <select name="plan_id" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">All Plans</option>
+            @foreach($plans as $plan)
+                <option value="{{ $plan->id }}" @selected(request('plan_id') == $plan->id)>{{ $plan->name }}</option>
+            @endforeach
+        </select>
+        
+        <select name="status" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">All Statuses</option>
+            <option value="active" @selected(request('status') === 'active')>Active</option>
+            <option value="expired" @selected(request('status') === 'expired')>Expired</option>
+            <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelled</option>
+        </select>
+        
+    </x-admin.filter-bar>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <table class="w-full text-sm">

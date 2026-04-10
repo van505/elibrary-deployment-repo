@@ -2,9 +2,23 @@
 @section('title', 'Members')
 
 @section('content')
-<div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl font-bold text-gray-800">Members</h2>
-</div>
+    <div class="flex items-center justify-between mb-2">
+        <h1 class="text-xl font-bold text-gray-800">Members Management</h1>
+    </div>
+
+    <x-admin.filter-bar 
+        :action="route('admin.members.index')" 
+        searchPlaceholder="Search by name or email..."
+        :sortable="['created_at' => 'Date Joined', 'full_name' => 'Name', 'member_code' => 'Member Code']">
+        
+        <select name="status" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">All Statuses</option>
+            <option value="active" @selected(request('status') === 'active')>Active</option>
+            <option value="suspended" @selected(request('status') === 'suspended')>Suspended</option>
+            <option value="expired" @selected(request('status') === 'expired')>Expired</option>
+        </select>
+        
+    </x-admin.filter-bar>
 
 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
     <table class="w-full text-sm text-left">

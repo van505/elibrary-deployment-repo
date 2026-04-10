@@ -52,6 +52,16 @@
                     @php $lc=['free'=>'bg-green-100 text-green-700','basic'=>'bg-blue-100 text-blue-700','premium'=>'bg-purple-100 text-purple-700']; @endphp
                     <dd><span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $lc[$ebook->access_level] ?? '' }}">{{ ucfirst($ebook->access_level) }}</span></dd>
                 </div>
+                <div class="sm:col-span-2 border-t border-gray-100 pt-3 mt-1 cursor-default">
+                    <dt class="text-gray-500 mb-2 font-medium">Tags / Keywords</dt>
+                    <dd class="flex flex-wrap gap-2">
+                        @forelse($ebook->tags as $tag)
+                            <span class="bg-gray-100 hover:bg-gray-200 transition-colors text-gray-700 text-xs px-3 py-1 rounded-full border border-gray-200">{{ $tag->tag_name }}</span>
+                        @empty
+                            <span class="text-gray-400 italic text-xs">No tags assigned.</span>
+                        @endforelse
+                    </dd>
+                </div>
             </dl>
         </div>
 

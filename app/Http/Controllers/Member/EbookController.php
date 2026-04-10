@@ -14,7 +14,7 @@ class EbookController extends BaseMemberController
         $categories = Category::orderBy('name')->get();
         $member     = $this->getOrCreateMember();
 
-        $query = Ebook::with('authors', 'category');
+        $query = Ebook::with('authors', 'category', 'tags');
 
         if (request('search')) {
             $search = request('search');
@@ -34,6 +34,12 @@ class EbookController extends BaseMemberController
             $query->where('access_level', request('access_level'));
         }
 
+        if (request('tag')) {
+            $query->whereHas('tags', function ($q) {
+                $q->where('tag_name', request('tag'));
+            });
+        }
+
         $ebooks      = $query->paginate(12);
         $accessedIds = $member->ebookAccess()->pluck('ebook_id')->toArray();
 
@@ -44,7 +50,7 @@ class EbookController extends BaseMemberController
     {
         $member = $this->getOrCreateMember();
 
-        $ebook->load('authors', 'category');
+        $ebook->load('authors', 'category', 'tags');
 
         $hasAccess = \App\Models\EbookAccess::where('member_id', $member->id)
             ->where('ebook_id', $ebook->id)

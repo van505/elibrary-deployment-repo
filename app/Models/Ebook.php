@@ -51,6 +51,11 @@ class Ebook extends Model
         return $this->hasMany(Review::class);
     }
 
+    public function tags(): HasMany
+    {
+        return $this->hasMany(EbookTag::class);
+    }
+
     // Alias used in admin analytics
     public function accesses(): HasMany
     {
