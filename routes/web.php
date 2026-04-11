@@ -16,10 +16,13 @@ Route::get('/', function () {
     // Load up to 3 featured books for the hero section
     $heroBooks = Ebook::where('is_featured', true)->latest()->limit(3)->get();
 
+    // Editor's Choice spotlight
+    $spotlightEbook = Ebook::with('authors')->where('is_spotlighted', true)->first();
+
     // Load all books with category for client-side filtering, sorted by access level
     $featuredBooks = Ebook::with(['authors', 'category'])->orderByRaw("FIELD(access_level, 'free', 'basic', 'premium')")->latest()->get();
 
-    return view('welcome', compact('categories', 'featuredBooks', 'heroBooks'));
+    return view('welcome', compact('categories', 'featuredBooks', 'heroBooks', 'spotlightEbook'));
 });
 
 
@@ -64,6 +67,7 @@ Route::middleware(['auth', '2fa', 'role:admin'])
         Route::resource('categories', Admin\CategoryController::class);
         
         Route::get('ebooks/{ebook}/stream', [Admin\EbookController::class, 'stream'])->name('ebooks.stream');
+        Route::post('ebooks/{ebook}/spotlight', [Admin\EbookController::class, 'spotlight'])->name('ebooks.spotlight');
         Route::resource('ebooks',     Admin\EbookController::class);
 
         Route::resource('members', Admin\MemberController::class)->except(['create', 'store']);

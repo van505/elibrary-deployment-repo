@@ -23,6 +23,7 @@ class Ebook extends Model
         'file_type',
         'access_level',
         'is_featured',
+        'is_spotlighted',
     ];
 
     protected $casts = [

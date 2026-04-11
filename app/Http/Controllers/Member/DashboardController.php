@@ -39,6 +39,9 @@ class DashboardController extends BaseMemberController
             }
         }
 
+        // Editor's Choice spotlight
+        $spotlightEbook = \App\Models\Ebook::with('authors')->where('is_spotlighted', true)->first();
+
         return view('member.dashboard', compact(
             'member',
             'subscription',
@@ -48,7 +51,8 @@ class DashboardController extends BaseMemberController
             'daysLeft',
             'daysTotal',
             'ebooksThisMonth',
-            'reviewsCount'
+            'reviewsCount',
+            'spotlightEbook'
         ));
     }
 }

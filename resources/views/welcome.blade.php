@@ -238,7 +238,7 @@
                 {{-- Left Text --}}
                 <div class="relative text-left max-w-2xl px-4 sm:px-0 fade-in">
                     <span
-                        class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold mb-6">
+                        class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 border border-blue-100 px-3 py-1.5 rounded-full text-xs font-semibold mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-yellow-500" fill="currentColor"
                             viewBox="0 0 24 24">
                             <path
@@ -246,6 +246,23 @@
                         </svg>
                         #1 Digital Library Platform
                     </span>
+
+                    {{-- ⭐ Trust Signal: Star Rating --}}
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="flex items-center gap-0.5">
+                            @for($i = 0; $i < 5; $i++)
+                            <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            @endfor
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-sm font-bold text-gray-800">4.9</span>
+                            <span class="text-sm text-gray-400">/</span>
+                            <span class="text-sm text-gray-500">5 &mdash; from over</span>
+                            <span class="text-sm font-semibold text-gray-700">10,000+ readers</span>
+                        </div>
+                    </div>
 
                     <h1 class="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight mb-5">
                         Discover Your<br>
@@ -279,20 +296,20 @@
                     </div>
 
                     <div class="flex items-center sm:justify-start justify-center gap-6 text-sm text-gray-500">
-                        <span class="flex items-center gap-1.5">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-500 flex-shrink-0"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                    d="M5 13l4 4L19 7" />
-                            </svg>
+                        <span class="flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-emerald-600 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </span>
                             No credit card required
                         </span>
-                        <span class="flex items-center gap-1.5">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-500 flex-shrink-0"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                    d="M5 13l4 4L19 7" />
-                            </svg>
+                        <span class="flex items-center gap-2">
+                            <span class="w-5 h-5 rounded-full bg-emerald-600 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </span>
                             Cancel anytime
                         </span>
                     </div>
@@ -412,6 +429,46 @@
                         class="w-full bg-white border border-gray-200 rounded-full pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all shadow-sm">
                 </div>
             </div>
+
+            {{-- Editor's Choice Spotlight --}}
+            @if(isset($spotlightEbook) && $spotlightEbook)
+                <div class="mb-10 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-sm flex flex-col md:flex-row items-center gap-8 cursor-pointer" onclick="window.location='{{ route('login') }}'">
+                    {{-- Decorative Background Badge --}}
+                    <svg class="absolute -right-12 -top-12 w-64 h-64 text-amber-100 opacity-50 transform -rotate-12" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+
+                    {{-- Cover --}}
+                    <div class="flex-shrink-0 relative z-10 w-32 sm:w-40 shadow-xl rounded-xl overflow-hidden border border-amber-100 group">
+                        @if($spotlightEbook->cover_image)
+                            <img src="{{ Storage::url($spotlightEbook->cover_image) }}" alt="Cover" class="w-full h-auto object-cover aspect-[3/4] group-hover:scale-105 transition-transform duration-500">
+                        @else
+                            <div class="w-full aspect-[3/4] bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                                <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13"/></svg>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Info --}}
+                    <div class="flex-1 text-center md:text-left relative z-10">
+                        <span class="inline-flex items-center gap-1 bg-gradient-to-r from-amber-200 to-yellow-300 text-amber-800 text-xs font-bold px-3 py-1.5 rounded-full mb-3 uppercase tracking-wider shadow-sm">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" /></svg>
+                            Editor's Choice
+                        </span>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 leading-tight">{{ $spotlightEbook->title }}</h3>
+                        <p class="text-gray-600 text-base mb-4 font-medium">{{ $spotlightEbook->authors->pluck('full_name')->join(', ') ?: 'Unknown Author' }}</p>
+                        <p class="text-gray-500 sm:w-4/5 line-clamp-2 md:line-clamp-3 mb-6">{{ $spotlightEbook->description ?? 'Dive into this highly recommended title chosen by our editorial team completely tailored to readers like you.' }}</p>
+                        
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                            <span class="bg-white border border-gray-200 text-gray-700 text-xs font-medium px-3 py-1.5 rounded-lg shadow-sm">{{ $spotlightEbook->category->name ?? 'Uncategorized' }}</span>
+                            @php $lvlColors = ['free'=>'bg-green-100 text-green-700','basic'=>'bg-blue-100 text-blue-700','premium'=>'bg-purple-100 text-purple-700']; @endphp
+                            <span class="text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm {{ $lvlColors[$spotlightEbook->access_level] ?? 'bg-gray-100' }}">
+                                {{ strtoupper($spotlightEbook->access_level) }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             {{-- Category filter pills --}}
             <div id="category-filters" class="flex flex-wrap gap-2 mb-4">

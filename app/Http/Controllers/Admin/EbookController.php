@@ -233,4 +233,23 @@ class EbookController extends Controller
 
         return response()->file($filePath, $headers);
     }
+
+    public function spotlight(Ebook $ebook)
+    {
+        $isTurningOn = !$ebook->is_spotlighted;
+
+        if ($isTurningOn) {
+            // Un-spotlight all other ebooks
+            Ebook::query()->update(['is_spotlighted' => false]);
+            $ebook->update(['is_spotlighted' => true]);
+            ActivityLogger::log('updated', 'ebooks', "Set spotlight to ebook: {$ebook->title}");
+            $message = 'Ebook set as spotlight.';
+        } else {
+            $ebook->update(['is_spotlighted' => false]);
+            ActivityLogger::log('updated', 'ebooks', "Removed spotlight from ebook: {$ebook->title}");
+            $message = 'Ebook spotlight removed.';
+        }
+
+        return back()->with('success', $message);
+    }
 }
