@@ -14,7 +14,8 @@ class EbookController extends BaseMemberController
         $categories = Category::orderBy('name')->get();
         $member     = $this->getOrCreateMember();
 
-        $query = Ebook::with('authors', 'category', 'tags');
+        $query = Ebook::with('authors', 'category', 'tags')
+            ->where('status', 'active'); // Only show active ebooks to members
 
         if (request('search')) {
             $search = request('search');

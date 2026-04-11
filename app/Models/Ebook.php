@@ -22,6 +22,7 @@ class Ebook extends Model
         'cover_image',
         'file_type',
         'access_level',
+        'status',
         'is_featured',
         'is_spotlighted',
         'preview_pages',

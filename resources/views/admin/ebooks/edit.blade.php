@@ -77,6 +77,15 @@
                 </select>
             </div>
 
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select name="status" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="active"   @selected(old('status', $ebook->status ?? 'active') === 'active')>✅ Active (visible to members)</option>
+                    <option value="inactive" @selected(old('status', $ebook->status) === 'inactive')>🚫 Inactive (hidden from members)</option>
+                </select>
+                <p class="text-xs text-gray-400 mt-1">Inactive ebooks are still accessible in admin but hidden from all member views.</p>
+            </div>
+
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Free Preview Pages</label>
                 <input type="number" name="preview_pages" value="{{ old('preview_pages', $ebook->preview_pages ?? 10) }}"

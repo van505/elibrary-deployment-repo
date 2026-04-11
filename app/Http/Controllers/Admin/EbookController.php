@@ -53,6 +53,7 @@ class EbookController extends Controller
             'cover_image'  => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'file_type'    => 'required|in:pdf,epub,mp3',
             'access_level' => 'required|in:free,basic,premium',
+            'status'       => 'nullable|in:active,inactive',
             'is_featured'  => 'nullable|boolean',
             'tags'         => 'nullable|string',
             'preview_pages'=> 'nullable|integer|min:0|max:50',
@@ -74,6 +75,7 @@ class EbookController extends Controller
             'cover_image'  => $validated['cover_image'] ?? null,
             'file_type'    => $validated['file_type'],
             'access_level' => $validated['access_level'],
+            'status'       => $validated['status'] ?? 'active',
             'is_featured'  => $request->has('is_featured'),
             'preview_pages'=> (int) ($validated['preview_pages'] ?? 10),
         ]);
@@ -157,6 +159,7 @@ class EbookController extends Controller
             'cover_image'  => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'file_type'    => 'required|in:pdf,epub,mp3',
             'access_level' => 'required|in:free,basic,premium',
+            'status'       => 'nullable|in:active,inactive',
             'is_featured'  => 'nullable|boolean',
             'tags'         => 'nullable|string',
             'preview_pages'=> 'nullable|integer|min:0|max:50',
@@ -184,6 +187,7 @@ class EbookController extends Controller
             'cover_image'  => $validated['cover_image'] ?? $ebook->cover_image,
             'file_type'    => $validated['file_type'],
             'access_level' => $validated['access_level'],
+            'status'       => $validated['status'] ?? $ebook->status,
             'is_featured'  => $request->has('is_featured'),
             'preview_pages'=> (int) ($validated['preview_pages'] ?? $ebook->preview_pages),
         ]);
@@ -255,5 +259,54 @@ class EbookController extends Controller
         }
 
         return back()->with('success', $message);
+    }
+
+    public function bulkAction(Request $request)
+    {
+        $request->validate([
+            'action'      => 'required|in:set_active,set_inactive,set_free,set_basic,set_premium,delete',
+            'ebook_ids'   => 'required|array|min:1',
+            'ebook_ids.*' => 'exists:ebooks,id',
+        ]);
+
+        $ids   = $request->ebook_ids;
+        $count = count($ids);
+
+        switch ($request->action) {
+            case 'set_active':
+                Ebook::whereIn('id', $ids)->update(['status' => 'active']);
+                $label = "Set {$count} ebook(s) to Active.";
+                break;
+
+            case 'set_inactive':
+                Ebook::whereIn('id', $ids)->update(['status' => 'inactive']);
+                $label = "Set {$count} ebook(s) to Inactive.";
+                break;
+
+            case 'set_free':
+                Ebook::whereIn('id', $ids)->update(['access_level' => 'free']);
+                $label = "Set {$count} ebook(s) access to Free.";
+                break;
+
+            case 'set_basic':
+                Ebook::whereIn('id', $ids)->update(['access_level' => 'basic']);
+                $label = "Set {$count} ebook(s) access to Basic.";
+                break;
+
+            case 'set_premium':
+                Ebook::whereIn('id', $ids)->update(['access_level' => 'premium']);
+                $label = "Set {$count} ebook(s) access to Premium.";
+                break;
+
+            case 'delete':
+                Ebook::whereIn('id', $ids)->delete(); // soft delete via SoftDeletes trait
+                $label = "Deleted {$count} ebook(s). They can be restored from Archive.";
+                break;
+        }
+
+        ActivityLogger::log('bulk_action', 'ebooks', "Bulk '{$request->action}' applied to {$count} ebook(s). IDs: " . implode(', ', $ids));
+
+        return redirect()->route('admin.ebooks.index')
+            ->with('success', "Bulk action applied to {$count} ebook(s) successfully.");
     }
 }
