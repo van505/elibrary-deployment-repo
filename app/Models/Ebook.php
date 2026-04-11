@@ -68,4 +68,11 @@ class Ebook extends Model
     {
         return $this->hasMany(EbookBookmark::class);
     }
+
+    public function collections(): BelongsToMany
+    {
+        return $this->belongsToMany(Collection::class, 'collection_ebooks')
+                    ->withPivot('order_number')
+                    ->orderBy('collection_ebooks.order_number');
+    }
 }

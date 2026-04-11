@@ -146,6 +146,39 @@
         </div>
     @endif
 
+    {{-- Featured Collections (Horizontal Scroll) --}}
+    @if(isset($featuredCollections) && $featuredCollections->isNotEmpty())
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-900 border-l-4 border-yellow-400 pl-3">Featured Series</h2>
+                <a href="{{ route('member.collections.index') }}" class="text-sm font-semibold text-blue-600 hover:underline">View All &rarr;</a>
+            </div>
+            
+            <div class="flex overflow-x-auto gap-5 pb-4 snap-x hide-scrollbar">
+                @foreach($featuredCollections as $collection)
+                    <a href="{{ route('member.collections.show', $collection->slug) }}" class="snap-start flex-shrink-0 w-72 sm:w-80 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition group">
+                        <div class="h-32 bg-gray-200 relative overflow-hidden">
+                            @if($collection->cover_image)
+                                <img src="{{ Storage::url($collection->cover_image) }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            @else
+                                <div class="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center p-4">
+                                    <span class="text-white font-bold opacity-80 text-center leading-tight">{{ $collection->name }}</span>
+                                </div>
+                            @endif
+                            <div class="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm text-white text-xs font-bold px-2 py-0.5 rounded shadow">
+                                {{ $collection->ebooks_count }} {{ Str::plural('Book', $collection->ebooks_count) }}
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-gray-900 truncate">{{ $collection->name }}</h3>
+                            <p class="text-xs text-gray-500 mt-1 line-clamp-2 min-h-[2rem]">{{ $collection->description }}</p>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     {{-- Subscription Info Card --}}
     @if($subscription)
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">

@@ -45,6 +45,33 @@
                 @if($ebook->isbn) <span>ISBN: {{ $ebook->isbn }}</span> @endif
             </div>
 
+            @if($ebook->collections->isNotEmpty())
+                <div class="mt-4 space-y-2">
+                    @foreach($ebook->collections as $collection)
+                        <div class="bg-blue-50 border border-blue-100 p-3 rounded-lg flex flex-col gap-1">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                <span class="text-sm font-semibold text-blue-900">
+                                    Part of <a href="{{ route('member.collections.show', $collection->slug) }}" class="underline hover:text-blue-700">{{ $collection->name }}</a>
+                                </span>
+                            </div>
+                            <div class="text-xs text-blue-700 ml-6">
+                                Book {{ $collection->pivot->order_number }} of {{ $collection->ebooks()->count() }} in this series
+                            </div>
+                            @php
+                                $nextOrder = $collection->pivot->order_number + 1;
+                                $nextBook = $collection->ebooks()->where('collection_ebooks.order_number', $nextOrder)->first();
+                            @endphp
+                            @if($nextBook)
+                                <div class="text-xs text-blue-600 font-medium ml-6 mt-1 flex items-center">
+                                    Next in Series: <a href="{{ route('member.ebooks.show', $nextBook->id) }}" class="underline hover:text-blue-800 ml-1">{{ $nextBook->title }} &rarr;</a>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
             @if($ebook->tags->isNotEmpty())
             <div class="flex flex-wrap gap-2 pt-1">
                 @foreach($ebook->tags as $tag)

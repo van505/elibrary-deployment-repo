@@ -45,6 +45,9 @@ class DashboardController extends BaseMemberController
         // Wishlist items
         $wishlistItems = $member->wishlistedEbooks()->with('authors', 'category')->latest('ebook_wishlists.created_at')->take(4)->get();
 
+        // Featured collections 
+        $featuredCollections = \App\Models\Collection::active()->withCount('ebooks')->latest()->take(3)->get();
+
         return view('member.dashboard', compact(
             'member',
             'subscription',
@@ -56,7 +59,8 @@ class DashboardController extends BaseMemberController
             'ebooksThisMonth',
             'reviewsCount',
             'spotlightEbook',
-            'wishlistItems'
+            'wishlistItems',
+            'featuredCollections'
         ));
     }
 }

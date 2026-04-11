@@ -615,6 +615,48 @@
     </section>
 
     {{-- ============================================================
+    POPULAR SERIES
+    ============================================================ --}}
+    @if(isset($featuredCollections) && $featuredCollections->isNotEmpty())
+    <section class="py-16 bg-white border-t border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 border-l-4 border-yellow-400 pl-3">Popular Series</h2>
+                    <p class="text-sm text-gray-500 mt-1 pl-4">Discover curated collections of related books.</p>
+                </div>
+                <a href="{{ route('login') }}" class="hidden sm:inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700">
+                    Browse All Series &rarr;
+                </a>
+            </div>
+
+            <div class="flex overflow-x-auto gap-6 pb-6 snap-x hide-scrollbar px-1">
+                @foreach($featuredCollections as $collection)
+                    <a href="{{ route('login') }}" class="snap-start flex-shrink-0 w-[280px] sm:w-[320px] bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:-translate-y-1 transition duration-300 group flex flex-col">
+                        <div class="h-40 bg-gray-100 relative overflow-hidden">
+                            @if($collection->cover_image)
+                                <img src="{{ Storage::url($collection->cover_image) }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            @else
+                                <div class="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center p-4">
+                                    <span class="text-white font-bold opacity-80 text-xl text-center leading-tight">{{ $collection->name }}</span>
+                                </div>
+                            @endif
+                            <div class="absolute bottom-3 right-3 bg-black/80 backdrop-blur text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+                                {{ $collection->ebooks_count }} {{ Str::plural('Book', $collection->ebooks_count) }}
+                            </div>
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col">
+                            <h3 class="font-bold text-gray-900 text-lg mb-2 leading-tight group-hover:text-blue-600 transition-colors">{{ $collection->name }}</h3>
+                            <p class="text-sm text-gray-500 line-clamp-2">{{ $collection->description }}</p>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
+    {{-- ============================================================
     HOW IT WORKS
     ============================================================ --}}
     <section id="how-it-works" class="bg-gray-50 py-20 border-t border-gray-100">
