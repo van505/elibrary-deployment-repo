@@ -95,6 +95,22 @@ class EbookController extends BaseMemberController
 
         $isWishlisted = $member->wishlist()->where('ebook_id', $ebook->id)->exists();
 
+        // -- Preview / read access logic --
+        $levelMap   = ['free' => 0, 'basic' => 1, 'premium' => 2];
+        $plan       = $member->currentPlan();
+        $planLevel  = $plan ? ($levelMap[$plan->slug] ?? 0) : -1;
+        $ebookLevel = $levelMap[$ebook->access_level] ?? 0;
+
+        // Does the member's current plan COVER this ebook's access level?
+        $planCanAccess = ($planLevel >= $ebookLevel);
+
+        // canRead: plan covers it AND member has formally added it to their reading list
+        $canRead = $planCanAccess && $hasAccess;
+
+        // canPreview (with upgrade prompt): ONLY when the plan is INSUFFICIENT
+        $previewPages = (int) ($ebook->preview_pages ?? 10);
+        $canPreview   = !$planCanAccess && $previewPages > 0;
+
         return view('member.ebooks.show', compact(
             'ebook',
             'hasAccess',
@@ -102,7 +118,11 @@ class EbookController extends BaseMemberController
             'isWishlisted',
             'reviews',
             'pendingReviews',
-            'relatedEbooks'
+            'relatedEbooks',
+            'canRead',
+            'canPreview',
+            'planCanAccess',
+            'previewPages'
         ));
     }
 }

@@ -78,6 +78,14 @@
             </div>
 
             <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Free Preview Pages</label>
+                <input type="number" name="preview_pages" value="{{ old('preview_pages', $ebook->preview_pages ?? 10) }}"
+                       min="0" max="50"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <p class="text-xs text-gray-400 mt-1">Number of pages non-members can read for free before being prompted to subscribe (0–50).</p>
+            </div>
+
+            <div class="md:col-span-2">
                 <label class="flex items-center gap-2 cursor-pointer mt-2 mb-4 bg-blue-50/50 p-3 rounded-lg border border-blue-100">
                     <input type="checkbox" name="is_featured" value="1" class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" @checked(old('is_featured', $ebook->is_featured))>
                     <div class="flex flex-col">

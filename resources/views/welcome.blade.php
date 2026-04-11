@@ -546,6 +546,12 @@
                                 class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md text-[11px] font-bold {{ $badgeColor }}">
                                 {{ $badgeText }}
                             </span>
+                            {{-- Free Preview badge --}}
+                            @if(($book->preview_pages ?? 0) > 0)
+                            <span class="absolute bottom-2.5 left-2.5 px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-400 text-gray-900 shadow-sm ring-1 ring-amber-300">
+                                👁 Free Preview
+                            </span>
+                            @endif
                         </div>
                         <div class="p-3">
                             <h3 class="font-semibold text-gray-900 text-sm truncate">{{ $book->title }}</h3>

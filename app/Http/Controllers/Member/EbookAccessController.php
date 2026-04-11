@@ -62,9 +62,26 @@ class EbookAccessController extends BaseMemberController
             ->where('ebook_id', $ebook->id)
             ->exists();
 
-        if (! $hasAccess) {
-            return redirect()->route('member.ebooks.show', $ebook->id)
-                ->with('error', 'You do not have access to this ebook.');
+        // Check subscription level against ebook access level
+        $levelMap   = ['free' => 0, 'basic' => 1, 'premium' => 2];
+        $plan       = $member->currentPlan();
+        $planLevel  = $plan ? ($levelMap[$plan->slug] ?? 0) : -1;
+        $ebookLevel = $levelMap[$ebook->access_level] ?? 0;
+        $hasSubscriptionAccess = ($planLevel >= $ebookLevel);
+
+        // Preview mode: member doesn't have full access but requests ?preview=true
+        $isPreview    = false;
+        $previewPages = (int) ($ebook->preview_pages ?? 10);
+
+        if (! $hasAccess || ! $hasSubscriptionAccess) {
+            if (request()->boolean('preview') && $previewPages > 0) {
+                $isPreview = true;
+            } else {
+                return redirect()->route('member.ebooks.show', $ebook->id)
+                    ->with('info', $previewPages > 0
+                        ? "You can preview the first {$previewPages} pages. Subscribe to read the full book."
+                        : 'You do not have access to this ebook.');
+            }
         }
 
         // Resolve a direct URL for the file (public disk only — no streaming)
@@ -82,10 +99,12 @@ class EbookAccessController extends BaseMemberController
             $fileUrl = route('member.ebooks.stream', $ebook->id);
         }
 
-        // Update Reading Streak
-        \App\Services\StreakService::updateStreak($member);
+        // Update Reading Streak (only on real reads, not previews)
+        if (! $isPreview) {
+            \App\Services\StreakService::updateStreak($member);
+        }
 
-        return view('member.ebooks.read', compact('ebook', 'fileUrl'));
+        return view('member.ebooks.read', compact('ebook', 'fileUrl', 'isPreview', 'previewPages'));
     }
 
     public function stream(Ebook $ebook)

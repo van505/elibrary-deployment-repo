@@ -71,6 +71,8 @@
                     {{-- Reading Badge --}}
                     @if($accessed)
                         <span class="absolute top-2 right-2 bg-blue-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">Reading</span>
+                    @elseif(($ebook->preview_pages ?? 0) > 0)
+                        <span class="absolute top-2 right-2 bg-amber-400 text-gray-900 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">👁 Preview</span>
                     @endif
                 </div>
 

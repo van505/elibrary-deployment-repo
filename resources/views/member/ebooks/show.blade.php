@@ -57,10 +57,11 @@
             @endif
 
             <div class="flex flex-wrap gap-3 pt-2">
-                @if($hasAccess)
+                @if($canRead)
+                    {{-- State 1: Plan covers it + formally in reading list → full read --}}
                     <a href="{{ route('member.ebooks.read', $ebook->id) }}"
-                       class="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors">
-                        Read Now
+                       class="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-2">
+                        📖 Read Now
                     </a>
                     <form action="{{ route('member.ebooks.remove-access', $ebook->id) }}" method="POST">
                         @csrf @method('DELETE')
@@ -69,17 +70,43 @@
                             Remove from Reading List
                         </button>
                     </form>
-                @else
+
+                @elseif(($planCanAccess ?? false) && !$hasAccess)
+                    {{-- State 2: Plan covers it but NOT yet added to reading list → normal Add button --}}
                     <form action="{{ route('member.ebooks.access', $ebook->id) }}" method="POST">
                         @csrf
                         <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors">
-                            Read Now
+                            📖 Read Now
                         </button>
                     </form>
-                    <a href="{{ route('member.subscriptions.index') }}" class="border border-gray-300 text-gray-600 hover:bg-gray-50 px-6 py-2.5 rounded-lg text-sm font-medium transition-colors">
-                        View Plans
+
+                @elseif($canPreview)
+                    {{-- State 3: Plan is INSUFFICIENT but preview pages are available --}}
+                    <a href="{{ route('member.ebooks.read', $ebook->id) }}?preview=true"
+                       class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors inline-flex items-center gap-2">
+                        👁 Preview — First {{ $previewPages }} Pages
+                    </a>
+
+                    {{-- Upgrade prompt --}}
+                    @php $requiredPlan = ucfirst($ebook->access_level); @endphp
+                    <div class="w-full mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <p class="text-sm font-semibold text-blue-800">🔒 Full {{ $requiredPlan }} plan required</p>
+                            <p class="text-xs text-blue-600 mt-0.5">Preview limited to {{ $previewPages }} pages. Subscribe to read the entire book.</p>
+                        </div>
+                        <a href="{{ route('member.subscriptions.index') }}"
+                           class="flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors whitespace-nowrap">
+                            🚀 Upgrade to {{ $requiredPlan }}
+                        </a>
+                    </div>
+
+                @else
+                    {{-- State 4: Plan insufficient + no preview (preview_pages = 0) --}}
+                    <a href="{{ route('member.subscriptions.index') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                        🚀 View Subscription Plans
                     </a>
                 @endif
+
 
                 {{-- Bookmarks --}}
                 <form action="{{ route('member.bookmarks.toggle', $ebook->id) }}" method="POST">
@@ -109,6 +136,7 @@
                     </button>
                 </form>
             </div>
+
         </div>
     </div>
 

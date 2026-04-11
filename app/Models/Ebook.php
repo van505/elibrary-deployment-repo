@@ -24,6 +24,7 @@ class Ebook extends Model
         'access_level',
         'is_featured',
         'is_spotlighted',
+        'preview_pages',
     ];
 
     protected $casts = [

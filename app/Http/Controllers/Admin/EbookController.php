@@ -55,6 +55,7 @@ class EbookController extends Controller
             'access_level' => 'required|in:free,basic,premium',
             'is_featured'  => 'nullable|boolean',
             'tags'         => 'nullable|string',
+            'preview_pages'=> 'nullable|integer|min:0|max:50',
         ]);
 
         $validated['file_path'] = $request->file('file_path')->store('ebooks', 'private');
@@ -74,6 +75,7 @@ class EbookController extends Controller
             'file_type'    => $validated['file_type'],
             'access_level' => $validated['access_level'],
             'is_featured'  => $request->has('is_featured'),
+            'preview_pages'=> (int) ($validated['preview_pages'] ?? 10),
         ]);
 
         $ebook->authors()->sync($request->author_ids);
@@ -157,6 +159,7 @@ class EbookController extends Controller
             'access_level' => 'required|in:free,basic,premium',
             'is_featured'  => 'nullable|boolean',
             'tags'         => 'nullable|string',
+            'preview_pages'=> 'nullable|integer|min:0|max:50',
         ]);
 
         if ($request->hasFile('file_path')) {
@@ -182,6 +185,7 @@ class EbookController extends Controller
             'file_type'    => $validated['file_type'],
             'access_level' => $validated['access_level'],
             'is_featured'  => $request->has('is_featured'),
+            'preview_pages'=> (int) ($validated['preview_pages'] ?? $ebook->preview_pages),
         ]);
 
         $ebook->authors()->sync($request->author_ids);
