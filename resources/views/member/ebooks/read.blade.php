@@ -184,9 +184,8 @@
 @if($isPreview)
 <script>
     (function () {
-        const previewPages  = {{ (int) $previewPages }};
-        // Allow ~8 seconds per page, capped at 90 seconds
-        const totalSeconds  = Math.min(previewPages * 8, 90);
+        // Flat 60-second timer as requested
+        const totalSeconds  = 60;
         let   remaining     = totalSeconds;
 
         const overlay       = document.getElementById('preview-overlay');
@@ -231,7 +230,7 @@
             // Window blur likely means focus went into iframe
             iframeClickCount++;
             // After 3 interactions (page turns), show overlay early
-            if (iframeClickCount > 3 && remaining < totalSeconds * 0.6) {
+            if (iframeClickCount > 3 && remaining < 40) {
                 showOverlay();
             }
         });

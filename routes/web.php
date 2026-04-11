@@ -119,6 +119,9 @@ Route::middleware(['auth', '2fa', 'verified', 'role:member'])
         Route::post  ('ebooks/{ebook}/access', [Member\EbookAccessController::class, 'access'])->name('ebooks.access');
         Route::get   ('ebooks/{ebook}/read',   [Member\EbookAccessController::class, 'read'])->name('ebooks.read');
         Route::get   ('ebooks/{ebook}/stream', [Member\EbookAccessController::class, 'stream'])->name('ebooks.stream');
+        Route::get   ('ebooks/{ebook}/preview-stream', [Member\EbookAccessController::class, 'previewStream'])
+            ->middleware(['signed', 'throttle:20,1'])
+            ->name('ebooks.preview-stream');
         Route::delete('ebooks/{ebook}/access', [Member\EbookAccessController::class, 'removeAccess'])->name('ebooks.remove-access');
 
         // Subscriptions
