@@ -7,9 +7,12 @@
     {{-- Search & Filters --}}
     <form method="GET" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
         <div class="flex flex-wrap gap-3">
-            <input type="text" name="search" value="{{ request('search') }}"
-                   placeholder="Search by title or author..."
-                   class="flex-1 min-w-48 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+            <div class="relative flex-1 min-w-48">
+                <input type="text" id="member-ebook-search" name="search" value="{{ request('search') }}" autocomplete="off"
+                       placeholder="Search by title or author..."
+                       class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                <x-search-autocomplete-js input-id="member-ebook-search" />
+            </div>
             <select name="category_id" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 <option value="">All Categories</option>
                 @foreach($categories as $cat)

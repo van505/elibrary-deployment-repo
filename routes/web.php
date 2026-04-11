@@ -25,7 +25,10 @@ Route::get('/', function () {
     return view('welcome', compact('categories', 'featuredBooks', 'heroBooks', 'spotlightEbook'));
 });
 
-
+// Search Autocomplete API (Public)
+Route::get('/search/suggestions', [App\Http\Controllers\SearchController::class, 'suggestions'])
+    ->middleware('throttle:60,1')
+    ->name('search.suggestions');
 
 // ── Role-based dashboard redirect ────────────────────────────────────────────
 

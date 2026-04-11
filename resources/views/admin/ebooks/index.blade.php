@@ -9,7 +9,8 @@
         searchPlaceholder="Search by title or author..."
         :sortable="['created_at' => 'Date Added', 'title' => 'Title', 'publish_year' => 'Publish Year']"
         :createRoute="route('admin.ebooks.create')"
-        createLabel="Add Ebook">
+        createLabel="Add Ebook"
+        :enableEbookAutocomplete="true">
         
         <select name="category_id" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
             <option value="">All Categories</option>

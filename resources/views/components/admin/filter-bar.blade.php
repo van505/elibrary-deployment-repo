@@ -5,7 +5,8 @@
     'createRoute' => null,
     'createLabel' => 'Create New',
     'showSearch' => true,
-    'showSort' => true
+    'showSort' => true,
+    'enableEbookAutocomplete' => false
 ])
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
@@ -23,8 +24,14 @@
     <form method="GET" action="{{ $action }}" class="flex flex-wrap items-center gap-3">
         @if($showSearch)
         <!-- Search Input -->
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ $searchPlaceholder }}"
-               class="flex-1 min-w-[200px] border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+        <div class="relative flex-1 min-w-[200px]">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ $searchPlaceholder }}"
+                   id="{{ $enableEbookAutocomplete ? 'admin-filter-autocomplete' : '' }}" {{ $enableEbookAutocomplete ? 'autocomplete=off' : '' }}
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            @if($enableEbookAutocomplete)
+            <x-search-autocomplete-js input-id="admin-filter-autocomplete" :is-admin="true" />
+            @endif
+        </div>
         @endif
 
         <!-- Custom Dropdowns Slot -->

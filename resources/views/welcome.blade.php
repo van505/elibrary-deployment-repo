@@ -425,8 +425,9 @@
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0" />
                         </svg>
                     </span>
-                    <input id="book-search" type="text" placeholder="Search books, authors..."
+                    <input id="book-search" type="text" placeholder="Search books, authors..." autocomplete="off"
                         class="w-full bg-white border border-gray-200 rounded-full pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all shadow-sm">
+                    <x-search-autocomplete-js input-id="book-search" />
                 </div>
             </div>
 
