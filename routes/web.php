@@ -114,7 +114,20 @@ Route::middleware(['auth', '2fa', 'role:admin'])
 
 // ── Member ────────────────────────────────────────────────────────────────────
 
+// Onboarding routes: inside auth + role guards but WITHOUT the onboarding middleware
 Route::middleware(['auth', '2fa', 'verified', 'role:member'])
+    ->prefix('member')
+    ->name('member.')
+    ->group(function () {
+        Route::get ('onboarding',       [Member\OnboardingController::class, 'show'])->name('onboarding.show');
+        Route::post('onboarding/step1', [Member\OnboardingController::class, 'saveStep1'])->name('onboarding.step1');
+        Route::post('onboarding/step2', [Member\OnboardingController::class, 'saveStep2'])->name('onboarding.step2');
+        Route::post('onboarding/step3', [Member\OnboardingController::class, 'saveStep3'])->name('onboarding.step3');
+        Route::post('onboarding/skip',  [Member\OnboardingController::class, 'skip'])->name('onboarding.skip');
+    });
+
+// All other member routes: includes onboarding middleware to enforce the flow
+Route::middleware(['auth', '2fa', 'verified', 'role:member', 'onboarding'])
     ->prefix('member')
     ->name('member.')
     ->group(function () {

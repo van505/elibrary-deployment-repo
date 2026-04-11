@@ -48,6 +48,21 @@ class DashboardController extends BaseMemberController
         // Featured collections 
         $featuredCollections = \App\Models\Collection::active()->withCount('ebooks')->latest()->take(3)->get();
 
+        // Recommended Ebooks — based on preferences or newest
+        $hasPreferences = !empty($member->preferred_categories);
+        if ($hasPreferences) {
+            $recommendedEbooks = \App\Models\Ebook::with(['authors', 'category'])
+                ->whereIn('category_id', $member->preferred_categories)
+                ->latest()
+                ->take(6)
+                ->get();
+        } else {
+            $recommendedEbooks = \App\Models\Ebook::with(['authors', 'category'])
+                ->latest()
+                ->take(6)
+                ->get();
+        }
+
         return view('member.dashboard', compact(
             'member',
             'subscription',
@@ -60,7 +75,9 @@ class DashboardController extends BaseMemberController
             'reviewsCount',
             'spotlightEbook',
             'wishlistItems',
-            'featuredCollections'
+            'featuredCollections',
+            'recommendedEbooks',
+            'hasPreferences'
         ));
     }
 }

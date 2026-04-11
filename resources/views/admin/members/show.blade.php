@@ -55,6 +55,20 @@
                 @php $sc=['active'=>'bg-green-100 text-green-700','suspended'=>'bg-red-100 text-red-700','expired'=>'bg-gray-100 text-gray-600']; @endphp
                 <span class="px-2 py-0.5 rounded text-xs font-medium {{ $sc[$member->status] ?? '' }}">{{ ucfirst($member->status) }}</span>
             </dd></div>
+            <div><dt class="text-gray-500">Onboarding</dt><dd>
+                @if($member->onboarding_completed)
+                    <span class="px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">✅ Completed</span>
+                @else
+                    <span class="px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-700">⏳ Pending (Step {{ $member->onboarding_step }})</span>
+                @endif
+            </dd></div>
+            @if(!empty($member->preferred_categories))
+            <div><dt class="text-gray-500">Interests</dt><dd class="flex flex-wrap gap-1 mt-1">
+                @foreach(\App\Models\Category::whereIn('id', $member->preferred_categories)->get() as $cat)
+                    <span class="px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-100 rounded text-xs">{{ $cat->name }}</span>
+                @endforeach
+            </dd></div>
+            @endif
             <div><dt class="text-gray-500">Joined</dt><dd class="text-xs">{{ $member->created_at->format('M d, Y') }}</dd></div>
         </dl>
     </div>

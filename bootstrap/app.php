@@ -21,8 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'role' => \App\Http\Middleware\CheckRole::class,
-            '2fa'  => \App\Http\Middleware\TwoFactorAuth::class,
+            'role'        => \App\Http\Middleware\CheckRole::class,
+            '2fa'         => \App\Http\Middleware\TwoFactorAuth::class,
+            'onboarding'  => \App\Http\Middleware\CheckOnboarding::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

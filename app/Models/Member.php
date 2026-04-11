@@ -24,6 +24,14 @@ class Member extends Model
         'status',
         'suspension_reason',
         'suspended_at',
+        'onboarding_completed',
+        'onboarding_step',
+        'preferred_categories',
+    ];
+
+    protected $casts = [
+        'preferred_categories' => 'array',
+        'onboarding_completed' => 'boolean',
     ];
 
     protected $hidden = [

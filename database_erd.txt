@@ -1,0 +1,249 @@
+erDiagram
+    activity_logs {
+        bigintunsigned id PK
+        bigintunsigned user_id FK
+        varchar action 
+        varchar module 
+        text description 
+        varchar ip_address 
+        varchar user_agent 
+        varchar browser 
+        varchar platform 
+        timestamp created_at 
+    }
+    announcements {
+        bigintunsigned id PK
+        varchar title 
+        text message 
+        enum type 
+        tinyint is_active 
+        timestamp starts_at 
+        timestamp ends_at 
+        bigintunsigned created_by FK
+        timestamp created_at 
+        timestamp updated_at 
+    }
+    authors {
+        bigintunsigned id PK
+        varchar first_name 
+        varchar middle_name 
+        varchar last_name 
+        text bio 
+        varchar nationality 
+        timestamp created_at 
+        timestamp updated_at 
+        timestamp deleted_at 
+    }
+    categories {
+        bigintunsigned id PK
+        varchar name 
+        varchar slug 
+        text description 
+        timestamp created_at 
+        timestamp updated_at 
+        timestamp deleted_at 
+    }
+    collection_ebooks {
+        bigintunsigned id PK
+        bigintunsigned collection_id FK
+        bigintunsigned ebook_id FK
+        int order_number 
+        timestamp created_at 
+        timestamp updated_at 
+    }
+    collections {
+        bigintunsigned id PK
+        varchar name 
+        varchar slug 
+        text description 
+        varchar cover_image 
+        tinyint is_active 
+        bigintunsigned created_by FK
+        timestamp created_at 
+        timestamp updated_at 
+    }
+    ebook_access {
+        bigintunsigned id PK
+        bigintunsigned member_id FK
+        bigintunsigned ebook_id FK
+        timestamp accessed_at 
+        timestamp created_at 
+        timestamp updated_at 
+    }
+    ebook_authors {
+        bigintunsigned id PK
+        bigintunsigned ebook_id FK
+        bigintunsigned author_id FK
+        timestamp created_at 
+        timestamp updated_at 
+    }
+    ebook_bookmarks {
+        bigintunsigned id PK
+        bigintunsigned member_id FK
+        bigintunsigned ebook_id FK
+        timestamp created_at 
+    }
+    ebook_tags {
+        bigintunsigned id PK
+        bigintunsigned ebook_id FK
+        varchar tag_name 
+        timestamp created_at 
+        timestamp updated_at 
+    }
+    ebook_wishlists {
+        bigintunsigned id PK
+        bigintunsigned member_id FK
+        bigintunsigned ebook_id FK
+        timestamp created_at 
+        timestamp updated_at 
+    }
+    ebooks {
+        bigintunsigned id PK
+        bigintunsigned category_id FK
+        varchar title 
+        varchar isbn 
+        varchar publisher 
+        int publish_year 
+        varchar file_path 
+        varchar cover_image 
+        enum file_type 
+        enum access_level 
+        intunsigned preview_pages 
+        tinyint is_featured 
+        tinyint is_spotlighted 
+        timestamp created_at 
+        timestamp updated_at 
+        timestamp deleted_at 
+    }
+    member_notifications {
+        bigintunsigned id PK
+        bigintunsigned member_id FK
+        varchar type 
+        text message 
+        tinyint is_read 
+        timestamp created_at 
+        timestamp updated_at 
+    }
+    members {
+        bigintunsigned id PK
+        bigintunsigned user_id FK
+        varchar member_code 
+        varchar first_name 
+        varchar middle_name 
+        varchar last_name 
+        varchar phone 
+        text address 
+        varchar avatar 
+        enum status 
+        int current_streak 
+        int longest_streak 
+        date last_read_date 
+        varchar suspension_reason 
+        timestamp suspended_at 
+        timestamp created_at 
+        timestamp updated_at 
+        timestamp deleted_at 
+    }
+    password_history {
+        bigintunsigned id PK
+        bigintunsigned user_id FK
+        varchar password 
+        timestamp created_at 
+    }
+    reviews {
+        bigintunsigned id PK
+        bigintunsigned member_id FK
+        bigintunsigned ebook_id FK
+        int rating 
+        text comment 
+        enum status 
+        timestamp created_at 
+        timestamp updated_at 
+        timestamp deleted_at 
+    }
+    settings {
+        bigintunsigned id PK
+        varchar key 
+        varchar value 
+        varchar type 
+        text description 
+        timestamp created_at 
+        timestamp updated_at 
+    }
+    subscription_plans {
+        bigintunsigned id PK
+        varchar name 
+        varchar slug 
+        decimal price 
+        int ebook_limit 
+        text description 
+        tinyint is_active 
+        tinyint level 
+        timestamp created_at 
+        timestamp updated_at 
+        timestamp deleted_at 
+    }
+    subscriptions {
+        bigintunsigned id PK
+        bigintunsigned member_id FK
+        bigintunsigned plan_id FK
+        enum status 
+        timestamp started_at 
+        timestamp expires_at 
+        timestamp created_at 
+        timestamp updated_at 
+    }
+    transactions {
+        bigintunsigned id PK
+        bigintunsigned member_id FK
+        bigintunsigned plan_id FK
+        decimal amount 
+        enum payment_method 
+        enum status 
+        varchar reference_no 
+        timestamp paid_at 
+        timestamp created_at 
+        timestamp updated_at 
+    }
+    users {
+        bigintunsigned id PK
+        varchar email 
+        varchar google_id FK
+        varchar first_name 
+        varchar last_name 
+        timestamp email_verified_at 
+        varchar password 
+        enum role 
+        varchar remember_token 
+        tinyint two_factor_enabled 
+        text google2fa_secret 
+        text two_factor_recovery_codes 
+        varchar email_otp_code 
+        timestamp email_otp_expires_at 
+        timestamp created_at 
+        timestamp updated_at 
+    }
+    users ||--o{ activity_logs : "user_id"
+    users ||--o{ announcements : "created_by"
+    users ||--o{ collections : "created_by"
+    collections ||--o{ collection_ebooks : "collection_id"
+    ebooks ||--o{ collection_ebooks : "ebook_id"
+    categories ||--o{ ebooks : "category_id"
+    ebooks ||--o{ ebook_access : "ebook_id"
+    members ||--o{ ebook_access : "member_id"
+    authors ||--o{ ebook_authors : "author_id"
+    ebooks ||--o{ ebook_authors : "ebook_id"
+    ebooks ||--o{ ebook_bookmarks : "ebook_id"
+    members ||--o{ ebook_bookmarks : "member_id"
+    ebooks ||--o{ ebook_tags : "ebook_id"
+    ebooks ||--o{ ebook_wishlists : "ebook_id"
+    members ||--o{ ebook_wishlists : "member_id"
+    users ||--o{ members : "user_id"
+    members ||--o{ member_notifications : "member_id"
+    users ||--o{ password_history : "user_id"
+    ebooks ||--o{ reviews : "ebook_id"
+    members ||--o{ reviews : "member_id"
+    members ||--o{ subscriptions : "member_id"
+    subscription_plans ||--o{ subscriptions : "plan_id"
+    members ||--o{ transactions : "member_id"
+    subscription_plans ||--o{ transactions : "plan_id"

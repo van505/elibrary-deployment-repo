@@ -4,6 +4,18 @@
 @section('content')
 <div class="space-y-6">
 
+    {{-- 🎉 Welcome Onboarding Banner --}}
+    @if(session('welcome_onboard'))
+    <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-5 text-white flex items-center gap-4 shadow-md">
+        <div class="text-4xl">🎉</div>
+        <div class="flex-1">
+            <h2 class="font-bold text-lg">Welcome to ELibrary, {{ auth()->user()->member->first_name ?: 'Reader' }}!</h2>
+            <p class="text-green-100 text-sm">Your account is all set up. Start exploring books below!</p>
+        </div>
+        <a href="{{ route('member.ebooks.index') }}" class="bg-white text-green-700 font-bold text-sm px-4 py-2 rounded-xl hover:bg-green-50 transition-colors whitespace-nowrap">Browse Books</a>
+    </div>
+    @endif
+
     {{-- Welcome + Plan Badge --}}
     <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
         <div class="flex items-start justify-between">
@@ -302,6 +314,48 @@
             </div>
         @endif
     </div>
+</div>
+
+    {{-- ── Recommended Ebooks ───────────────────────────────────────────────── --}}
+    @if(isset($recommendedEbooks) && $recommendedEbooks->isNotEmpty())
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h2 class="font-semibold text-gray-800">
+                    @if(isset($hasPreferences) && $hasPreferences)
+                        ✨ Based on Your Interests
+                    @else
+                        🆕 New Arrivals
+                    @endif
+                </h2>
+                @if(isset($hasPreferences) && $hasPreferences)
+                    <p class="text-xs text-gray-400 mt-0.5">Books matching your selected categories</p>
+                @else
+                    <p class="text-xs text-gray-400 mt-0.5">Discover our latest additions</p>
+                @endif
+            </div>
+            <a href="{{ route('member.ebooks.index') }}" class="text-blue-600 text-sm hover:underline font-medium">Browse All →</a>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+            @foreach($recommendedEbooks as $ebook)
+            <a href="{{ route('member.ebooks.show', $ebook->id) }}" class="group block">
+                <div class="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden mb-2 shadow-sm group-hover:shadow-md transition-shadow">
+                    @if($ebook->cover_image)
+                        <img src="{{ Storage::url($ebook->cover_image) }}" alt="{{ $ebook->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    @else
+                        <div class="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13"/></svg>
+                        </div>
+                    @endif
+                </div>
+                <p class="text-xs font-semibold text-gray-800 truncate group-hover:text-blue-600 transition-colors">{{ $ebook->title }}</p>
+                <p class="text-[10px] text-gray-400 truncate mt-0.5">{{ $ebook->authors->pluck('full_name')->join(', ') ?: 'Unknown' }}</p>
+            </a>
+            @endforeach
+        </div>
+    </div>
+    @endif
 
 </div>
 @endsection
