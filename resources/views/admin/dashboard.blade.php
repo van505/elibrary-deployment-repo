@@ -19,6 +19,35 @@
     </div>
     @endif
 
+    {{-- Active Announcements Widget --}}
+    @if(isset($activeAnnouncements) && $activeAnnouncements->count() > 0)
+    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 pt-4">
+        <div class="flex justify-between items-center mb-3">
+            <h3 class="text-blue-800 font-bold flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                Active Announcements
+            </h3>
+            <a href="{{ route('admin.announcements.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-800 uppercase tracking-wider">Manage</a>
+        </div>
+        <div class="space-y-2">
+            @foreach($activeAnnouncements as $ann)
+                @php
+                    $bgColors = [
+                        'info' => 'bg-white text-blue-900 border-blue-100',
+                        'warning' => 'bg-yellow-100 text-yellow-900 border-yellow-200',
+                        'success' => 'bg-green-100 text-green-900 border-green-200',
+                        'danger' => 'bg-red-100 text-red-900 border-red-200',
+                    ];
+                @endphp
+                <div class="{{ $bgColors[$ann->type] ?? 'bg-white' }} px-4 py-2 rounded-lg border shadow-sm flex items-center justify-between gap-4">
+                    <div class="font-medium text-sm truncate">{{ $ann->title }}</div>
+                    <div class="text-xs uppercase font-bold opacity-75">{{ $ann->type }}</div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     {{-- Stats Grid --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
 

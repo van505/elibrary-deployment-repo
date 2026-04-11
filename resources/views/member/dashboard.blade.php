@@ -232,5 +232,43 @@
         @endif
     </div>
 
+    {{-- Your Wishlist --}}
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="font-semibold text-gray-800">Your Wishlist</h2>
+            <a href="{{ route('member.wishlist.index') }}" class="text-blue-600 text-sm hover:underline">View all →</a>
+        </div>
+
+        @if(isset($wishlistItems) && $wishlistItems->isEmpty())
+            <div class="text-center py-10 text-gray-400">
+                <svg class="w-12 h-12 mx-auto mb-3 opacity-40 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                <p class="text-sm">Your wishlist is empty.</p>
+                <a href="{{ route('member.ebooks.index') }}" class="mt-2 inline-block text-blue-600 text-sm hover:underline">Find books to read →</a>
+            </div>
+        @elseif(isset($wishlistItems))
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                @foreach($wishlistItems as $item)
+                <div class="group block relative bg-gray-50 rounded-lg p-2 border border-gray-100">
+                    <a href="{{ route('member.ebooks.show', $item->id) }}" class="flex gap-3">
+                        <div class="w-16 h-20 bg-gray-200 rounded flex-shrink-0 overflow-hidden shadow-sm">
+                            @if($item->cover_image)
+                                <img src="{{ asset('storage/' . $item->cover_image) }}" alt="{{ $item->title }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200">
+                                    <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13"/></svg>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="flex-1 min-w-0 py-1">
+                            <p class="text-xs font-semibold text-gray-800 line-clamp-2 mb-1 group-hover:text-blue-600 transition-colors">{{ $item->title }}</p>
+                            <p class="text-[10px] text-gray-400 truncate">{{ $item->authors->pluck('full_name')->join(', ') ?: 'Unknown' }}</p>
+                        </div>
+                    </a>
+                </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+
 </div>
 @endsection

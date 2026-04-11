@@ -45,6 +45,9 @@ class DashboardController extends Controller
             ->whereHas('plan', fn ($q) => $q->where('slug', 'premium'))
             ->count();
 
+        // Announcements
+        $activeAnnouncements = \App\Models\Announcement::active()->get();
+
         return view('admin.dashboard', compact(
             'totalUsers',
             'totalEbooks',
@@ -56,7 +59,8 @@ class DashboardController extends Controller
             'totalRevenue',
             'pendingReviews',
             'newMembersThisMonth',
-            'premiumMembers'
+            'premiumMembers',
+            'activeAnnouncements'
         ));
     }
 }

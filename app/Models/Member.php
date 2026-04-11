@@ -116,4 +116,14 @@ class Member extends Model
 
         return $this->ebookAccess()->count() < $limit;
     }
+
+    public function wishlist(): HasMany
+    {
+        return $this->hasMany(EbookWishlist::class);
+    }
+
+    public function wishlistedEbooks()
+    {
+        return $this->belongsToMany(Ebook::class, 'ebook_wishlists', 'member_id', 'ebook_id')->withTimestamps();
+    }
 }

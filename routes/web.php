@@ -65,6 +65,7 @@ Route::middleware(['auth', '2fa', 'role:admin'])
         Route::resource('users',      Admin\UserController::class)->except(['create', 'store']);
         Route::resource('authors',    Admin\AuthorController::class);
         Route::resource('categories', Admin\CategoryController::class);
+        Route::resource('announcements', Admin\AnnouncementController::class)->except(['show']);
         
         Route::get('ebooks/{ebook}/stream', [Admin\EbookController::class, 'stream'])->name('ebooks.stream');
         Route::post('ebooks/{ebook}/spotlight', [Admin\EbookController::class, 'spotlight'])->name('ebooks.spotlight');
@@ -133,6 +134,10 @@ Route::middleware(['auth', '2fa', 'verified', 'role:member'])
         // Bookmarks
         Route::get ('bookmarks',              [Member\BookmarkController::class, 'index'])->name('bookmarks.index');
         Route::post('bookmarks/{ebook}/toggle',[Member\BookmarkController::class, 'toggle'])->name('bookmarks.toggle');
+
+        // Wishlists
+        Route::get ('wishlist',               [Member\WishlistController::class, 'index'])->name('wishlist.index');
+        Route::post('wishlist/{ebook}/toggle', [Member\WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
         // Notifications
         Route::post('notifications/{id}/read', [Member\NotificationController::class, 'markRead'])->name('notifications.read');

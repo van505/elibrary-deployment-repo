@@ -93,10 +93,13 @@ class EbookController extends BaseMemberController
 
         $relatedEbooks = $sameCatSameAuthor->concat($sameAuthor)->concat($sameCat)->take(4);
 
+        $isWishlisted = $member->wishlist()->where('ebook_id', $ebook->id)->exists();
+
         return view('member.ebooks.show', compact(
             'ebook',
             'hasAccess',
             'isBookmarked',
+            'isWishlisted',
             'reviews',
             'pendingReviews',
             'relatedEbooks'

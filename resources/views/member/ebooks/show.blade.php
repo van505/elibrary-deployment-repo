@@ -81,15 +81,31 @@
                     </a>
                 @endif
 
-                {{-- Bookmark Toggle --}}
+                {{-- Bookmarks --}}
                 <form action="{{ route('member.bookmarks.toggle', $ebook->id) }}" method="POST">
                     @csrf
                     <button type="submit"
-                            class="px-4 py-2.5 rounded-lg text-sm font-medium transition-colors border
+                            class="px-4 py-2.5 rounded-lg text-sm font-medium transition-colors border shadow-sm
                                    {{ $isBookmarked
                                        ? 'bg-yellow-50 border-yellow-300 text-yellow-700 hover:bg-yellow-100'
-                                       : 'border-gray-300 text-gray-600 hover:bg-gray-50' }}">
+                                       : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50' }}">
                         {{ $isBookmarked ? '★ Bookmarked' : '☆ Save to Bookmarks' }}
+                    </button>
+                </form>
+
+                {{-- Wishlist --}}
+                <form action="{{ route('member.wishlist.toggle', $ebook->id) }}" method="POST">
+                    @csrf
+                    <button type="submit"
+                            class="px-4 py-2.5 rounded-lg text-sm font-medium transition-colors border shadow-sm flex items-center gap-2
+                                   {{ isset($isWishlisted) && $isWishlisted
+                                       ? 'bg-purple-50 border-purple-300 text-purple-700 hover:bg-purple-100'
+                                       : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50' }}">
+                        @if(isset($isWishlisted) && $isWishlisted)
+                            <span>✅ In Wishlist</span>
+                        @else
+                            <span>📋 Add to Wishlist</span>
+                        @endif
                     </button>
                 </form>
             </div>

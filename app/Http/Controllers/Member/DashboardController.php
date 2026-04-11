@@ -42,6 +42,9 @@ class DashboardController extends BaseMemberController
         // Editor's Choice spotlight
         $spotlightEbook = \App\Models\Ebook::with('authors')->where('is_spotlighted', true)->first();
 
+        // Wishlist items
+        $wishlistItems = $member->wishlistedEbooks()->with('authors', 'category')->latest('ebook_wishlists.created_at')->take(4)->get();
+
         return view('member.dashboard', compact(
             'member',
             'subscription',
@@ -52,7 +55,8 @@ class DashboardController extends BaseMemberController
             'daysTotal',
             'ebooksThisMonth',
             'reviewsCount',
-            'spotlightEbook'
+            'spotlightEbook',
+            'wishlistItems'
         ));
     }
 }

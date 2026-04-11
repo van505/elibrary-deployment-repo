@@ -63,6 +63,10 @@ class AppServiceProvider extends ServiceProvider
                          ->with('recentNotifications', $recentNotifications);
                 }
             }
+            
+            // Inject active announcements for all users of the member layout
+            $activeAnnouncements = \App\Models\Announcement::active()->get();
+            $view->with('globalActiveAnnouncements', $activeAnnouncements);
         });
     }
 }

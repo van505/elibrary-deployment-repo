@@ -44,7 +44,8 @@
                     ['route' => 'member.subscriptions.index', 'label' => 'My Subscription',   'icon' => 'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z'],
                     ['route' => 'member.my-ebooks',           'label' => 'Reading History',   'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'],
                     ['route' => 'member.reviews.index',       'label' => 'My Reviews',         'icon' => 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z'],
-                    ['route' => 'member.bookmarks.index',     'label' => 'Bookmarks',          'icon' => 'M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z'],
+                    ['route' => 'member.bookmarks.index',     'label' => 'My Bookmarks',          'icon' => 'M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z'],
+                    ['route' => 'member.wishlist.index',      'label' => 'My Wishlist',           'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 01-2-2h2a2 2 0 012 2'],
                 ],
                 'PROFILE' => [
                     ['route' => 'member.profile.edit',        'label' => 'My Profile',         'icon' => 'M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0M19 21a7 7 0 10-14 0'],
@@ -185,6 +186,61 @@
                 @endif
             </div>
         </header>
+
+        {{-- Global Active Announcements --}}
+        @if(isset($globalActiveAnnouncements) && $globalActiveAnnouncements->count() > 0)
+            <div id="announcement-container" class="flex flex-col">
+                @foreach($globalActiveAnnouncements as $ann)
+                    @php
+                        $annColors = [
+                            'info' => 'bg-blue-600 text-white',
+                            'warning' => 'bg-yellow-500 text-yellow-900',
+                            'success' => 'bg-green-600 text-white',
+                            'danger' => 'bg-red-600 text-white',
+                        ];
+                        
+                        $annIcons = [
+                            'info' => '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+                            'warning' => '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>',
+                            'success' => '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+                            'danger' => '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
+                        ];
+                    @endphp
+                    <div id="announcement-{{ $ann->id }}" style="display: none;" class="{{ $annColors[$ann->type] ?? 'bg-blue-600 text-white' }} px-4 py-3 flex items-center justify-between shadow-sm relative z-20">
+                        <div class="flex items-center gap-3">
+                            {!! $annIcons[$ann->type] ?? $annIcons['info'] !!}
+                            <p class="text-sm">
+                                <span class="font-bold">{{ $ann->title }}:</span> {{ $ann->message }}
+                            </p>
+                        </div>
+                        <button onclick="dismissAnnouncement({{ $ann->id }})" class="p-1 rounded-md opacity-80 hover:opacity-100 hover:bg-black/10 transition-colors flex-shrink-0" aria-label="Dismiss">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                @endforeach
+            </div>
+            
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const announcements = @json($globalActiveAnnouncements->pluck('id'));
+                    announcements.forEach(id => {
+                        if (!localStorage.getItem('dismissed_announcement_' + id)) {
+                            const el = document.getElementById('announcement-' + id);
+                            if (el) el.style.display = 'flex';
+                        }
+                    });
+                });
+
+                function dismissAnnouncement(id) {
+                    localStorage.setItem('dismissed_announcement_' + id, 'true');
+                    const el = document.getElementById('announcement-' + id);
+                    if (el) {
+                        el.style.opacity = '0';
+                        setTimeout(() => el.remove(), 300);
+                    }
+                }
+            </script>
+        @endif
 
         {{-- Subscription Expiry Banner --}}
         @if(!request()->routeIs('member.subscriptions.*'))
