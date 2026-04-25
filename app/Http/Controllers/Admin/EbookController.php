@@ -28,8 +28,9 @@ class EbookController extends Controller
 
         $ebooks = $query->paginate(10)->appends($request->query());
         $categories = Category::orderBy('name')->get();
+        $authors    = Author::orderBy('last_name')->get();
 
-        return view('admin.ebooks.index', compact('ebooks', 'categories'));
+        return view('admin.ebooks.index', compact('ebooks', 'categories', 'authors'));
     }
 
     public function create()

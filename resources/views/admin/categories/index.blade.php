@@ -2,44 +2,266 @@
 @section('title', 'Categories')
 
 @section('content')
+@php
+    $colorMap = [
+        'red'    => ['dot' => 'bg-red-400',    'hex' => '#f87171'],
+        'orange' => ['dot' => 'bg-orange-400', 'hex' => '#fb923c'],
+        'yellow' => ['dot' => 'bg-yellow-400', 'hex' => '#facc15'],
+        'green'  => ['dot' => 'bg-emerald-400','hex' => '#34d399'],
+        'blue'   => ['dot' => 'bg-blue-400',   'hex' => '#60a5fa'],
+        'indigo' => ['dot' => 'bg-indigo-400', 'hex' => '#818cf8'],
+        'purple' => ['dot' => 'bg-purple-400', 'hex' => '#c084fc'],
+        'pink'   => ['dot' => 'bg-pink-400',   'hex' => '#f472b6'],
+        'slate'  => ['dot' => 'bg-slate-400',  'hex' => '#94a3b8'],
+    ];
+@endphp
 
-    <x-admin.filter-bar 
-        :action="route('admin.categories.index')" 
+<div class="h-full" x-data="categoryDrawer()" @keydown.window.escape="open = false">
+    <div class="space-y-5">
+
+    {{-- Page Header --}}
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Categories</h1>
+            <p class="text-gray-500 text-sm mt-1">Organize your library by topic or genre</p>
+        </div>
+        <button @click="openCreate()"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Add Category
+        </button>
+    </div>
+
+
+    {{-- ── Filter Bar ──────────────────────────────────────────── --}}
+    <x-admin.filter-bar
+        :action="route('admin.categories.index')"
         searchPlaceholder="Search category name..."
-        :sortable="['created_at' => 'Date Added', 'name' => 'Name']"
-        :createRoute="route('admin.categories.create')"
-        createLabel="Add Category">
+        :sortable="['created_at' => 'Date Added', 'name' => 'Name']">
     </x-admin.filter-bar>
 
-<div class="bg-white rounded-xl shadow-sm overflow-hidden">
-    <table class="w-full text-sm text-left">
-        <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
-            <tr>
-                <th class="px-6 py-3">Name</th>
-                <th class="px-6 py-3">Slug</th>
-                <th class="px-6 py-3">Description</th>
-                <th class="px-6 py-3">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($categories as $category)
-            <tr class="border-t border-gray-100 hover:bg-gray-50">
-                <td class="px-6 py-4 font-medium text-gray-800">{{ $category->name }}</td>
-                <td class="px-6 py-4"><code class="bg-gray-100 px-2 py-0.5 rounded text-xs">{{ $category->slug }}</code></td>
-                <td class="px-6 py-4 text-gray-500 truncate max-w-xs">{{ $category->description ?? '—' }}</td>
-                <td class="px-6 py-4 flex gap-2">
-                    <a href="{{ route('admin.categories.edit', $category) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm">Edit</a>
-                    <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" onsubmit="return confirm('Delete this category?')">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            @empty
-            <tr><td colspan="4" class="px-6 py-8 text-center text-gray-400">No categories found.</td></tr>
-            @endforelse
-        </tbody>
-    </table>
-    <div class="px-6 py-4 border-t border-gray-100">{{ $categories->links() }}</div>
+    {{-- ── Categories Table ────────────────────────────────────── --}}
+    <div class="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                    <th class="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Slug</th>
+                    <th class="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Books</th>
+                    <th class="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Description</th>
+                    <th class="px-6 py-3"></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @forelse($categories as $category)
+                    @php
+                        $catColor  = $category->color ?? 'blue';
+                        $dotClass  = $colorMap[$catColor]['dot'] ?? 'bg-blue-400';
+                        $catInline = [
+                            'name'        => $category->name,
+                            'description' => $category->description ?? '',
+                            'color'       => $catColor,
+                        ];
+                    @endphp
+                    <tr class="hover:bg-gray-50/60 transition-colors">
+                        {{-- Name --}}
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-2.5 h-2.5 rounded-full flex-shrink-0 {{ $dotClass }}"></span>
+                                <span class="font-semibold text-gray-900">{{ $category->name }}</span>
+                            </div>
+                        </td>
+                        {{-- Slug --}}
+                        <td class="px-6 py-4">
+                            <code class="font-mono text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">{{ $category->slug }}</code>
+                        </td>
+                        {{-- Book Count --}}
+                        <td class="px-6 py-4">
+                            <span class="text-xs font-medium text-gray-500">{{ $category->ebooks_count ?? $category->ebooks()->count() }} books</span>
+                        </td>
+                        {{-- Description --}}
+                        <td class="px-6 py-4 text-gray-400 text-sm truncate max-w-[180px]">
+                            {{ $category->description ?? '—' }}
+                        </td>
+                        {{-- Actions --}}
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2 justify-end">
+                                {{-- Edit pencil --}}
+                                <button type="button"
+                                        @click="openEdit({{ $category->id }}, {{ Js::from($catInline) }})"
+                                        class="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                        title="Edit">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                </button>
+                                {{-- Delete --}}
+                                <form action="{{ route('admin.categories.destroy', $category) }}" method="POST"
+                                      onsubmit="return confirm('Archive this category?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit"
+                                            class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            title="Delete">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="5">
+                        <div class="text-center py-16">
+                            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                            </div>
+                            <h3 class="text-gray-900 font-semibold mb-1">No categories yet</h3>
+                            <p class="text-gray-500 text-sm mb-4">Get started by adding your first category.</p>
+                            <button @click="openCreate()"
+                                    class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                Add Category
+                            </button>
+                        </div>
+                    </td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    </div>
+
+    {{-- ── Slide-over Backdrop ─────────────────────────────────── --}}
+    <div x-show="open"
+         x-transition:enter="ease-in-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="ease-in-out duration-300"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity z-[90]"
+         @click="open = false" style="display: none;"></div>
+
+    {{-- ── Slide-over Panel ────────────────────────────────────── --}}
+    <div class="fixed inset-y-0 right-0 z-[100] flex max-w-full pl-10" x-show="open" style="display: none;">
+        <div x-show="open"
+             x-transition:enter="transform transition ease-in-out duration-300"
+             x-transition:enter-start="translate-x-full"
+             x-transition:enter-end="translate-x-0"
+             x-transition:leave="transform transition ease-in-out duration-300"
+             x-transition:leave-start="translate-x-0"
+             x-transition:leave-end="translate-x-full"
+             class="w-screen max-w-md pointer-events-auto">
+
+            <form :action="formUrl" method="POST" class="flex flex-col h-full bg-white shadow-2xl">
+                @csrf
+                <input type="hidden" :name="isEdit ? '_method' : '_noop'" value="PUT">
+
+                {{-- Drawer Header --}}
+                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900" x-text="isEdit ? 'Edit Category' : 'New Category'"></h2>
+                    <button type="button" @click="open = false" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Drawer Body --}}
+                <div class="flex-1 px-6 py-6 overflow-y-auto space-y-5">
+
+                    {{-- Row 1: Name + Color side-by-side --}}
+                    <div class="grid grid-cols-2 gap-4">
+                        {{-- Name --}}
+                        <div class="col-span-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="name" x-model="formData.name" required
+                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <p class="text-xs text-gray-400 mt-1">Auto-generates slug.</p>
+                        </div>
+
+                        {{-- Color Swatches --}}
+                        <div class="col-span-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Color</label>
+                            <input type="hidden" name="color" x-model="formData.color">
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($colorMap as $colorName => $colorVal)
+                                    <button type="button"
+                                            @click="formData.color = '{{ $colorName }}'"
+                                            title="{{ ucfirst($colorName) }}"
+                                            class="w-6 h-6 rounded-full transition-all duration-150 focus:outline-none flex items-center justify-center"
+                                            :class="formData.color === '{{ $colorName }}'
+                                                ? 'ring-2 ring-offset-1 ring-gray-700 scale-110'
+                                                : 'hover:scale-110'"
+                                            style="background-color: {{ $colorVal['hex'] }}">
+                                        <svg x-show="formData.color === '{{ $colorName }}'"
+                                             class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                    </button>
+                                @endforeach
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1 capitalize" x-text="formData.color"></p>
+                        </div>
+                    </div>
+
+                    {{-- Row 2: Description full-width --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea name="description" x-model="formData.description" rows="3"
+                                  class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                  placeholder="A short description of this category..."></textarea>
+                    </div>
+                </div>
+
+                {{-- Drawer Footer --}}
+                <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
+                    <button type="button" @click="open = false"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 transition-colors">
+                        <span x-text="isEdit ? 'Save Changes' : 'Add Category'"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
+<script>
+window.categoryDrawer = function() {
+    return {
+        open: false,
+        isEdit: false,
+        editId: null,
+        formUrl: '{{ route('admin.categories.store') }}',
+
+        formData: {
+            name: '',
+            description: '',
+            color: 'blue',
+        },
+
+        openCreate() {
+            this.isEdit  = false;
+            this.editId  = null;
+            this.formUrl = '{{ route('admin.categories.store') }}';
+            this.formData = { name: '', description: '', color: 'blue' };
+            this.open = true;
+        },
+
+        openEdit(id, data) {
+            this.isEdit  = true;
+            this.editId  = id;
+            this.formUrl = `/admin/categories/${id}`;
+            this.formData.name        = data.name;
+            this.formData.description = data.description || '';
+            this.formData.color       = data.color || 'blue';
+            this.open = true;
+        }
+    };
+};
+</script>
 @endsection

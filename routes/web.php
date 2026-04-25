@@ -81,6 +81,7 @@ Route::middleware(['auth', '2fa', 'role:admin'])
         Route::get('ebooks/{ebook}/stream', [Admin\EbookController::class, 'stream'])->name('ebooks.stream');
         Route::post('ebooks/{ebook}/spotlight', [Admin\EbookController::class, 'spotlight'])->name('ebooks.spotlight');
         Route::post('ebooks/bulk-action', [Admin\EbookController::class, 'bulkAction'])->name('ebooks.bulk-action');
+        Route::get('api/ebooks/{ebook}', [Admin\EbookController::class, 'apiShow'])->name('api.ebooks.show');
         Route::resource('ebooks',     Admin\EbookController::class);
 
         Route::resource('members', Admin\MemberController::class)->except(['create', 'store']);

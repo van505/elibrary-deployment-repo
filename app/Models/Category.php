@@ -13,6 +13,7 @@ class Category extends Model
         'name',
         'slug',
         'description',
+        'color',
     ];
 
     public function ebooks(): HasMany

@@ -181,16 +181,72 @@
                     </div>
                 </div>
 
-                <span class="hidden sm:block text-sm text-gray-600">{{ auth()->user()->member?->full_name ?: (auth()->user()->email ?? '') }}</span>
-                @if(auth()->user()->member?->avatar)
-                    <img src="{{ Storage::url(auth()->user()->member->avatar) }}"
-                         alt="Avatar"
-                         class="w-8 h-8 rounded-full object-cover">
-                @else
-                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                        {{ strtoupper(substr(auth()->user()->member?->full_name ?: auth()->user()->email ?? 'M', 0, 1)) }}
+                {{-- Member Avatar Dropdown --}}
+                <div class="relative" id="memberAvatarWrapper">
+                    <button id="memberAvatarBtn"
+                            onclick="toggleMemberDropdown(event)"
+                            class="flex items-center gap-2 cursor-pointer focus:outline-none group"
+                            aria-haspopup="true" aria-expanded="false">
+                        <span class="hidden sm:block text-sm text-gray-600 font-medium group-hover:text-gray-900 transition-colors">
+                            {{ auth()->user()->member?->full_name ?: (auth()->user()->email ?? '') }}
+                        </span>
+                        @if(auth()->user()->member?->avatar)
+                            <img src="{{ Storage::url(auth()->user()->member->avatar) }}"
+                                 alt="Avatar"
+                                 class="w-8 h-8 rounded-full object-cover ring-2 ring-transparent group-hover:ring-blue-200 transition-all">
+                        @else
+                            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm ring-2 ring-transparent group-hover:ring-blue-200 transition-all">
+                                {{ strtoupper(substr(auth()->user()->member?->full_name ?: auth()->user()->email ?? 'M', 0, 1)) }}
+                            </div>
+                        @endif
+                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    {{-- Dropdown Panel --}}
+                    <div id="memberDropdown"
+                         class="hidden absolute right-0 top-12 w-56 bg-white rounded-xl shadow-xl border border-gray-100 z-50
+                                opacity-0 scale-95 transition-all duration-150 ease-out origin-top-right"
+                         role="menu">
+
+                        {{-- Header --}}
+                        <div class="px-4 py-3 border-b border-gray-100">
+                            <p class="text-xs text-gray-500 font-medium">Signed in as</p>
+                            <p class="text-sm font-semibold text-gray-800 truncate">{{ auth()->user()->member?->full_name ?: (auth()->user()->email ?? 'Member') }}</p>
+                            <p class="text-xs text-gray-400 truncate">{{ auth()->user()->email }}</p>
+                        </div>
+
+                        {{-- My Profile --}}
+                        <div class="py-1">
+                            <a href="{{ route('member.profile.edit') }}"
+                               class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                               role="menuitem">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0M19 21a7 7 0 10-14 0"/>
+                                </svg>
+                                My Profile
+                            </a>
+                        </div>
+
+                        <div class="border-t border-gray-100"></div>
+
+                        {{-- Logout --}}
+                        <div class="py-1">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit"
+                                        class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                        role="menuitem">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                    </svg>
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                @endif
+                </div>
             </div>
         </header>
 
@@ -384,6 +440,40 @@
     document.addEventListener('click', function(e) {
         if (!e.target.closest('#notificationDropdown') && !e.target.closest('[onclick="toggleNotifications()"]')) {
             notifDropdown.classList.add('hidden');
+        }
+    });
+
+    // ── Member Avatar Dropdown ──────────────────────────────────────────────
+    const memberDropdown = document.getElementById('memberDropdown');
+    const memberAvatarBtn = document.getElementById('memberAvatarBtn');
+    let memberDropdownOpen = false;
+
+    function toggleMemberDropdown(e) {
+        e.stopPropagation();
+        memberDropdownOpen ? closeMemberDropdown() : openMemberDropdown();
+    }
+
+    function openMemberDropdown() {
+        memberDropdown.classList.remove('hidden');
+        requestAnimationFrame(() => {
+            memberDropdown.classList.remove('opacity-0', 'scale-95');
+            memberDropdown.classList.add('opacity-100', 'scale-100');
+        });
+        memberAvatarBtn.setAttribute('aria-expanded', 'true');
+        memberDropdownOpen = true;
+    }
+
+    function closeMemberDropdown() {
+        memberDropdown.classList.add('opacity-0', 'scale-95');
+        memberDropdown.classList.remove('opacity-100', 'scale-100');
+        setTimeout(() => memberDropdown.classList.add('hidden'), 150);
+        memberAvatarBtn.setAttribute('aria-expanded', 'false');
+        memberDropdownOpen = false;
+    }
+
+    document.addEventListener('click', function(e) {
+        if (memberDropdownOpen && !document.getElementById('memberAvatarWrapper').contains(e.target)) {
+            closeMemberDropdown();
         }
     });
     </script>

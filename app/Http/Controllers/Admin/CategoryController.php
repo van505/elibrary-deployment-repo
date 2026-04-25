@@ -33,9 +33,11 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255|unique:categories,name',
             'description' => 'nullable|string',
+            'color'       => 'nullable|string|max:20',
         ]);
 
-        $validated['slug'] = Str::slug($request->name);
+        $validated['slug']  = Str::slug($request->name);
+        $validated['color'] = $request->input('color', 'blue');
 
         $category = Category::create($validated);
 
@@ -58,9 +60,11 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255|unique:categories,name,' . $id,
             'description' => 'nullable|string',
+            'color'       => 'nullable|string|max:20',
         ]);
 
-        $validated['slug'] = Str::slug($request->name);
+        $validated['slug']  = Str::slug($request->name);
+        $validated['color'] = $request->input('color', $category->color ?? 'blue');
 
         $category->update($validated);
 

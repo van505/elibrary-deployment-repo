@@ -5,49 +5,61 @@
 <div class="space-y-4">
 
     {{-- ── Dashboard Header ─────────────────────────────────────────────────── --}}
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-xl font-bold text-gray-900">Dashboard</h1>
-            <p class="text-sm text-gray-400 mt-0.5">Welcome back, {{ auth()->user()->first_name ?: auth()->user()->email }}</p>
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 p-8 shadow-lg border border-blue-800/50">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+        <div class="relative z-10">
+            <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight drop-shadow-md">Welcome back, {{ auth()->user()->first_name ?: auth()->user()->email }} 👋</h1>
+            <p class="text-blue-200 mt-1.5 font-medium flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                System is running smoothly. Here's your overview.
+            </p>
         </div>
-        <button id="open-customize-btn"
-            onclick="openCustomizePanel()"
-            class="flex items-center gap-2 bg-white border border-gray-200 hover:border-blue-400 hover:text-blue-600 text-gray-600 text-sm font-medium px-4 py-2 rounded-xl shadow-sm transition-all duration-150">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-            Customize (<span id="visible-count">12</span>/12 visible)
-        </button>
+        <div class="relative z-10 hidden sm:block">
+            <button id="open-customize-btn"
+                onclick="openCustomizePanel()"
+                class="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300">
+                <svg class="w-4 h-4 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                Customize Layout (<span id="visible-count">12</span>/12)
+            </button>
+        </div>
     </div>
 
     {{-- ── Alerts (non-widget, always visible) ─────────────────────────────── --}}
     @if($pendingReviews > 0)
-    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+    <div class="bg-gradient-to-r from-amber-50 to-amber-100/50 border border-amber-200/60 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-inner text-white">
+                <svg class="w-5 h-5 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
             </div>
-            <p class="text-sm font-medium text-yellow-800">
-                <span class="font-bold">{{ $pendingReviews }}</span> review{{ $pendingReviews > 1 ? 's' : '' }} awaiting approval
-            </p>
+            <div>
+                <p class="text-sm font-semibold text-amber-900 tracking-tight">Action Required</p>
+                <p class="text-sm font-medium text-amber-700 mt-0.5">
+                    <span class="font-bold text-amber-900">{{ $pendingReviews }}</span> review{{ $pendingReviews > 1 ? 's' : '' }} awaiting your approval
+                </p>
+            </div>
         </div>
-        <a href="{{ route('admin.reviews.index', ['status' => 'pending']) }}" class="text-yellow-700 hover:text-yellow-900 text-sm font-medium hover:underline">Review now →</a>
+        <a href="{{ route('admin.reviews.index', ['status' => 'pending']) }}" class="flex items-center gap-1.5 bg-white/80 hover:bg-white text-amber-900 text-sm font-bold px-4 py-2 rounded-lg border border-amber-200 shadow-sm transition-all hover:scale-105">
+            Review Now <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </a>
     </div>
     @endif
 
     @if(isset($activeAnnouncements) && $activeAnnouncements->count() > 0)
-    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
-        <div class="flex justify-between items-center mb-3">
-            <h3 class="text-blue-800 font-bold flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
-                Active Announcements
+    <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-gray-800 font-extrabold text-sm uppercase tracking-wider flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div> Active Announcements
             </h3>
-            <a href="{{ route('admin.announcements.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-800 uppercase tracking-wider">Manage</a>
+            <a href="{{ route('admin.announcements.index') }}" class="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg border border-blue-100">
+                Manage Announcements
+            </a>
         </div>
-        <div class="space-y-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach($activeAnnouncements as $ann)
-                @php $bgColors = ['info'=>'bg-white text-blue-900 border-blue-100','warning'=>'bg-yellow-100 text-yellow-900 border-yellow-200','success'=>'bg-green-100 text-green-900 border-green-200','danger'=>'bg-red-100 text-red-900 border-red-200']; @endphp
-                <div class="{{ $bgColors[$ann->type] ?? 'bg-white' }} px-4 py-2 rounded-lg border shadow-sm flex items-center justify-between gap-4">
-                    <div class="font-medium text-sm truncate">{{ $ann->title }}</div>
-                    <div class="text-xs uppercase font-bold opacity-75">{{ $ann->type }}</div>
+                @php $bgGradients = ['info'=>'from-blue-50 to-indigo-50/30 border-blue-200 text-blue-900','warning'=>'from-amber-50 to-yellow-50/30 border-amber-200 text-amber-900','success'=>'from-emerald-50 to-green-50/30 border-emerald-200 text-emerald-900','danger'=>'from-red-50 to-rose-50/30 border-red-200 text-red-900']; @endphp
+                <div class="bg-gradient-to-br {{ $bgGradients[$ann->type] ?? 'from-gray-50 to-white border-gray-200' }} px-4 py-3 rounded-xl border shadow-sm flex flex-col justify-between hover:-translate-y-0.5 transition-transform hover:shadow-md cursor-default">
+                    <div class="text-[10px] font-black uppercase mb-1 opacity-60 tracking-widest">{{ $ann->type }}</div>
+                    <div class="font-bold text-sm leading-tight">{{ $ann->title }}</div>
                 </div>
             @endforeach
         </div>
@@ -62,197 +74,221 @@
 
         {{-- ── [1] WIDGET: total_members ──────────────────────────────────────── --}}
         <div id="widget-total_members" data-widget-id="total_members"
-             class="dashboard-widget stat-widget bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-            <div class="widget-header">
-                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+             class="dashboard-widget stat-widget bg-white hover:bg-gradient-to-b hover:from-white hover:to-blue-50/30 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 p-6 transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-blue-50 to-transparent rounded-bl-full opacity-50 pointer-events-none group-hover:from-blue-100/50 transition-colors"></div>
+            <div class="widget-header relative z-10">
+                <div class="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200/50 rounded-xl flex items-center justify-center border border-blue-200/30 shadow-inner group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6 text-blue-600 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 </div>
-                <div class="widget-controls">
-                    <span class="text-xs text-green-500 font-medium">+{{ $newMembersThisMonth }} this mo.</span>
+                <div class="widget-controls flex items-center gap-2">
+                    <span class="text-xs bg-green-50 text-green-600 border border-green-100 px-2.5 py-1 rounded-full font-bold shadow-sm translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">+{{ $newMembersThisMonth }} mo.</span>
                     <button class="widget-hide-btn" onclick="hideWidget('total_members')" title="Hide widget">✕</button>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-gray-800 mt-3">{{ $totalMembers }}</p>
-            <p class="text-sm text-gray-500 mt-1">Total Members</p>
+            <p class="text-4xl font-extrabold text-gray-800 mt-5 tracking-tight relative z-10">{{ $totalMembers }}</p>
+            <p class="text-sm font-semibold text-gray-400 mt-1 uppercase tracking-wider relative z-10">Total Members</p>
         </div>
 
         {{-- ── [2] WIDGET: new_members_month ──────────────────────────────────── --}}
         <div id="widget-new_members_month" data-widget-id="new_members_month"
-             class="dashboard-widget stat-widget bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-            <div class="widget-header">
-                <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+             class="dashboard-widget stat-widget bg-white hover:bg-gradient-to-b hover:from-white hover:to-teal-50/30 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 p-6 transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-teal-50 to-transparent rounded-bl-full opacity-50 pointer-events-none group-hover:from-teal-100/50 transition-colors"></div>
+            <div class="widget-header relative z-10">
+                <div class="w-12 h-12 bg-gradient-to-br from-teal-100 to-teal-200/50 rounded-xl flex items-center justify-center border border-teal-200/30 shadow-inner group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6 text-teal-600 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 </div>
                 <div class="widget-controls">
-                    <span class="text-xs text-gray-400 font-medium">{{ now()->format('M Y') }}</span>
+                    <span class="text-[10px] font-black uppercase text-gray-400 tracking-wider bg-gray-50 border border-gray-100 px-2 py-1 rounded-md">{{ now()->format('M Y') }}</span>
                     <button class="widget-hide-btn" onclick="hideWidget('new_members_month')" title="Hide widget">✕</button>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-gray-800 mt-3">{{ $newMembersThisMonth }}</p>
-            <p class="text-sm text-gray-500 mt-1">New Members This Month</p>
+            <p class="text-4xl font-extrabold text-gray-800 mt-5 tracking-tight relative z-10">{{ $newMembersThisMonth }}</p>
+            <p class="text-sm font-semibold text-gray-400 mt-1 uppercase tracking-wider relative z-10">New This Mo.</p>
         </div>
 
         {{-- ── [3] WIDGET: total_ebooks ────────────────────────────────────────── --}}
         <div id="widget-total_ebooks" data-widget-id="total_ebooks"
-             class="dashboard-widget stat-widget bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-            <div class="widget-header">
-                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+             class="dashboard-widget stat-widget bg-white hover:bg-gradient-to-b hover:from-white hover:to-indigo-50/30 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 p-6 transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-indigo-50 to-transparent rounded-bl-full opacity-50 pointer-events-none group-hover:from-indigo-100/50 transition-colors"></div>
+            <div class="widget-header relative z-10">
+                <div class="w-12 h-12 bg-gradient-to-br from-indigo-100 to-indigo-200/50 rounded-xl flex items-center justify-center border border-indigo-200/30 shadow-inner group-hover:-rotate-6 transition-transform">
+                    <svg class="w-6 h-6 text-indigo-600 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                 </div>
                 <div class="widget-controls">
                     <button class="widget-hide-btn" onclick="hideWidget('total_ebooks')" title="Hide widget">✕</button>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-gray-800 mt-3">{{ $totalEbooks }}</p>
-            <p class="text-sm text-gray-500 mt-1">Total Ebooks</p>
+            <p class="text-4xl font-extrabold text-gray-800 mt-5 tracking-tight relative z-10">{{ $totalEbooks }}</p>
+            <p class="text-sm font-semibold text-gray-400 mt-1 uppercase tracking-wider relative z-10">Total Ebooks</p>
         </div>
 
         {{-- ── [4] WIDGET: total_authors ───────────────────────────────────────── --}}
         <div id="widget-total_authors" data-widget-id="total_authors"
-             class="dashboard-widget stat-widget bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-            <div class="widget-header">
-                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+             class="dashboard-widget stat-widget bg-white hover:bg-gradient-to-b hover:from-white hover:to-purple-50/30 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 p-6 transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-purple-50 to-transparent rounded-bl-full opacity-50 pointer-events-none group-hover:from-purple-100/50 transition-colors"></div>
+            <div class="widget-header relative z-10">
+                <div class="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200/50 rounded-xl flex items-center justify-center border border-purple-200/30 shadow-inner group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6 text-purple-600 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 </div>
                 <div class="widget-controls">
                     <button class="widget-hide-btn" onclick="hideWidget('total_authors')" title="Hide widget">✕</button>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-gray-800 mt-3">{{ $totalAuthors }}</p>
-            <p class="text-sm text-gray-500 mt-1">Total Authors</p>
+            <p class="text-4xl font-extrabold text-gray-800 mt-5 tracking-tight relative z-10">{{ $totalAuthors }}</p>
+            <p class="text-sm font-semibold text-gray-400 mt-1 uppercase tracking-wider relative z-10">Total Authors</p>
         </div>
 
         {{-- ── [5] WIDGET: total_categories ────────────────────────────────────── --}}
         <div id="widget-total_categories" data-widget-id="total_categories"
-             class="dashboard-widget stat-widget bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-            <div class="widget-header">
-                <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+             class="dashboard-widget stat-widget bg-white hover:bg-gradient-to-b hover:from-white hover:to-violet-50/30 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 p-6 transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-violet-50 to-transparent rounded-bl-full opacity-50 pointer-events-none group-hover:from-violet-100/50 transition-colors"></div>
+            <div class="widget-header relative z-10">
+                <div class="w-12 h-12 bg-gradient-to-br from-violet-100 to-violet-200/50 rounded-xl flex items-center justify-center border border-violet-200/30 shadow-inner group-hover:-rotate-6 transition-transform">
+                    <svg class="w-6 h-6 text-violet-600 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
                 </div>
                 <div class="widget-controls">
                     <button class="widget-hide-btn" onclick="hideWidget('total_categories')" title="Hide widget">✕</button>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-gray-800 mt-3">{{ $totalCategories }}</p>
-            <p class="text-sm text-gray-500 mt-1">Total Categories</p>
+            <p class="text-4xl font-extrabold text-gray-800 mt-5 tracking-tight relative z-10">{{ $totalCategories }}</p>
+            <p class="text-sm font-semibold text-gray-400 mt-1 uppercase tracking-wider relative z-10">Categories</p>
         </div>
 
         {{-- ── [6] WIDGET: active_subscriptions ───────────────────────────────── --}}
         <div id="widget-active_subscriptions" data-widget-id="active_subscriptions"
-             class="dashboard-widget stat-widget bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-            <div class="widget-header">
-                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+             class="dashboard-widget stat-widget bg-white hover:bg-gradient-to-b hover:from-white hover:to-green-50/30 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 p-6 transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-green-50 to-transparent rounded-bl-full opacity-50 pointer-events-none group-hover:from-green-100/50 transition-colors"></div>
+            <div class="widget-header relative z-10">
+                <div class="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200/50 rounded-xl flex items-center justify-center border border-green-200/30 shadow-inner group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6 text-green-600 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
                 </div>
                 <div class="widget-controls">
                     <button class="widget-hide-btn" onclick="hideWidget('active_subscriptions')" title="Hide widget">✕</button>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-gray-800 mt-3">{{ $activeSubscriptions }}</p>
-            <p class="text-sm text-gray-500 mt-1">Active Subscriptions</p>
+            <p class="text-4xl font-extrabold text-gray-800 mt-5 tracking-tight relative z-10">{{ $activeSubscriptions }}</p>
+            <p class="text-sm font-semibold text-gray-400 mt-1 uppercase tracking-wider relative z-10">Active Subs</p>
         </div>
 
         {{-- ── [7] WIDGET: revenue_month ───────────────────────────────────────── --}}
         <div id="widget-revenue_month" data-widget-id="revenue_month"
-             class="dashboard-widget stat-widget bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-            <div class="widget-header">
-                <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+             class="dashboard-widget stat-widget bg-white hover:bg-gradient-to-b hover:from-white hover:to-emerald-50/30 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 p-6 transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-emerald-50 to-transparent rounded-bl-full opacity-50 pointer-events-none group-hover:from-emerald-100/50 transition-colors"></div>
+            <div class="widget-header relative z-10">
+                <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-xl flex items-center justify-center border border-emerald-500/30 shadow-inner shadow-emerald-700/20 group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                 </div>
                 <div class="widget-controls">
-                    <span class="text-xs text-gray-400">This month</span>
+                    <span class="text-[10px] font-black uppercase text-emerald-600 tracking-wider bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-md">This Month</span>
                     <button class="widget-hide-btn" onclick="hideWidget('revenue_month')" title="Hide widget">✕</button>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-gray-800 mt-3">₱{{ number_format($revenueThisMonth, 2) }}</p>
-            <p class="text-sm text-gray-500 mt-1">Revenue This Month</p>
+            <p class="text-3xl lg:text-4xl font-extrabold text-gray-800 mt-5 tracking-tight relative z-10 drop-shadow-sm">₱{{ number_format($revenueThisMonth, 2) }}</p>
+            <p class="text-sm font-semibold text-gray-400 mt-1 uppercase tracking-wider relative z-10">Revenue</p>
         </div>
 
         {{-- ── [8] WIDGET: pending_reviews ─────────────────────────────────────── --}}
         <div id="widget-pending_reviews" data-widget-id="pending_reviews"
-             class="dashboard-widget stat-widget bg-white rounded-xl shadow-sm p-5 border border-gray-100">
-            <div class="widget-header">
-                <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+             class="dashboard-widget stat-widget bg-white hover:bg-gradient-to-b hover:from-white hover:to-amber-50/30 rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 p-6 transition-all duration-300 hover:-translate-y-1 group relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-amber-50 to-transparent rounded-bl-full opacity-50 pointer-events-none group-hover:from-amber-100/50 transition-colors"></div>
+            <div class="widget-header relative z-10">
+                <div class="w-12 h-12 bg-gradient-to-br from-amber-100 to-amber-200/50 rounded-xl flex items-center justify-center border border-amber-200/30 shadow-inner group-hover:-rotate-6 transition-transform">
+                    <svg class="w-6 h-6 text-amber-600 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
                 </div>
                 <div class="widget-controls">
                     @if($pendingReviews > 0)
-                    <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $pendingReviews }}</span>
+                    <span class="bg-red-500 text-white shadow shadow-red-500/40 text-[10px] font-bold px-2 py-1 rounded-md tracking-wider uppercase animate-pulse">{{ $pendingReviews }} Pending</span>
                     @endif
                     <button class="widget-hide-btn" onclick="hideWidget('pending_reviews')" title="Hide widget">✕</button>
                 </div>
             </div>
-            <p class="text-3xl font-bold text-gray-800 mt-3">{{ $pendingReviews }}</p>
-            <p class="text-sm text-gray-500 mt-1">Pending Reviews</p>
+            <p class="text-4xl font-extrabold text-gray-800 mt-5 tracking-tight relative z-10">{{ $pendingReviews }}</p>
+            <p class="text-sm font-semibold text-gray-400 mt-1 uppercase tracking-wider relative z-10">Review Queue</p>
         </div>
 
         {{-- ── [9] WIDGET: activity_feed ───────────────────────────────────────── --}}
         <div id="widget-activity_feed" data-widget-id="activity_feed"
-             class="dashboard-widget full-widget bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <span class="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                    <h2 class="font-semibold text-gray-800">Live Activity Feed</h2>
-                </div>
+             class="dashboard-widget full-widget bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
+            <div class="px-6 py-5 border-b border-gray-100/80 flex items-center justify-between bg-gray-50/50">
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('admin.activity-logs.index') }}" class="text-xs text-blue-600 hover:underline">View all →</a>
-                    <button class="widget-hide-btn" onclick="hideWidget('activity_feed')" title="Hide widget">✕</button>
+                    <span class="relative flex h-3 w-3">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                    </span>
+                    <h2 class="font-bold text-gray-800 tracking-tight">Live Activity Feed</h2>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="{{ route('admin.activity-logs.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline transition-all">View all →</a>
+                    <button class="widget-hide-btn bg-white shadow-sm border border-gray-200" onclick="hideWidget('activity_feed')" title="Hide widget">✕</button>
                 </div>
             </div>
-            <div class="divide-y divide-gray-50">
+            <div class="divide-y divide-gray-50 max-h-96 overflow-y-auto">
                 @forelse($activityFeed as $log)
-                <div class="px-6 py-3 flex items-start gap-3 hover:bg-gray-50 transition-colors">
-                    <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <div class="px-6 py-4 flex items-start gap-4 hover:bg-blue-50/30 transition-colors group">
+                    <div class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border border-gray-100 group-hover:bg-blue-100 group-hover:text-blue-600 group-hover:border-blue-200 transition-colors">
+                        <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm text-gray-800 font-medium truncate">{{ $log->action }}</p>
-                        <p class="text-xs text-gray-400 truncate">{{ Str::limit($log->description, 80) }}</p>
-                        <p class="text-xs text-gray-300 mt-0.5">{{ $log->user?->email ?? 'System' }} · {{ $log->created_at?->diffForHumans() }}</p>
+                        <p class="text-sm text-gray-900 font-bold tracking-tight truncate">{{ $log->action }}</p>
+                        <p class="text-xs text-gray-500 truncate mt-0.5">{{ Str::limit($log->description, 90) }}</p>
+                        <p class="text-[11px] font-semibold text-gray-400 mt-1 uppercase tracking-wider flex gap-2">
+                            <span class="text-blue-600">{{ $log->user?->email ?? 'System' }}</span> &bull; <span>{{ $log->created_at?->diffForHumans() }}</span>
+                        </p>
                     </div>
-                    <span class="text-xs text-gray-300 whitespace-nowrap">{{ $log->module }}</span>
+                    <span class="bg-gray-100 text-gray-500 border border-gray-200 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest">{{ $log->module }}</span>
                 </div>
                 @empty
-                <div class="px-6 py-8 text-center text-gray-400 text-sm">No recent activity.</div>
+                <div class="px-6 py-12 text-center text-gray-400 text-sm flex flex-col items-center gap-2">
+                    <svg class="w-10 h-10 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+                    No recent activity.
+                </div>
                 @endforelse
             </div>
         </div>
 
         {{-- ── [10] WIDGET: recent_transactions ────────────────────────────────── --}}
         <div id="widget-recent_transactions" data-widget-id="recent_transactions"
-             class="dashboard-widget full-widget bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <h2 class="font-semibold text-gray-800">Recent Transactions</h2>
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('admin.transactions.index') }}" class="text-xs text-blue-600 hover:underline">View all →</a>
-                    <button class="widget-hide-btn" onclick="hideWidget('recent_transactions')" title="Hide widget">✕</button>
+             class="dashboard-widget full-widget bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
+            <div class="px-6 py-5 border-b border-gray-100/80 flex items-center justify-between bg-gray-50/50">
+                <h2 class="font-bold text-gray-800 tracking-tight flex items-center gap-2">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                    Recent Transactions
+                </h2>
+                <div class="flex items-center gap-4">
+                    <a href="{{ route('admin.transactions.index') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline transition-all">View all →</a>
+                    <button class="widget-hide-btn bg-white shadow-sm border border-gray-200" onclick="hideWidget('recent_transactions')" title="Hide widget">✕</button>
                 </div>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-50/50 text-gray-400 text-[10px] font-black uppercase tracking-wider">
                         <tr>
-                            <th class="px-6 py-3 text-left">Member</th>
-                            <th class="px-6 py-3 text-left">Plan</th>
-                            <th class="px-6 py-3 text-left">Amount</th>
-                            <th class="px-6 py-3 text-left">Status</th>
-                            <th class="px-6 py-3 text-left">Date</th>
+                            <th class="px-6 py-4">Member</th>
+                            <th class="px-6 py-4">Plan Name</th>
+                            <th class="px-6 py-4">Amount</th>
+                            <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4">Date</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y divide-gray-50">
                         @forelse($recentTransactions as $tx)
-                        <tr class="border-t border-gray-50 hover:bg-gray-50 transition-colors">
-                            <td class="px-6 py-3 font-medium text-gray-800">{{ $tx->member?->full_name ?: '—' }}</td>
-                            <td class="px-6 py-3 text-gray-500">{{ $tx->plan?->name ?: '—' }}</td>
-                            <td class="px-6 py-3 font-semibold text-emerald-600">₱{{ number_format($tx->amount, 2) }}</td>
-                            <td class="px-6 py-3">
-                                @php $txColors = ['completed'=>'bg-green-100 text-green-700','pending'=>'bg-yellow-100 text-yellow-700','failed'=>'bg-red-100 text-red-700']; @endphp
-                                <span class="px-2 py-0.5 rounded text-xs font-medium {{ $txColors[$tx->status] ?? 'bg-gray-100 text-gray-600' }}">{{ ucfirst($tx->status) }}</span>
+                        <tr class="hover:bg-gray-50/80 transition-colors group">
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-800">{{ $tx->member?->full_name ?: '—' }}</div>
+                                <div class="text-xs text-gray-400">{{ $tx->member?->email }}</div>
                             </td>
-                            <td class="px-6 py-3 text-gray-400 text-xs">{{ $tx->created_at->format('M d, Y') }}</td>
+                            <td class="px-6 py-4 font-medium text-gray-600">{{ $tx->plan?->name ?: '—' }}</td>
+                            <td class="px-6 py-4 font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">₱{{ number_format($tx->amount, 2) }}</td>
+                            <td class="px-6 py-4">
+                                @php $txColors = ['completed'=>'bg-emerald-50 text-emerald-700 border-emerald-200','pending'=>'bg-amber-50 text-amber-700 border-amber-200','failed'=>'bg-rose-50 text-rose-700 border-rose-200']; @endphp
+                                <span class="px-2.5 py-1 rounded-md border text-[11px] font-bold uppercase tracking-wider {{ $txColors[$tx->status] ?? 'bg-gray-50 text-gray-600 border-gray-200' }}">
+                                    {{ ucfirst($tx->status) }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-gray-500 text-xs font-medium">{{ $tx->created_at->format('M d, Y') }}</td>
                         </tr>
                         @empty
-                        <tr><td colspan="5" class="px-6 py-6 text-center text-gray-400">No transactions yet.</td></tr>
+                        <tr><td colspan="5" class="px-6 py-12 text-center text-gray-400">No transactions yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -261,70 +297,108 @@
 
         {{-- ── [11] WIDGET: top_ebooks ─────────────────────────────────────────── --}}
         <div id="widget-top_ebooks" data-widget-id="top_ebooks"
-             class="dashboard-widget full-widget bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <h2 class="font-semibold text-gray-800">Most Read Ebooks</h2>
-                <button class="widget-hide-btn" onclick="hideWidget('top_ebooks')" title="Hide widget">✕</button>
+             class="dashboard-widget full-widget bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
+            <div class="px-6 py-5 border-b border-gray-100/80 flex items-center justify-between bg-gray-50/50">
+                <h2 class="font-bold text-gray-800 tracking-tight flex items-center gap-2">
+                    <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                    Most Read Ebooks Top Chart
+                </h2>
+                <button class="widget-hide-btn bg-white shadow-sm border border-gray-200" onclick="hideWidget('top_ebooks')" title="Hide widget">✕</button>
             </div>
             <div class="divide-y divide-gray-50">
                 @forelse($topEbooks as $i => $ebook)
-                <div class="px-6 py-3 flex items-center gap-4 hover:bg-gray-50 transition-colors">
-                    <span class="text-2xl font-black text-gray-200 w-8 text-center leading-none">{{ $i + 1 }}</span>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-semibold text-gray-800 truncate">{{ $ebook->title }}</p>
-                        <p class="text-xs text-gray-400 truncate">{{ $ebook->authors->pluck('full_name')->join(', ') ?: 'Unknown' }}</p>
+                <div class="px-6 py-4 flex items-center gap-5 hover:bg-gray-50/80 transition-colors group">
+                    <div class="text-xl font-black {{ $i < 3 ? 'text-gray-800' : 'text-gray-300' }} w-8 text-center tabular-nums">{{ $i + 1 }}</div>
+                    <div class="w-12 h-16 bg-gray-100 rounded border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm group-hover:shadow transition-shadow">
+                        @if($ebook->cover_image)
+                            <img src="{{ Storage::url($ebook->cover_image) }}" alt="Cover" class="w-full h-full object-cover">
+                        @else
+                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        @endif
                     </div>
-                    <div class="text-right flex-shrink-0">
-                        <p class="text-sm font-bold text-blue-600">{{ $ebook->ebook_access_count }}</p>
-                        <p class="text-xs text-gray-400">reads</p>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-gray-900 truncate">{{ $ebook->title }}</p>
+                        <p class="text-xs text-gray-500 truncate mt-0.5">{{ $ebook->authors->pluck('full_name')->join(', ') ?: 'Unknown' }}</p>
+                    </div>
+                    <div class="text-right flex-shrink-0 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        <p class="text-sm font-black text-blue-600 group-hover:text-white leading-none">{{ $ebook->ebook_access_count }}</p>
+                        <p class="text-[10px] font-bold text-blue-400 group-hover:text-blue-200 uppercase tracking-widest mt-0.5">Reads</p>
                     </div>
                 </div>
                 @empty
-                <div class="px-6 py-8 text-center text-gray-400 text-sm">No reading data yet.</div>
+                <div class="px-6 py-12 text-center text-gray-400 text-sm">No reading data yet.</div>
                 @endforelse
             </div>
         </div>
 
         {{-- ── [12] WIDGET: subscription_chart ─────────────────────────────────── --}}
         <div id="widget-subscription_chart" data-widget-id="subscription_chart"
-             class="dashboard-widget full-widget bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <div class="flex items-center justify-between mb-5">
+             class="dashboard-widget full-widget bg-white rounded-2xl shadow-sm border border-gray-100 p-8 hover:shadow-lg transition-shadow">
+            <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h2 class="font-semibold text-gray-800">Subscriptions Chart</h2>
-                    <p class="text-xs text-gray-400 mt-0.5">New subscriptions over the last 6 months</p>
+                    <h2 class="font-bold text-gray-800 tracking-tight text-lg">Subscriptions Growth</h2>
+                    <p class="text-sm text-gray-400 mt-1 font-medium">New premium tier subscriptions over the last 6 months</p>
                 </div>
-                <button class="widget-hide-btn" onclick="hideWidget('subscription_chart')" title="Hide widget">✕</button>
+                <button class="widget-hide-btn bg-gray-50 shadow-sm border border-gray-200" onclick="hideWidget('subscription_chart')" title="Hide widget">✕</button>
             </div>
-            <div class="flex items-end gap-3 h-32">
+            <div class="flex items-end gap-4 h-40">
                 @php $maxCount = max($subscriptionChart->pluck('count')->max(), 1); @endphp
                 @foreach($subscriptionChart as $point)
-                @php $barHeight = max(4, round(($point['count'] / $maxCount) * 100)); @endphp
-                <div class="flex-1 flex flex-col items-center gap-1">
-                    <span class="text-xs font-bold text-blue-600">{{ $point['count'] }}</span>
-                    <div class="w-full bg-blue-500 hover:bg-blue-600 transition-colors rounded-t-md" style="height: {{ $barHeight }}%;" title="{{ $point['count'] }} subscriptions"></div>
-                    <span class="text-xs text-gray-400">{{ $point['label'] }}</span>
+                @php 
+                    $barHeight = max(4, round(($point['count'] / $maxCount) * 100)); 
+                    $isLast = $loop->last;
+                @endphp
+                <div class="flex-1 flex flex-col items-center gap-2 group relative">
+                    <span class="text-xs font-black {{ $isLast ? 'text-indigo-600' : 'text-gray-400' }} group-hover:-translate-y-1 transition-transform">{{ $point['count'] }}</span>
+                    <div class="w-full relative overflow-hidden rounded-t-xl {{ $isLast ? 'bg-gradient-to-t from-indigo-500 to-purple-500 shadow-md shadow-indigo-500/20' : 'bg-gray-100 hover:bg-gray-200' }} transition-colors" style="height: {{ $barHeight }}%;" title="{{ $point['count'] }} subscriptions">
+                        @if($isLast) <div class="absolute inset-0 bg-white/20 w-full h-full transform -skew-y-12"></div> @endif
+                    </div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider {{ $isLast ? 'text-indigo-600' : 'text-gray-400' }}">{{ $point['label'] }}</span>
                 </div>
                 @endforeach
             </div>
-            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center gap-6 text-sm">
-                <div><span class="text-gray-400">Total Active:</span> <span class="font-bold text-gray-800">{{ $activeSubscriptions }}</span></div>
-                <div><span class="text-gray-400">Revenue:</span> <span class="font-bold text-emerald-600">₱{{ number_format($revenueThisMonth, 2) }}</span></div>
-                <div><span class="text-gray-400">Premium:</span> <span class="font-bold text-purple-600">{{ $premiumMembers }}</span></div>
+            <div class="mt-8 pt-6 border-t border-gray-100 flex flex-wrap items-center justify-center sm:justify-start gap-8 text-sm">
+                <div class="flex flex-col"><span class="text-gray-400 text-[10px] font-black uppercase tracking-wider">Total Active</span> <span class="font-extrabold text-xl text-gray-800">{{ $activeSubscriptions }}</span></div>
+                <div class="flex flex-col"><span class="text-gray-400 text-[10px] font-black uppercase tracking-wider">Total Revenue</span> <span class="font-extrabold text-xl text-emerald-600">₱{{ number_format($revenueThisMonth, 2) }}</span></div>
+                <div class="flex flex-col"><span class="text-gray-400 text-[10px] font-black uppercase tracking-wider">Total Premium</span> <span class="font-extrabold text-xl text-indigo-600">{{ $premiumMembers }}</span></div>
             </div>
         </div>
 
         {{-- ── Quick Links (always visible, not a widget) ──────────────────────── --}}
-        <div class="w-full bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <h2 class="text-base font-semibold text-gray-700 mb-4">Quick Actions</h2>
-            <div class="flex flex-wrap gap-3">
-                <a href="{{ route('admin.ebooks.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">+ Add Ebook</a>
-                <a href="{{ route('admin.reviews.index', ['status' => 'pending']) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
-                    Review Approvals
-                    @if($pendingReviews > 0) <span class="bg-white text-yellow-700 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingReviews }}</span> @endif
+        <div class="w-full bg-white rounded-2xl shadow-sm p-8 border border-gray-100">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <h2 class="text-lg font-bold text-gray-800 tracking-tight">Quick Actions Workspace</h2>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <a href="{{ route('admin.ebooks.create') }}" class="group relative bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center gap-3 hover:border-blue-500 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg></div>
+                    <span class="text-sm font-bold text-gray-700 group-hover:text-blue-700 transition-colors">Add Ebook</span>
                 </a>
-                <a href="{{ route('admin.subscription-plans.index') }}" class="bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">Manage Plans</a>
-                <a href="{{ route('admin.subscriptions.index') }}" class="bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">View Subscriptions</a>
-                <a href="{{ route('admin.transactions.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">View Transactions</a>
+
+                <a href="{{ route('admin.reviews.index', ['status' => 'pending']) }}" class="group relative bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center gap-3 hover:border-amber-500 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    @if($pendingReviews > 0) <span class="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-black px-2 py-1 rounded-lg border-2 border-white shadow-sm">{{ $pendingReviews }}</span> @endif
+                    <div class="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></div>
+                    <span class="text-sm font-bold text-gray-700 group-hover:text-amber-700 transition-colors text-center leading-tight">Review Approvals</span>
+                </a>
+
+                <a href="{{ route('admin.subscription-plans.index') }}" class="group relative bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center gap-3 hover:border-purple-500 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg></div>
+                    <span class="text-sm font-bold text-gray-700 group-hover:text-purple-700 transition-colors text-center leading-tight">Manage Plans</span>
+                </a>
+
+                <a href="{{ route('admin.subscriptions.index') }}" class="group relative bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center gap-3 hover:border-emerald-500 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+                    <span class="text-sm font-bold text-gray-700 group-hover:text-emerald-700 transition-colors text-center leading-tight">Monitor Subs</span>
+                </a>
+
+                <a href="{{ route('admin.transactions.index') }}" class="group relative bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center gap-3 hover:border-teal-500 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-10 h-10 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center group-hover:scale-110 transition-transform"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg></div>
+                    <span class="text-sm font-bold text-gray-700 group-hover:text-teal-700 transition-colors text-center leading-tight">Transactions</span>
+                </a>
             </div>
         </div>
 
@@ -337,35 +411,35 @@
 
 {{-- Backdrop --}}
 <div id="customize-backdrop" onclick="closeCustomizePanel()"
-     class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-200"></div>
+     class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-40 hidden opacity-0 transition-opacity duration-300"></div>
 
 {{-- Panel --}}
 <div id="customize-panel"
-     class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out">
+     class="fixed top-0 right-0 h-full w-80 bg-white/95 backdrop-blur-xl shadow-2xl z-50 flex flex-col transform translate-x-full transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] border-l border-white/20">
 
     {{-- Panel Header --}}
-    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
+    <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 flex-shrink-0 bg-white">
         <div>
-            <h3 class="font-bold text-gray-900">Customize Widgets</h3>
-            <p class="text-xs text-gray-400 mt-0.5"><span id="panel-visible-count">12</span>/12 widgets visible</p>
+            <h3 class="font-extrabold text-gray-900 tracking-tight text-lg">Customize Layout</h3>
+            <p class="text-xs text-gray-500 mt-0.5 font-medium"><span id="panel-visible-count">12</span>/12 widgets visible</p>
         </div>
-        <button onclick="closeCustomizePanel()" class="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        <button onclick="closeCustomizePanel()" class="w-8 h-8 rounded-full bg-gray-50 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
     </div>
 
     {{-- Widget List --}}
-    <div class="flex-1 overflow-y-auto px-4 py-3" id="customize-widget-list">
+    <div class="flex-1 overflow-y-auto px-5 py-4 space-y-1" id="customize-widget-list">
         {{-- Rows will be rendered and sorted by JS --}}
     </div>
 
     {{-- Panel Footer --}}
-    <div class="px-5 py-4 border-t border-gray-100 space-y-2 flex-shrink-0">
-        <button onclick="saveLayout()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-2.5 rounded-xl transition-colors">
-            Save Layout
+    <div class="px-6 py-5 border-t border-gray-100 space-y-3 flex-shrink-0 bg-gray-50/50">
+        <button onclick="saveLayout()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm py-3 rounded-xl shadow-md hover:shadow-lg transition-all focus:ring-4 focus:ring-blue-100">
+            Save Changes
         </button>
-        <button onclick="resetLayout()" class="w-full bg-white border border-gray-200 hover:border-red-300 hover:text-red-600 text-gray-600 font-medium text-sm py-2.5 rounded-xl transition-colors">
-            Reset to Default
+        <button onclick="resetLayout()" class="w-full bg-white border border-gray-200 hover:border-red-200 hover:bg-red-50 hover:text-red-600 text-gray-600 font-bold text-sm py-3 rounded-xl transition-all">
+            Reset Default Layout
         </button>
     </div>
 </div>
