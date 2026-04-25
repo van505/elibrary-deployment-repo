@@ -220,7 +220,7 @@
                                 {{-- Edit (pencil) --}}
                                 <button type="button"
                                         @click="openEdit({{ $collection->id }}, {{ Js::from($colInlineData) }})"
-                                        class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                        class="p-1.5 text-indigo-300 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
                                         title="Edit">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 </button>
@@ -281,121 +281,74 @@
         @if($collections->hasPages())
             <div class="px-6 py-4 border-t border-gray-100">{{ $collections->links() }}</div>
         @endif
-    </div>
-    </div>
+    </div>{{-- /space-y-5 --}}
 
-    {{-- ── Slide-over Backdrop ─────────────────────────────────── --}}
-    <div x-show="open"
-         x-transition:enter="ease-in-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="ease-in-out duration-300"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity z-[90]"
-         @click="open = false" style="display: none;"></div>
+    {{-- ── Reusable Drawer Component ──────────────────────────────── --}}
+    <x-admin.drawer
+        title="Create Collection"
+        edit-title="Edit Collection"
+        form-action="{{ route('admin.collections.store') }}">
 
-    {{-- ── Slide-over Panel ────────────────────────────────────── --}}
-    <div class="fixed inset-y-0 right-0 z-[100] flex max-w-full pl-10" x-show="open" style="display: none;">
-        <div x-show="open"
-             x-transition:enter="transform transition ease-in-out duration-300"
-             x-transition:enter-start="translate-x-full"
-             x-transition:enter-end="translate-x-0"
-             x-transition:leave="transform transition ease-in-out duration-300"
-             x-transition:leave-start="translate-x-0"
-             x-transition:leave-end="translate-x-full"
-             class="w-screen max-w-md pointer-events-auto">
-
-            <form :action="formUrl" method="POST" enctype="multipart/form-data" class="flex flex-col h-full bg-white shadow-2xl">
-                @csrf
-                <input type="hidden" :name="isEdit ? '_method' : '_noop'" value="PUT">
-
-                {{-- Drawer Header --}}
-                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900" x-text="isEdit ? 'Edit Collection' : 'New Collection'"></h2>
-                    <button type="button" @click="open = false" class="text-gray-400 hover:text-gray-600 transition-colors">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-
-                {{-- Drawer Body --}}
-                <div class="flex-1 px-6 py-6 overflow-y-auto space-y-6">
-
-                    {{-- Collection Name --}}
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Collection Name <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" x-model="formData.name" required
-                               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-
-                    {{-- Description --}}
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                        <textarea name="description" x-model="formData.description" rows="4"
-                                  class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                  placeholder="A short description of this collection..."></textarea>
-                    </div>
-
-                    {{-- Cover Image — Drag & Drop --}}
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Cover Image</label>
-                        <div x-show="isEdit && formData.currentCover" class="mb-3">
-                            <img :src="formData.currentCover" class="w-20 h-28 object-cover rounded shadow-sm border border-gray-200">
-                            <p class="text-xs text-gray-500 mt-1">Upload a new image to replace</p>
-                        </div>
-                        <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-indigo-400 transition-colors bg-gray-50"
-                             x-data="{ dragging: false }"
-                             @dragover.prevent="dragging = true"
-                             @dragleave.prevent="dragging = false"
-                             @drop.prevent="dragging = false; $refs.fileInput.files = $event.dataTransfer.files"
-                             :class="{ 'border-indigo-500 bg-indigo-50': dragging }">
-                            <div class="space-y-1 text-center">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                <div class="flex text-sm text-gray-600 justify-center">
-                                    <label class="relative cursor-pointer bg-transparent rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                                        <span>Upload a file</span>
-                                        <input x-ref="fileInput" type="file" name="cover_image" class="sr-only" accept="image/*">
-                                    </label>
-                                    <p class="pl-1">or drag and drop</p>
-                                </div>
-                                <p class="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Status Toggle --}}
-                    <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-100">
-                        <div>
-                            <label class="text-sm font-medium text-gray-900">Active Status</label>
-                            <p class="text-xs text-gray-500">Is this collection visible to users?</p>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="hidden" name="is_active" value="0">
-                            <input type="checkbox" name="is_active" value="1" x-model="formData.is_active" class="sr-only peer">
-                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                    </div>
-                </div>
-
-                {{-- Drawer Footer --}}
-                <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
-                    <button type="button" @click="open = false"
-                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition-colors">
-                        Cancel
-                    </button>
-                    <button type="submit"
-                            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 transition-colors">
-                        <span x-text="isEdit ? 'Save Changes' : 'Create Collection'"></span>
-                    </button>
-                </div>
-            </form>
+        {{-- Collection Name --}}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Collection Name <span class="text-red-500">*</span></label>
+            <input type="text" name="name" x-model="formData.name" required
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
         </div>
-    </div>
-</div>
+
+        {{-- Description --}}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <textarea name="description" x-model="formData.description" rows="4"
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="A short description of this collection..."></textarea>
+        </div>
+
+        {{-- Cover Image — Drag & Drop --}}
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Cover Image</label>
+            <div x-show="isEdit && formData.currentCover" class="mb-3">
+                <img :src="formData.currentCover" class="w-20 h-28 object-cover rounded shadow-sm border border-gray-200">
+                <p class="text-xs text-gray-500 mt-1">Upload a new image to replace</p>
+            </div>
+            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-indigo-400 transition-colors bg-gray-50"
+                 x-data="{ dragging: false }"
+                 @dragover.prevent="dragging = true"
+                 @dragleave.prevent="dragging = false"
+                 @drop.prevent="dragging = false; $refs.fileInput.files = $event.dataTransfer.files"
+                 :class="{ 'border-indigo-500 bg-indigo-50': dragging }">
+                <div class="space-y-1 text-center">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="flex text-sm text-gray-600 justify-center">
+                        <label class="relative cursor-pointer bg-transparent rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                            <span>Upload a file</span>
+                            <input x-ref="fileInput" type="file" name="cover_image" class="sr-only" accept="image/*">
+                        </label>
+                        <p class="pl-1">or drag and drop</p>
+                    </div>
+                    <p class="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Status Toggle --}}
+        <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-100">
+            <div>
+                <label class="text-sm font-medium text-gray-900">Active Status</label>
+                <p class="text-xs text-gray-500">Is this collection visible to users?</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="hidden" name="is_active" value="0">
+                <input type="checkbox" name="is_active" value="1" x-model="formData.is_active" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+        </div>
+
+    </x-admin.drawer>
+
+</div>{{-- /h-full x-data --}}
 
 <script>
 window.collectionDrawer = function() {

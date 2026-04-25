@@ -303,7 +303,32 @@
                         </div>
                     </td>
                     <td class="px-4 py-3">
-                        <span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-medium">{{ $ebook->category->name ?? '—' }}</span>
+                        @php
+                            $colorHexMap = [
+                                'red'    => '#f87171',
+                                'orange' => '#fb923c',
+                                'yellow' => '#facc15',
+                                'green'  => '#34d399',
+                                'blue'   => '#60a5fa',
+                                'indigo' => '#818cf8',
+                                'purple' => '#c084fc',
+                                'pink'   => '#f472b6',
+                                'slate'  => '#94a3b8',
+                            ];
+                            $catColorKey = $ebook->category->color ?? 'blue';
+                            $catHex      = $colorHexMap[$catColorKey] ?? '#60a5fa';
+                        @endphp
+                        @if($ebook->category)
+                            <span class="inline-flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full flex-shrink-0"
+                                      style="background-color: {{ $catHex }}"></span>
+                                <span class="text-xs font-medium" style="color: {{ $catHex }}">
+                                    {{ $ebook->category->name }}
+                                </span>
+                            </span>
+                        @else
+                            <span class="text-xs text-gray-400">—</span>
+                        @endif
                     </td>
                     <td class="px-4 py-3">
                         <span class="bg-gray-50 text-gray-700 text-xs px-2.5 py-0.5 rounded-full font-medium uppercase border border-gray-100">{{ $ebook->file_type }}</span>
@@ -344,7 +369,7 @@
                             @endphp
                             <button type="button"
                                @click="openEdit({{ $ebook->id }}, {{ Js::from($ebookInlineData) }})"
-                               class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                               class="p-1.5 text-indigo-300 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
                                title="Edit">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                             </button>
@@ -352,7 +377,7 @@
                             {{-- Action Dropdown (Three Dots) --}}
                             <div x-data="{ open: false }" class="relative">
                                 <button @click="open = !open" @click.outside="open = false"
-                                        class="p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none"
+                                        class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-gray-100 rounded-lg transition-all duration-200 focus:outline-none"
                                         title="More Actions">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg>
                                 </button>

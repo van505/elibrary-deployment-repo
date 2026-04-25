@@ -35,7 +35,13 @@ class AuthorController extends Controller
             'last_name'   => 'required|string|max:255',
             'bio'         => 'nullable|string',
             'nationality' => 'nullable|string|max:255',
+            'photo'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('authors', 'public');
+            $validated['photo'] = $path;
+        }
 
         $author = Author::create($validated);
 
@@ -68,7 +74,13 @@ class AuthorController extends Controller
             'last_name'   => 'required|string|max:255',
             'bio'         => 'nullable|string',
             'nationality' => 'nullable|string|max:255',
+            'photo'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+
+        if ($request->hasFile('photo')) {
+            $path = $request->file('photo')->store('authors', 'public');
+            $validated['photo'] = $path;
+        }
 
         $author->update($validated);
 
