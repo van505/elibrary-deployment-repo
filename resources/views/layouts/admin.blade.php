@@ -125,15 +125,6 @@
             {{-- Header Icons + Avatar Dropdown --}}
             <div class="flex items-center gap-1 border-l border-gray-200 pl-4">
 
-                {{-- Announcements bell --}}
-                <a href="{{ route('admin.announcements.index') }}"
-                   class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200 relative"
-                   title="Announcements">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5.055A7.001 7.001 0 005 12v3l-2 2v1h14v-1l-2-2v-3a7.001 7.001 0 00-6-6.945M11 5.055V5a1 1 0 10-2 0v.055M9 17a2 2 0 104 0H9z" />
-                    </svg>
-                </a>
-
                 {{-- Notification bell --}}
                 <button class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200 relative"
                         title="Notifications">
@@ -151,7 +142,7 @@
                             class="flex items-center gap-2 cursor-pointer focus:outline-none group"
                             :aria-expanded="dropdownOpen.toString()">
                         <span class="hidden sm:block text-sm text-gray-600 font-medium group-hover:text-gray-900 transition-colors">
-                            {{ auth()->user()->display_name }}
+                            Admin
                         </span>
                         <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm ring-2 ring-transparent group-hover:ring-blue-200 transition-all">
                             {{ strtoupper(substr(auth()->user()->first_name ?? auth()->user()->email ?? 'A', 0, 1)) }}

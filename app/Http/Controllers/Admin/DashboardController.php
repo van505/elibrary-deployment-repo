@@ -10,9 +10,11 @@ use App\Models\Ebook;
 use App\Models\EbookAccess;
 use App\Models\Member;
 use App\Models\Review;
+use App\Models\Setting;
 use App\Models\Subscription;
 use App\Models\Transaction;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -83,6 +85,17 @@ class DashboardController extends Controller
             ];
         });
 
+        // ── Widget visibility settings ──────────────────────────────────────
+        $widgets = [
+            'metrics'               => filter_var(Setting::where('key', 'dashboard.widget.metrics')->value('value')               ?? 'true',  FILTER_VALIDATE_BOOLEAN),
+            'subscriptions_chart'   => filter_var(Setting::where('key', 'dashboard.widget.subscriptions_chart')->value('value')   ?? 'true',  FILTER_VALIDATE_BOOLEAN),
+            'recent_transactions'   => filter_var(Setting::where('key', 'dashboard.widget.recent_transactions')->value('value')   ?? 'true',  FILTER_VALIDATE_BOOLEAN),
+            'action_required'       => filter_var(Setting::where('key', 'dashboard.widget.action_required')->value('value')       ?? 'true',  FILTER_VALIDATE_BOOLEAN),
+            'most_read_ebooks'      => filter_var(Setting::where('key', 'dashboard.widget.most_read_ebooks')->value('value')      ?? 'true',  FILTER_VALIDATE_BOOLEAN),
+            'recent_members'        => filter_var(Setting::where('key', 'dashboard.widget.recent_members')->value('value')        ?? 'false', FILTER_VALIDATE_BOOLEAN),
+            'activity_feed'         => filter_var(Setting::where('key', 'dashboard.widget.activity_feed')->value('value')         ?? 'false', FILTER_VALIDATE_BOOLEAN),
+        ];
+
         return view('admin.dashboard', compact(
             'totalUsers',
             'totalEbooks',
@@ -99,7 +112,26 @@ class DashboardController extends Controller
             'activityFeed',
             'recentTransactions',
             'topEbooks',
-            'subscriptionChart'
+            'subscriptionChart',
+            'widgets'
         ));
+    }
+
+    public function saveWidgets(Request $request)
+    {
+        $allowed = [
+            'metrics', 'subscriptions_chart', 'recent_transactions',
+            'action_required', 'most_read_ebooks', 'recent_members', 'activity_feed',
+        ];
+
+        foreach ($request->input('widgets', []) as $key => $value) {
+            if (!in_array($key, $allowed)) continue;
+            Setting::updateOrCreate(
+                ['key'   => 'dashboard.widget.' . $key],
+                ['value' => $value ? 'true' : 'false']
+            );
+        }
+
+        return response()->json(['success' => true]);
     }
 }

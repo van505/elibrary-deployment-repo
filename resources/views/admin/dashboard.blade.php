@@ -2,6 +2,31 @@
 @section('title', 'Dashboard')
 
 @section('content')
+<div x-data="{
+    customizeOpen: false,
+    saving: false,
+    widgets: {
+        metrics:             {{ $widgets['metrics'] ? 'true' : 'false' }},
+        subscriptions_chart: {{ $widgets['subscriptions_chart'] ? 'true' : 'false' }},
+        recent_transactions: {{ $widgets['recent_transactions'] ? 'true' : 'false' }},
+        action_required:     {{ $widgets['action_required'] ? 'true' : 'false' }},
+        most_read_ebooks:    {{ $widgets['most_read_ebooks'] ? 'true' : 'false' }},
+        recent_members:      {{ $widgets['recent_members'] ? 'true' : 'false' }},
+        activity_feed:       {{ $widgets['activity_feed'] ? 'true' : 'false' }},
+    },
+    async saveWidgets() {
+        this.saving = true;
+        await fetch('{{ route('admin.dashboard.widgets') }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            body: JSON.stringify({ widgets: this.widgets })
+        });
+        this.saving = false;
+        this.customizeOpen = false;
+        window.location.reload();
+    }
+}">
+
 <div class="space-y-5">
 
 {{-- ── ROW 1: Welcome Banner ──────────────────────────────────────────── --}}
@@ -15,11 +40,16 @@
         </p>
     </div>
     <div class="relative z-10 flex items-center gap-2">
-        <a href="{{ route('admin.ebooks.create') }}" title="Add Ebook"
+        <button @click="customizeOpen = true"
+                class="flex items-center gap-1.5 bg-indigo-700 hover:bg-indigo-600 text-white text-xs px-3 py-2 rounded-lg transition-all duration-200">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+            Customize
+        </button>
+        <button @click="$dispatch('open-ebook-drawer')" title="Add Ebook"
            class="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold px-3 py-2 rounded-xl transition-all">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
             Add Ebook
-        </a>
+        </button>
         <a href="{{ route('admin.subscription-plans.index') }}" title="Manage Plans"
            class="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold px-3 py-2 rounded-xl transition-all">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
@@ -33,6 +63,7 @@
     </div>
 </div>
 
+@if($widgets['metrics'])
 {{-- ── ROW 2: 6 Metric Cards ──────────────────────────────────────────── --}}
 <div class="grid grid-cols-2 lg:grid-cols-6 gap-4">
     @php
@@ -59,6 +90,7 @@
     </div>
     @endforeach
 </div>
+@endif
 
 {{-- ── ROWS 3-4: Split View ───────────────────────────────────────────── --}}
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -66,6 +98,7 @@
     {{-- Left: col-span-2 --}}
     <div class="lg:col-span-2 space-y-5">
 
+        @if($widgets['subscriptions_chart'])
         {{-- Subscription Growth Chart --}}
         <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
             <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -79,20 +112,70 @@
                 </div>
             </div>
             <div class="px-5 py-4">
-                @php $maxCount = max($subscriptionChart->pluck('count')->max(), 1); @endphp
-                <div class="flex items-end gap-2 h-28">
-                    @foreach($subscriptionChart as $point)
-                    @php $h = max(4, round(($point['count'] / $maxCount) * 100)); $last = $loop->last; @endphp
-                    <div class="flex-1 flex flex-col items-center gap-1 group">
-                        <span class="text-[10px] font-bold {{ $last ? 'text-indigo-600' : 'text-gray-400' }}">{{ $point['count'] }}</span>
-                        <div class="w-full rounded-t-lg {{ $last ? 'bg-gradient-to-t from-indigo-500 to-purple-400' : 'bg-gray-100 group-hover:bg-gray-200' }} transition-colors" style="height:{{ $h }}%"></div>
-                        <span class="text-[10px] font-semibold {{ $last ? 'text-indigo-600' : 'text-gray-400' }} uppercase">{{ $point['label'] }}</span>
-                    </div>
-                    @endforeach
-                </div>
+                <div id="subscriptions-chart" class="w-full h-48"></div>
             </div>
         </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var options = {
+                    series: [{
+                        name: 'New Subscriptions',
+                        data: {!! json_encode($subscriptionChart->pluck('count')) !!}
+                    }],
+                    chart: {
+                        height: 192, // h-48 = 12rem = 192px
+                        type: 'area',
+                        fontFamily: 'inherit',
+                        toolbar: { show: false },
+                        zoom: { enabled: false }
+                    },
+                    colors: ['#4F46E5'], // Tailwind indigo-600
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shadeIntensity: 1,
+                            opacityFrom: 0.45,
+                            opacityTo: 0.05,
+                            stops: [50, 100, 100]
+                        }
+                    },
+                    dataLabels: { enabled: false },
+                    stroke: {
+                        curve: 'smooth',
+                        width: 2
+                    },
+                    xaxis: {
+                        categories: {!! json_encode($subscriptionChart->pluck('label')) !!},
+                        axisBorder: { show: false },
+                        axisTicks: { show: false },
+                        labels: {
+                            style: { colors: '#9CA3AF', fontSize: '11px', fontWeight: 500 }
+                        }
+                    },
+                    yaxis: {
+                        show: false, // Hide y-axis for a cleaner SaaS look
+                    },
+                    grid: {
+                        show: true,
+                        borderColor: '#F3F4F6',
+                        strokeDashArray: 4,
+                        padding: { top: 0, right: 0, bottom: 0, left: 10 }
+                    },
+                    tooltip: {
+                        theme: 'light',
+                        y: { formatter: function (val) { return val + " subs" } }
+                    }
+                };
 
+                var chart = new ApexCharts(document.querySelector("#subscriptions-chart"), options);
+                chart.render();
+            });
+        </script>
+        @endif
+
+        @if($widgets['recent_transactions'])
         {{-- Recent Transactions --}}
         <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
             <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -127,12 +210,14 @@
                 </table>
             </div>
         </div>
+        @endif
 
     </div>
 
     {{-- Right: col-span-1 --}}
     <div class="lg:col-span-1 space-y-5">
 
+        @if($widgets['action_required'])
         {{-- Pending Approvals Alert --}}
         @if($pendingReviews > 0)
         <div class="bg-amber-50 border border-amber-200 rounded-xl shadow-md p-4">
@@ -160,7 +245,9 @@
             </div>
         </div>
         @endif
+        @endif
 
+        @if($widgets['most_read_ebooks'])
         {{-- Most Read Ebooks Top 5 --}}
         <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
             <div class="px-4 py-3.5 border-b border-gray-100 flex items-center gap-2">
@@ -189,7 +276,29 @@
                 @endforelse
             </div>
         </div>
+        @endif
 
+        @if($widgets['recent_members'])
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+            <div class="px-4 py-3.5 border-b border-gray-100">
+                <h2 class="font-bold text-gray-900 text-sm">Recent Members</h2>
+            </div>
+            <div class="divide-y divide-gray-50">
+                @foreach(\App\Models\Member::with('user')->latest()->take(5)->get() as $member)
+                <div class="px-4 py-3 flex items-center gap-3 hover:bg-gray-50/60 transition-colors">
+                    <div class="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold flex-shrink-0">{{ strtoupper(substr($member->first_name ?? '?', 0, 1)) }}</div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold text-gray-900 truncate">{{ $member->first_name }} {{ $member->last_name }}</p>
+                        <p class="text-[10px] text-gray-400 truncate">{{ $member->user?->email }}</p>
+                    </div>
+                    <span class="text-[10px] text-gray-400">{{ $member->created_at->diffForHumans() }}</span>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        @if($widgets['activity_feed'])
         {{-- Live Activity Feed --}}
         <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
             <div class="px-4 py-3.5 border-b border-gray-100 flex items-center justify-between">
@@ -220,6 +329,7 @@
                 @endforelse
             </div>
         </div>
+        @endif
 
     </div>
 </div>
@@ -243,6 +353,67 @@
     </div>
 </div>
 @endif
+
+</div> {{-- End space-y-5 main content --}}
+
+{{-- ── Customize Slide-over ───────────────────────────────────────────── --}}
+<div x-show="customizeOpen" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[90]" 
+     x-transition:enter="ease-in-out duration-300"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="ease-in-out duration-300"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     @click="customizeOpen = false" style="display:none;"></div>
+     
+<div x-show="customizeOpen" 
+     x-transition:enter="transform transition ease-in-out duration-500"
+     x-transition:enter-start="translate-x-full"
+     x-transition:enter-end="translate-x-0"
+     x-transition:leave="transform transition ease-in-out duration-500"
+     x-transition:leave-start="translate-x-0"
+     x-transition:leave-end="translate-x-full"
+     class="fixed inset-y-0 right-0 z-[100] w-80 bg-white shadow-2xl flex flex-col pointer-events-auto" style="display:none;">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+        <h2 class="text-base font-semibold text-gray-900">Customize Dashboard</h2>
+        <button @click="customizeOpen = false" class="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all">✕</button>
+    </div>
+    <div class="flex-1 px-6 py-5 overflow-y-auto space-y-1">
+        <p class="text-xs text-gray-400 mb-4">Toggle widgets on or off. Click Save to apply.</p>
+        <template x-for="(label, key) in {
+            metrics: 'Metrics Row',
+            subscriptions_chart: 'Subscriptions Chart',
+            recent_transactions: 'Recent Transactions',
+            action_required: 'Action Required Alert',
+            most_read_ebooks: 'Most Read Ebooks',
+            recent_members: 'Recent Members',
+            activity_feed: 'Activity Feed'
+        }" :key="key">
+            <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                <span class="text-sm text-gray-700" x-text="label"></span>
+                <button @click="widgets[key] = !widgets[key]"
+                        :class="widgets[key] ? 'bg-indigo-600' : 'bg-gray-200'"
+                        class="relative inline-flex h-5 w-9 rounded-full transition-colors duration-200 focus:outline-none">
+                    <span :class="widgets[key] ? 'translate-x-4' : 'translate-x-0.5'"
+                          class="inline-block w-4 h-4 mt-0.5 bg-white rounded-full shadow transform transition-transform duration-200"></span>
+                </button>
+            </div>
+        </template>
+    </div>
+    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <button @click="saveWidgets()" :disabled="saving"
+                class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white text-sm font-medium rounded-lg transition-all">
+            <span x-text="saving ? 'Saving...' : 'Save Layout'"></span>
+        </button>
+    </div>
+</div>
+
+</div>
+
+<x-admin.ebook-drawer 
+    :categories="\App\Models\Category::orderBy('name')->get()" 
+    :authors="\App\Models\Author::orderBy('last_name')->get()" 
+/>
 
 </div>
 @endsection

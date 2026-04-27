@@ -65,7 +65,8 @@ Route::middleware(['auth', '2fa', 'role:admin'])
     ->name('admin.')
     ->group(function () {
 
-        Route::get('dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
+        Route::get ('dashboard',         [Admin\DashboardController::class, 'index'])->name('dashboard');
+        Route::post('dashboard/widgets', [Admin\DashboardController::class, 'saveWidgets'])->name('dashboard.widgets');
 
         Route::resource('users',      Admin\UserController::class)->except(['create', 'store']);
         Route::resource('authors',    Admin\AuthorController::class);
