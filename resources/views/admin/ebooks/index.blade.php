@@ -17,6 +17,7 @@
                 Add Ebook
             </button>
         </div>
+    </div>
 
     <x-admin.filter-bar 
         :action="route('admin.ebooks.index')" 
