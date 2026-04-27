@@ -17,7 +17,7 @@
     
     {{-- Left Column: Books List --}}
     <div class="lg:col-span-2 space-y-6">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
                 <h3 class="font-bold text-gray-900">Books in Series</h3>
                 <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded-full">{{ $ebooks->count() }} Books</span>
@@ -115,7 +115,7 @@
         </div>
 
         {{-- Collection Summary --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
             @if($collection->cover_image)
                 <div class="h-32 w-full bg-cover bg-center" style="background-image: url('{{ Storage::url($collection->cover_image) }}'); opacity: 0.8;"></div>
             @else

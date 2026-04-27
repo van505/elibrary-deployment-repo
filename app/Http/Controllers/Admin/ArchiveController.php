@@ -55,14 +55,16 @@ class ArchiveController extends Controller
             $counts[$key] = $model::onlyTrashed()->count();
         }
 
-        // 3. Apply Filters
-        $searchFields = $this->searchMap[$type] ?? [];
+        // 3. Apply Filters — exclude 'type' from the request so it never hits the DB as a column filter
+        $searchFields  = $this->searchMap[$type] ?? [];
+        $filterRequest = clone $request;
+        $filterRequest->request->remove('type');
+
         $query = $this->applyFilters(
             $query,
-            $request,
+            $filterRequest,
             'filter_archive',
-            $searchFields,
-            ['type']
+            $searchFields
         );
 
         $records = $query->paginate(15)->appends($request->query());

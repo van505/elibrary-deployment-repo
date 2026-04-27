@@ -41,7 +41,7 @@
 
     {{-- Transaction History --}}
     @if($transactions->count())
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
         <div class="px-5 py-4 border-b border-gray-100"><h2 class="text-sm font-semibold text-gray-700">Transaction History</h2></div>
         <table class="w-full text-sm">
             <thead class="bg-gray-50 text-gray-500"><tr>

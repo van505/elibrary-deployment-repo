@@ -65,7 +65,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {{-- Top 5 Ebooks --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 font-semibold text-gray-800">Most Read Ebooks</div>
             <table class="w-full text-sm">
                 <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
@@ -95,7 +95,7 @@
         </div>
 
         {{-- Top 5 Members --}}
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 font-semibold text-gray-800">Most Active Members</div>
             <table class="w-full text-sm">
                 <thead class="bg-gray-50 text-gray-500 uppercase text-xs">

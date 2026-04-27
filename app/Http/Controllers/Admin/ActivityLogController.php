@@ -27,7 +27,7 @@ class ActivityLogController extends Controller
         $logs = $query->paginate(15)->appends($request->query());
 
         // For dropdowns (could be optimized if tables get huge, but this works generally)
-        $users = User::orderBy('name')->get();
+        $users = User::orderBy('first_name')->get();
         $modules = ActivityLog::select('module')->distinct()->pluck('module');
         $actions = ActivityLog::select('action')->distinct()->pluck('action');
 

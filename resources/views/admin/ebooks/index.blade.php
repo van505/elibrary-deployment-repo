@@ -258,7 +258,7 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
         <table class="w-full text-sm">
             <thead class="bg-gray-50 border-b border-gray-200">
                 <tr>
@@ -369,7 +369,7 @@
                             @endphp
                             <button type="button"
                                @click="openEdit({{ $ebook->id }}, {{ Js::from($ebookInlineData) }})"
-                               class="p-1.5 text-indigo-300 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
+                               class="p-1.5 text-indigo-500 hover:text-indigo-700 rounded-lg transition-colors duration-200"
                                title="Edit">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                             </button>
@@ -377,7 +377,7 @@
                             {{-- Action Dropdown (Three Dots) --}}
                             <div x-data="{ open: false }" class="relative">
                                 <button @click="open = !open" @click.outside="open = false"
-                                        class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-gray-100 rounded-lg transition-all duration-200 focus:outline-none"
+                                        class="p-1.5 text-slate-500 hover:text-slate-700 rounded-lg transition-colors duration-200 focus:outline-none"
                                         title="More Actions">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg>
                                 </button>
