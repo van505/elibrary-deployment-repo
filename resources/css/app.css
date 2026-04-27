@@ -75,3 +75,15 @@ html {
     background: #3b82f6;
     border-radius: 3px;
 }
+
+/* ================================================
+   SIDEBAR SCROLL (HIDDEN SCROLLBAR)
+   ================================================ */
+.sidebar-scroll {
+    overflow-y: auto;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+.sidebar-scroll::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
