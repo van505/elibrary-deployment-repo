@@ -29,12 +29,18 @@ class ReviewController extends BaseMemberController
 
         $member = $this->getOrCreateMember();
 
-        Review::create([
+        $review = Review::create([
             'member_id' => $member->id,
             'ebook_id'  => $request->ebook_id,
             'rating'    => $request->rating,
             'comment'   => $request->comment,
             'status'    => 'pending',
+        ]);
+
+        \App\Models\AdminNotification::create([
+            'type' => 'new_review',
+            'message' => ($member->first_name ? $member->full_name : $member->user->email) . " submitted a review for '{$review->ebook->title}' — awaiting approval.",
+            'action_url' => route('admin.reviews.index'),
         ]);
 
         return redirect()->back()->with('success', 'Your review has been submitted and is awaiting approval.');

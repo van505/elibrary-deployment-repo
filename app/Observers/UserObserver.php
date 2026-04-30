@@ -40,6 +40,12 @@ class UserObserver
                     'expires_at' => null,
                 ]);
             }
+
+            \App\Models\AdminNotification::create([
+                'type' => 'new_member',
+                'message' => ($user->display_name ?? $user->email) . ' has registered as a new member.',
+                'action_url' => route('admin.members.show', $member->id),
+            ]);
         }
     }
 }

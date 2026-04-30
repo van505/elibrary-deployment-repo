@@ -84,26 +84,6 @@
             @endforeach
         </nav>
 
-        {{-- User + Logout --}}
-        <div class="px-4 py-4 border-t border-indigo-800/50 flex items-center justify-between bg-indigo-950/50">
-            <div class="flex items-center gap-3 min-w-0">
-                <div class="w-8 h-8 flex-shrink-0 bg-indigo-600 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm">
-                    {{ strtoupper(substr(auth()->user()->first_name ?? auth()->user()->email ?? 'A', 0, 1)) }}
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-white text-sm font-medium truncate">{{ auth()->user()->display_name ?? auth()->user()->email }}</p>
-                    <p class="text-indigo-300 text-xs truncate">Administrator</p>
-                </div>
-            </div>
-            <form method="POST" action="{{ route('logout') }}" class="flex flex-shrink-0 ml-2">
-                @csrf
-                <button type="submit" class="p-2 text-indigo-300 hover:bg-indigo-600 hover:text-white rounded-lg transition-colors" title="Logout">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                    </svg>
-                </button>
-            </form>
-        </div>
     </aside>
 
     {{-- ========== MAIN CONTENT ========== --}}
@@ -124,12 +104,110 @@
             <div class="flex items-center gap-1 border-l border-gray-200 pl-4">
 
                 {{-- Notification bell --}}
-                <button class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200 relative"
-                        title="Notifications">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
-                </button>
+                <div class="relative" x-data="{ notifyOpen: false }">
+                    <button @click="notifyOpen = !notifyOpen"
+                            @click.outside="notifyOpen = false"
+                            class="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200 relative"
+                            title="Notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        @if(isset($adminUnreadCount) && $adminUnreadCount > 0)
+                            <span class="absolute top-1.5 right-1.5 flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                            </span>
+                        @endif
+                    </button>
+
+                    {{-- Notifications Dropdown --}}
+                    <div x-show="notifyOpen"
+                         x-transition:enter="transition ease-out duration-100"
+                         x-transition:enter-start="transform opacity-0 scale-95"
+                         x-transition:enter-end="transform opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-75"
+                         x-transition:leave-start="transform opacity-100 scale-100"
+                         x-transition:leave-end="transform opacity-0 scale-95"
+                         class="absolute right-0 top-12 w-80 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden"
+                         style="display: none;">
+                        
+                        {{-- Header --}}
+                        <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-sm font-semibold text-gray-800">Notifications</h3>
+                                @if(isset($adminUnreadCount) && $adminUnreadCount > 0)
+                                    <span class="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $adminUnreadCount }} new</span>
+                                @endif
+                            </div>
+                            @if(isset($adminUnreadCount) && $adminUnreadCount > 0)
+                                <form action="{{ route('admin.notifications.mark-all-read') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">Mark all read</button>
+                                </form>
+                            @endif
+                        </div>
+
+                        {{-- List --}}
+                        <div class="max-h-80 overflow-y-auto">
+                            @if(isset($adminRecentNotifications) && $adminRecentNotifications->count() > 0)
+                                @foreach($adminRecentNotifications as $notification)
+                                    <div class="px-4 py-3 border-b border-gray-50 flex gap-3 hover:bg-gray-50 transition-colors {{ $notification->is_read ? 'bg-white' : 'bg-indigo-50/30' }}">
+                                        {{-- Icon --}}
+                                        @php
+                                            $iconBg = 'bg-gray-100'; $iconColor = 'text-gray-500'; $iconSvg = 'M15 17h5l-1.405-1.405...';
+                                            if ($notification->type === 'new_member') {
+                                                $iconBg = 'bg-emerald-100'; $iconColor = 'text-emerald-600'; 
+                                                $iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />';
+                                            } elseif ($notification->type === 'new_review') {
+                                                $iconBg = 'bg-amber-100'; $iconColor = 'text-amber-600';
+                                                $iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />';
+                                            } elseif ($notification->type === 'new_purchase') {
+                                                $iconBg = 'bg-blue-100'; $iconColor = 'text-blue-600';
+                                                $iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />';
+                                            } elseif ($notification->type === 'expiry_warning') {
+                                                $iconBg = 'bg-orange-100'; $iconColor = 'text-orange-600';
+                                                $iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />';
+                                            } else {
+                                                $iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />';
+                                            }
+                                        @endphp
+                                        <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 {{ $iconBg }} {{ $iconColor }}">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $iconSvg !!}</svg>
+                                        </div>
+                                        {{-- Content --}}
+                                        <div class="flex-1 min-w-0">
+                                            @if(!$notification->is_read)
+                                                <form action="{{ route('admin.notifications.mark-as-read', $notification->id) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    <button type="submit" class="text-sm text-gray-800 hover:text-indigo-600 text-left w-full line-clamp-2 leading-tight">
+                                                        {{ $notification->message }}
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <p class="text-sm text-gray-600 line-clamp-2 leading-tight">{{ $notification->message }}</p>
+                                            @endif
+                                            <p class="text-xs text-gray-400 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="px-4 py-8 text-center">
+                                    <div class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-2 border border-gray-100">
+                                        <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                                    </div>
+                                    <p class="text-sm text-gray-500">No notifications yet</p>
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- Footer --}}
+                        <div class="px-4 py-2 border-t border-gray-100 bg-gray-50/50 text-center">
+                            <a href="{{ route('admin.notifications.index') }}" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">
+                                View all notifications
+                            </a>
+                        </div>
+                    </div>
+                </div>
 
                 {{-- Separator --}}
                 <div class="w-px h-6 bg-gray-200 mx-1"></div>

@@ -68,5 +68,13 @@ class AppServiceProvider extends ServiceProvider
             $activeAnnouncements = \App\Models\Announcement::active()->get();
             $view->with('globalActiveAnnouncements', $activeAnnouncements);
         });
+
+        // ── Admin Notifications ViewComposer ──────────────────────────────────
+        View::composer('layouts.admin', function ($view) {
+            $adminUnreadCount = \App\Models\AdminNotification::where('is_read', false)->count();
+            $adminRecentNotifications = \App\Models\AdminNotification::latest()->limit(5)->get();
+            $view->with('adminUnreadCount', $adminUnreadCount)
+                 ->with('adminRecentNotifications', $adminRecentNotifications);
+        });
     }
 }

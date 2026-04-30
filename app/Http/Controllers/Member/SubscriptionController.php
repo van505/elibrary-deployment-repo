@@ -70,7 +70,7 @@ class SubscriptionController extends BaseMemberController
 
         // Record transaction for paid plans
         if ($newPlan->price > 0) {
-            Transaction::create([
+            $transaction = Transaction::create([
                 'member_id'      => $member->id,
                 'plan_id'        => $newPlan->id,
                 'amount'         => $newPlan->price,
@@ -78,6 +78,12 @@ class SubscriptionController extends BaseMemberController
                 'status'         => 'completed',
                 'reference_no'   => 'TXN-' . strtoupper(Str::random(8)),
                 'paid_at'        => now(),
+            ]);
+
+            \App\Models\AdminNotification::create([
+                'type' => 'new_purchase',
+                'message' => ($member->first_name ? $member->full_name : $member->user->email) . ' subscribed to ' . $newPlan->name . ' plan.',
+                'action_url' => route('admin.transactions.show', $transaction->id),
             ]);
         }
 

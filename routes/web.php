@@ -97,6 +97,12 @@ Route::middleware(['auth', '2fa', 'role:admin'])
 
         Route::get('reports', [Admin\ReportController::class, 'index'])->name('reports.index');
 
+        // Admin Notifications
+        Route::get('notifications', [Admin\NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('notifications/mark-all-read', [Admin\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+        Route::post('notifications/{notification}/read', [Admin\NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+        Route::delete('notifications/{notification}', [Admin\NotificationController::class, 'destroy'])->name('notifications.destroy');
+
         Route::post('members/{id}/toggle-status', [Admin\MemberController::class, 'toggleStatus'])->name('members.toggle-status');
 
         Route::get('settings', [Admin\SettingController::class, 'index'])->name('settings.index');
