@@ -15,12 +15,17 @@ class CategoryController extends Controller
 
     public function index(Request $request)
     {
-        $query = Category::query();
+        $query = Category::withCount('ebooks');
         $query = $this->applyFilters($query, $request, 'filter_categories', ['name']);
 
         $categories = $query->paginate(10)->appends($request->query());
 
-        return view('admin.categories.index', compact('categories'));
+        // Stats
+        $totalCategories = \App\Models\Category::count();
+        $mostUsed = \App\Models\Category::withCount('ebooks')->orderByDesc('ebooks_count')->first();
+        $ebooksCategorized = \App\Models\Ebook::whereNotNull('category_id')->count();
+
+        return view('admin.categories.index', compact('categories', 'totalCategories', 'mostUsed', 'ebooksCategorized'));
     }
 
     public function create()

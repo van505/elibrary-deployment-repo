@@ -47,7 +47,13 @@ class CollectionController extends Controller
 
         $collections = $query->paginate(20)->appends($request->query());
 
-        return view('admin.collections.index', compact('collections'));
+        // Stats
+        $totalCollections  = \App\Models\Collection::count();
+        $activeCollections = \App\Models\Collection::where('is_active', true)->count();
+        $totalEbooksInCollections = \App\Models\Collection::withCount('ebooks')->get()->sum('ebooks_count');
+        $avgEbooksPerCollection = $totalCollections > 0 ? round($totalEbooksInCollections / $totalCollections, 1) : 0;
+
+        return view('admin.collections.index', compact('collections', 'totalCollections', 'activeCollections', 'totalEbooksInCollections', 'avgEbooksPerCollection'));
     }
 
     public function create()

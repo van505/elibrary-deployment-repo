@@ -30,7 +30,13 @@ class EbookController extends Controller
         $categories = Category::orderBy('name')->get();
         $authors    = Author::orderBy('last_name')->get();
 
-        return view('admin.ebooks.index', compact('ebooks', 'categories', 'authors'));
+        // Stats
+        $totalEbooks  = Ebook::count();
+        $activeEbooks = Ebook::where('status', 'active')->count();
+        $inactiveEbooks = Ebook::where('status', 'inactive')->count();
+        $totalAccesses = \App\Models\EbookAccess::count();
+
+        return view('admin.ebooks.index', compact('ebooks', 'categories', 'authors', 'totalEbooks', 'activeEbooks', 'inactiveEbooks', 'totalAccesses'));
     }
 
     public function create()

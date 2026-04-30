@@ -2,20 +2,60 @@
 @section('title', 'Ebooks')
 
 @section('content')
-<div class="space-y-5" x-data="bulkActions({{ $ebooks->pluck('id')->toJson() }})" @keydown.window.escape="open = false">
+<div class="space-y-5" x-data="Object.assign(bulkActions({{ $ebooks->pluck('id')->toJson() }}), { viewMode: localStorage.getItem('ebooksView') || 'grid' })" @keydown.window.escape="open = false">
 
     {{-- Page Header --}}
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between mb-2">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Ebooks</h1>
-            <p class="text-gray-500 text-sm mt-1">Manage your digital library collection</p>
+            <p class="text-sm text-gray-500 mt-1">Manage your digital library collection</p>
         </div>
-        {{-- Slide-over Component --}}
-        <div>
-            <button @click="$dispatch('open-ebook-drawer')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm inline-flex items-center gap-2">
+        <div class="flex items-center gap-3">
+            {{-- View Toggle --}}
+            <div class="flex items-center bg-gray-100 rounded-lg p-1 gap-1">
+                <button @click="viewMode = 'grid'; localStorage.setItem('ebooksView', 'grid')"
+                        :class="viewMode === 'grid' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'"
+                        class="p-1.5 rounded-md transition-all duration-150" title="Grid View">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                </button>
+                <button @click="viewMode = 'table'; localStorage.setItem('ebooksView', 'table')"
+                        :class="viewMode === 'table' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'"
+                        class="p-1.5 rounded-md transition-all duration-150" title="Table View">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 6h18M3 14h18M3 18h18"/></svg>
+                </button>
+            </div>
+            <button @click="$dispatch('open-ebook-drawer')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm inline-flex items-center gap-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 Add Ebook
             </button>
+        </div>
+    </div>
+
+    {{-- Stats Cards --}}
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
+        <div class="bg-white rounded-xl border border-gray-100 border-t-2 border-t-indigo-500 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.07),0_2px_4px_-2px_rgba(0,0,0,0.05)] p-5 flex items-center gap-4 transition-all duration-200 hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.08),0_4px_6px_-4px_rgba(0,0,0,0.05)] hover:-translate-y-0.5">
+            <div class="w-11 h-11 bg-indigo-50 rounded-xl flex items-center justify-center flex-shrink-0 ring-1 ring-indigo-100 shadow-sm">
+                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            </div>
+            <div><div class="text-2xl font-bold text-gray-900">{{ $totalEbooks }}</div><div class="text-sm text-gray-500">Total Ebooks</div></div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 border-t-2 border-t-indigo-500 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.07),0_2px_4px_-2px_rgba(0,0,0,0.05)] p-5 flex items-center gap-4 transition-all duration-200 hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.08),0_4px_6px_-4px_rgba(0,0,0,0.05)] hover:-translate-y-0.5">
+            <div class="w-11 h-11 bg-emerald-50 rounded-xl flex items-center justify-center flex-shrink-0 ring-1 ring-emerald-100 shadow-sm">
+                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div><div class="text-2xl font-bold text-gray-900">{{ $activeEbooks }}</div><div class="text-sm text-gray-500">Active</div></div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 border-t-2 border-t-indigo-500 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.07),0_2px_4px_-2px_rgba(0,0,0,0.05)] p-5 flex items-center gap-4 transition-all duration-200 hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.08),0_4px_6px_-4px_rgba(0,0,0,0.05)] hover:-translate-y-0.5">
+            <div class="w-11 h-11 bg-amber-50 rounded-xl flex items-center justify-center flex-shrink-0 ring-1 ring-amber-100 shadow-sm">
+                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </div>
+            <div><div class="text-2xl font-bold text-gray-900">{{ $inactiveEbooks }}</div><div class="text-sm text-gray-500">Inactive</div></div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 border-t-2 border-t-indigo-500 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.07),0_2px_4px_-2px_rgba(0,0,0,0.05)] p-5 flex items-center gap-4 transition-all duration-200 hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.08),0_4px_6px_-4px_rgba(0,0,0,0.05)] hover:-translate-y-0.5">
+            <div class="w-11 h-11 bg-indigo-50 rounded-xl flex items-center justify-center flex-shrink-0 ring-1 ring-indigo-100 shadow-sm">
+                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0m6 3a2 2 0 11-4 0 2 2 0 014 0M7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            </div>
+            <div><div class="text-2xl font-bold text-gray-900">{{ number_format($totalAccesses) }}</div><div class="text-sm text-gray-500">Total Reads</div></div>
         </div>
     </div>
 
@@ -94,7 +134,7 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+    <div x-show="viewMode === 'table'" style="display:none;" class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
         <table class="w-full text-sm">
             <thead class="bg-gray-50 border-b border-gray-200">
                 <tr>
@@ -279,7 +319,6 @@
         </table>
         <div class="px-6 py-4 border-t border-gray-100">{{ $ebooks->links() }}</div>
     </div>
-</div>
 
 <script>
 
@@ -319,6 +358,80 @@ document.addEventListener('alpine:init', () => {
     }));
 });
 </script>
+
+{{-- Grid View --}}
+<div x-show="viewMode === 'grid'" style="display:none;">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        @forelse($ebooks as $index => $ebook)
+        <div x-show="viewMode === 'grid'"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             style="transition-delay: {{ ($index % 8) * 50 }}ms;"
+             class="bg-white rounded-xl border border-gray-100 shadow-[0_2px_4px_-1px_rgba(0,0,0,0.06),0_1px_2px_-1px_rgba(0,0,0,0.04)] overflow-hidden hover:-translate-y-1 hover:shadow-[0_12px_20px_-4px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.06)] hover:border-indigo-200 transition-all duration-200 ease-out group">
+            {{-- Cover --}}
+            @if($ebook->cover_image)
+                <img src="{{ asset('storage/' . $ebook->cover_image) }}" class="h-40 w-full object-cover" alt="{{ $ebook->title }}">
+            @else
+                <div class="h-40 w-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center">
+                    <svg class="w-12 h-12 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                </div>
+            @endif
+            {{-- Body --}}
+            <div class="p-4 relative">
+                {{-- Three-dot menu --}}
+                <div x-data="{ open: false }" class="absolute top-3 right-3">
+                    <button @click="open = !open" @click.outside="open = false"
+                            class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg>
+                    </button>
+                    <div x-show="open" style="display:none;"
+                         x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                         class="absolute right-0 top-8 w-40 bg-white rounded-xl shadow-lg border border-gray-100 z-50 py-1">
+                        <button @click="$dispatch('open-ebook-drawer-edit', { id: {{ $ebook->id }}, data: {{ Js::from(['title' => $ebook->title, 'category_id' => (string) $ebook->category_id, 'isbn' => $ebook->isbn ?? '', 'publisher' => $ebook->publisher ?? '', 'publish_year' => $ebook->publish_year ? (string)$ebook->publish_year : '', 'file_type' => $ebook->file_type, 'access_level' => $ebook->access_level, 'status' => $ebook->status ?? 'active', 'preview_pages' => $ebook->preview_pages ?? 10, 'tags' => $ebook->tags->pluck('tag_name')->join(', '), 'author_ids' => $ebook->authors->pluck('id')->map(fn($id) => (int)$id)->values()->all()]) }} }); open = false"
+                                class="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-colors">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            Edit
+                        </button>
+                        <a href="{{ route('admin.ebooks.show', $ebook) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            View
+                        </a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <form action="{{ route('admin.ebooks.destroy', $ebook) }}" method="POST" onsubmit="return confirm('Delete this ebook?')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                                <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="pr-6">
+                    <h3 class="font-semibold text-gray-900 truncate text-sm leading-snug">{{ $ebook->title }}</h3>
+                    <p class="text-xs text-gray-500 mt-0.5 truncate">{{ $ebook->authors->pluck('full_name')->join(', ') ?: '—' }}</p>
+                    <div class="flex items-center gap-2 mt-2 flex-wrap">
+                        @if($ebook->category)
+                            <span class="bg-indigo-50 text-indigo-700 text-xs rounded-full px-2 py-0.5 font-medium">{{ $ebook->category->name }}</span>
+                        @endif
+                        @if(($ebook->status ?? 'active') === 'active')
+                            <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>Active</span>
+                        @else
+                            <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-gray-50 text-gray-500"><span class="w-1.5 h-1.5 rounded-full bg-gray-400 inline-block"></span>Inactive</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        @empty
+        <div class="col-span-full text-center py-16 text-gray-500">No ebooks found.</div>
+        @endforelse
+    </div>
+    <div class="mt-4">{{ $ebooks->links() }}</div>
+</div>
+
+</div>
 
 <x-admin.ebook-drawer :categories="$categories" :authors="$authors" />
 

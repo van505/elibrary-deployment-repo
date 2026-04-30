@@ -2,20 +2,61 @@
 @section('title', 'Collections')
 
 @section('content')
-<div class="h-full" x-data="collectionDrawer()" @keydown.window.escape="open = false">
+<div class="h-full" x-data="Object.assign(collectionDrawer(), { viewMode: localStorage.getItem('collectionsView') || 'grid' })" @keydown.window.escape="open = false">
     <div class="space-y-5">
 
     {{-- Page Header --}}
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between mb-2">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Collections</h1>
-            <p class="text-gray-500 text-sm mt-1">Group related ebooks into sequential series or thematic collections</p>
+            <p class="text-sm text-gray-500 mt-1">Group related ebooks into sequential series or thematic collections</p>
         </div>
-        <button @click="openCreate()"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-            Create Collection
-        </button>
+        <div class="flex items-center gap-3">
+            <div class="flex items-center bg-gray-100 rounded-lg p-1 gap-1">
+                <button @click="viewMode = 'grid'; localStorage.setItem('collectionsView', 'grid')"
+                        :class="viewMode === 'grid' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'"
+                        class="p-1.5 rounded-md transition-all duration-150" title="Grid View">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                </button>
+                <button @click="viewMode = 'table'; localStorage.setItem('collectionsView', 'table')"
+                        :class="viewMode === 'table' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'"
+                        class="p-1.5 rounded-md transition-all duration-150" title="Table View">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 6h18M3 14h18M3 18h18"/></svg>
+                </button>
+            </div>
+            <button @click="openCreate()" class="inline-flex items-center gap-2 px-4 py-2 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition-colors shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                Create Collection
+            </button>
+        </div>
+    </div>
+
+    {{-- Stats Cards --}}
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-2">
+        <div class="bg-white rounded-xl border border-gray-100 border-t-2 border-t-teal-500 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.07),0_2px_4px_-2px_rgba(0,0,0,0.05)] p-5 flex items-center gap-4 transition-all duration-200 hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.08),0_4px_6px_-4px_rgba(0,0,0,0.05)] hover:-translate-y-0.5">
+            <div class="w-11 h-11 bg-teal-50 rounded-xl flex items-center justify-center flex-shrink-0 ring-1 ring-teal-100 shadow-sm">
+                <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            </div>
+            <div><div class="text-2xl font-bold text-gray-900">{{ $totalCollections }}</div><div class="text-sm text-gray-500">Total Collections</div></div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 border-t-2 border-t-teal-500 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.07),0_2px_4px_-2px_rgba(0,0,0,0.05)] p-5 flex items-center gap-4 transition-all duration-200 hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.08),0_4px_6px_-4px_rgba(0,0,0,0.05)] hover:-translate-y-0.5">
+            <div class="w-11 h-11 bg-emerald-50 rounded-xl flex items-center justify-center flex-shrink-0 ring-1 ring-emerald-100 shadow-sm">
+                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div><div class="text-2xl font-bold text-gray-900">{{ $activeCollections }}</div><div class="text-sm text-gray-500">Active</div></div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 border-t-2 border-t-teal-500 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.07),0_2px_4px_-2px_rgba(0,0,0,0.05)] p-5 flex items-center gap-4 transition-all duration-200 hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.08),0_4px_6px_-4px_rgba(0,0,0,0.05)] hover:-translate-y-0.5">
+            <div class="w-11 h-11 bg-teal-50 rounded-xl flex items-center justify-center flex-shrink-0 ring-1 ring-teal-100 shadow-sm">
+                <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13"/></svg>
+            </div>
+            <div><div class="text-2xl font-bold text-gray-900">{{ $totalEbooksInCollections }}</div><div class="text-sm text-gray-500">Total Ebooks</div></div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 border-t-2 border-t-teal-500 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.07),0_2px_4px_-2px_rgba(0,0,0,0.05)] p-5 flex items-center gap-4 transition-all duration-200 hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.08),0_4px_6px_-4px_rgba(0,0,0,0.05)] hover:-translate-y-0.5">
+            <div class="w-11 h-11 bg-teal-50 rounded-xl flex items-center justify-center flex-shrink-0 ring-1 ring-teal-100 shadow-sm">
+                <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            </div>
+            <div><div class="text-2xl font-bold text-gray-900">{{ $avgEbooksPerCollection }}</div><div class="text-sm text-gray-500">Avg Ebooks</div></div>
+        </div>
     </div>
 
 
@@ -47,8 +88,79 @@
         @endif
     </form>
 
-    {{-- ── Collections Table ───────────────────────────────────── --}}
-    <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+    {{-- ── Collections Grid/Table ─────────────────────────────── --}}
+    {{-- Grid View --}}
+    <div x-show="viewMode === 'grid'" style="display:none;" x-data="{ show: false }" x-init="setTimeout(() => show = true, 50)">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            @forelse($collections as $index => $collection)
+            @php
+                $colInlineData = ['name' => $collection->name, 'description' => $collection->description ?? '', 'is_active' => (bool)$collection->is_active, 'currentCover' => $collection->cover_image ? Storage::url($collection->cover_image) : null];
+            @endphp
+            <div x-show="show"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-2"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 style="transition-delay: {{ ($index % 8) * 50 }}ms; display:none;"
+                 class="bg-white rounded-xl border border-gray-100 shadow-[0_2px_4px_-1px_rgba(0,0,0,0.06),0_1px_2px_-1px_rgba(0,0,0,0.04)] overflow-hidden hover:-translate-y-1 hover:shadow-[0_12px_20px_-4px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.06)] hover:border-teal-200 transition-all duration-200 ease-out">
+                {{-- Gradient Banner --}}
+                <div class="h-28 bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center relative">
+                    <h3 class="text-white font-bold text-center px-4 leading-snug drop-shadow">{{ $collection->name }}</h3>
+                </div>
+                {{-- Body --}}
+                <div class="p-4 relative">
+                    <div x-data="{ open: false }" class="absolute top-3 right-3">
+                        <button @click="open = !open" @click.outside="open = false"
+                                class="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg>
+                        </button>
+                        <div x-show="open" style="display:none;"
+                             x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                             class="absolute right-0 top-8 w-44 bg-white rounded-xl shadow-lg border border-gray-100 z-50 py-1">
+                            <button @click="openEdit({{ $collection->id }}, {{ Js::from($colInlineData) }}); open = false"
+                                    class="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-colors">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                Edit
+                            </button>
+                            <a href="{{ route('admin.collections.show', $collection) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                Manage Books
+                            </a>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <form action="{{ route('admin.collections.destroy', $collection) }}" method="POST" onsubmit="return confirm('Delete this collection?')">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                                    <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="pr-6">
+                        <h3 class="font-semibold text-gray-900 text-sm truncate">{{ $collection->name }}</h3>
+                        @if($collection->description)
+                            <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ $collection->description }}</p>
+                        @endif
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="bg-teal-50 text-teal-700 text-xs font-medium px-2 py-0.5 rounded-full">{{ $collection->ebooks_count ?? 0 }} ebooks</span>
+                            @if($collection->is_active)
+                                <span class="bg-emerald-50 text-emerald-700 text-xs font-medium px-2 py-0.5 rounded-full">Active</span>
+                            @else
+                                <span class="bg-gray-50 text-gray-500 text-xs font-medium px-2 py-0.5 rounded-full">Inactive</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @empty
+            <div class="col-span-full text-center py-16 text-gray-500">No collections found.</div>
+            @endforelse
+        </div>
+        <div class="mt-4">{{ $collections->links() }}</div>
+    </div>
+
+    {{-- Table View --}}
+    <div x-show="viewMode === 'table'" style="display:none;" class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
         <table class="w-full text-sm">
             <thead class="bg-gray-50 border-b border-gray-200">
                 <tr>

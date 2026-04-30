@@ -19,7 +19,13 @@ class AuthorController extends Controller
 
         $authors = $query->paginate(10)->appends($request->query());
 
-        return view('admin.authors.index', compact('authors'));
+        // Stats
+        $totalAuthors = \App\Models\Author::count();
+        $activeAuthors = \App\Models\Author::whereHas('ebooks', fn($q) => $q->where('status', 'active'))->count();
+        $totalEbooksByAuthors = \App\Models\Author::withCount('ebooks')->get()->sum('ebooks_count');
+        $featuredAuthor = \App\Models\Author::withCount('ebooks')->orderByDesc('ebooks_count')->first();
+
+        return view('admin.authors.index', compact('authors', 'totalAuthors', 'activeAuthors', 'totalEbooksByAuthors', 'featuredAuthor'));
     }
 
     public function create()
