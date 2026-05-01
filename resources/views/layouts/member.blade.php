@@ -9,7 +9,7 @@
     <style> body { font-family: 'Plus Jakarta Sans', sans-serif; } </style>
     @stack('styles')
 </head>
-<body class="bg-gray-50 flex h-screen overflow-hidden">
+<body class="bg-slate-50 flex h-screen overflow-hidden">
 
     {{-- ========== OVERLAY (mobile) ========== --}}
     <div id="sidebarOverlay"
@@ -47,9 +47,6 @@
                     ['route' => 'member.reviews.index',       'label' => 'My Reviews',         'icon' => 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z'],
                     ['route' => 'member.bookmarks.index',     'label' => 'My Bookmarks',          'icon' => 'M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z'],
                 ],
-                'PROFILE' => [
-                    ['route' => 'member.profile.edit',        'label' => 'My Profile',         'icon' => 'M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0M19 21a7 7 0 10-14 0'],
-                ],
             ];
             @endphp
 
@@ -86,33 +83,6 @@
                 </ul>
             </div>
         </nav>
-
-        {{-- User + Logout --}}
-        <div class="px-4 py-4 border-t border-slate-700 flex items-center justify-between">
-            <div class="flex items-center gap-3 min-w-0">
-                @if(auth()->user()->member?->avatar)
-                    <img src="{{ Storage::url(auth()->user()->member->avatar) }}"
-                         alt="Avatar"
-                         class="w-8 h-8 rounded-full object-cover flex-shrink-0">
-                @else
-                    <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                        {{ strtoupper(substr(auth()->user()->member?->full_name ?: auth()->user()->email ?? 'M', 0, 1)) }}
-                    </div>
-                @endif
-                <div class="flex-1 min-w-0">
-                    <p class="text-white text-sm font-medium truncate">{{ auth()->user()->member?->full_name ?: (auth()->user()->email ?? '') }}</p>
-                    <p class="text-slate-400 text-xs truncate">Member</p>
-                </div>
-            </div>
-            <form method="POST" action="{{ route('logout') }}" class="flex flex-shrink-0 ml-2">
-                @csrf
-                <button type="submit" class="p-2 text-slate-400 hover:bg-slate-700 hover:text-white rounded-lg transition-colors" title="Logout">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                    </svg>
-                </button>
-            </form>
-        </div>
     </aside>
 
 
@@ -120,17 +90,33 @@
     <div class="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
 
         {{-- Top Navbar --}}
-        <header class="bg-white border-b border-gray-200 px-4 md:px-6 py-4 flex items-center justify-between flex-shrink-0">
-            <div class="flex items-center gap-3">
+        <header class="bg-white border-b border-gray-100 px-4 md:px-6 py-4 flex items-center justify-between flex-shrink-0">
+            <div class="flex items-center min-w-0">
                 {{-- Hamburger (mobile only) --}}
                 <button id="hamburgerBtn"
                         onclick="toggleSidebar()"
-                        class="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                        class="md:hidden p-2 mr-3 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors flex-shrink-0"
                         aria-label="Toggle sidebar">
                     <span id="hamburgerIcon" class="text-xl leading-none">☰</span>
                 </button>
-                <h1 class="text-lg md:text-xl font-semibold text-gray-800">@yield('title', 'Dashboard')</h1>
+                @stack('breadcrumbs')
             </div>
+
+            {{-- Global Search Bar --}}
+            <div class="hidden md:block flex-1 max-w-md mx-4">
+                <form action="{{ route('member.ebooks.index') }}" method="GET" class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-4 w-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                           class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all shadow-sm"
+                           placeholder="Search ebooks, authors, or categories..."
+                           autocomplete="off">
+                </form>
+            </div>
+
             <div class="flex items-center gap-3">
                 {{-- Wishlist Icon --}}
                 <a href="{{ route('member.wishlist.index') }}" class="p-2 rounded-lg text-gray-500 hover:text-red-500 hover:bg-red-50 transition-colors" title="My Wishlist" aria-label="Wishlist">
@@ -182,11 +168,9 @@
                 </div>
 
                 {{-- Member Avatar Dropdown --}}
-                <div class="relative" id="memberAvatarWrapper">
-                    <button id="memberAvatarBtn"
-                            onclick="toggleMemberDropdown(event)"
-                            class="flex items-center gap-2 cursor-pointer focus:outline-none group"
-                            aria-haspopup="true" aria-expanded="false">
+                <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                    <button @click="open = !open"
+                            class="flex items-center gap-2 cursor-pointer focus:outline-none group">
                         <span class="hidden sm:block text-sm text-gray-600 font-medium group-hover:text-gray-900 transition-colors">
                             {{ auth()->user()->member?->full_name ?: (auth()->user()->email ?? '') }}
                         </span>
@@ -205,43 +189,68 @@
                     </button>
 
                     {{-- Dropdown Panel --}}
-                    <div id="memberDropdown"
-                         class="hidden absolute right-0 top-12 w-56 bg-white rounded-xl shadow-xl border border-gray-100 z-50
-                                opacity-0 scale-95 transition-all duration-150 ease-out origin-top-right"
+                    <div x-show="open"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 scale-95 translate-y-[-4px]"
+                         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 scale-100"
+                         x-transition:leave-end="opacity-0 scale-95"
+                         class="absolute right-0 top-[calc(100%+8px)] w-[220px] bg-white rounded-xl border border-gray-100 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.12)] z-50 overflow-hidden"
+                         style="display: none;"
                          role="menu">
-
+                        
                         {{-- Header --}}
-                        <div class="px-4 py-3 border-b border-gray-100">
-                            <p class="text-xs text-gray-500 font-medium">Signed in as</p>
-                            <p class="text-sm font-semibold text-gray-800 truncate">{{ auth()->user()->member?->full_name ?: (auth()->user()->email ?? 'Member') }}</p>
-                            <p class="text-xs text-gray-400 truncate">{{ auth()->user()->email }}</p>
+                        <div class="px-4 py-3 bg-gray-50 border-b border-gray-100 flex items-center gap-3">
+                            @if(auth()->user()->member?->avatar)
+                                <img src="{{ Storage::url(auth()->user()->member->avatar) }}" alt="Avatar" class="w-8 h-8 rounded-full object-cover flex-shrink-0">
+                            @else
+                                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                                    {{ strtoupper(substr(auth()->user()->member?->full_name ?: auth()->user()->email ?? 'M', 0, 1)) }}
+                                </div>
+                            @endif
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-medium text-gray-900 truncate">{{ auth()->user()->member?->full_name ?: (auth()->user()->email ?? 'Member') }}</p>
+                                <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
+                            </div>
                         </div>
 
-                        {{-- My Profile --}}
+                        {{-- Menu Items --}}
                         <div class="py-1">
                             <a href="{{ route('member.profile.edit') }}"
-                               class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                               class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
                                role="menuitem">
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0M19 21a7 7 0 10-14 0"/>
-                                </svg>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
                                 My Profile
+                            </a>
+                            
+                            <a href="{{ route('member.subscriptions.index') }}"
+                               class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                               role="menuitem">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
+                                My Subscription
+                            </a>
+
+                            {{-- TODO: create member settings page --}}
+                            <a href="{{ route('member.profile.edit') }}"
+                               class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                               role="menuitem">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                Settings
                             </a>
                         </div>
 
-                        <div class="border-t border-gray-100"></div>
+                        <div class="border-t border-gray-100 my-1"></div>
 
                         {{-- Logout --}}
                         <div class="py-1">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"
-                                        class="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                        class="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
                                         role="menuitem">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                                    </svg>
-                                    Logout
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
+                                    Sign Out
                                 </button>
                             </form>
                         </div>
@@ -440,40 +449,6 @@
     document.addEventListener('click', function(e) {
         if (!e.target.closest('#notificationDropdown') && !e.target.closest('[onclick="toggleNotifications()"]')) {
             notifDropdown.classList.add('hidden');
-        }
-    });
-
-    // ── Member Avatar Dropdown ──────────────────────────────────────────────
-    const memberDropdown = document.getElementById('memberDropdown');
-    const memberAvatarBtn = document.getElementById('memberAvatarBtn');
-    let memberDropdownOpen = false;
-
-    function toggleMemberDropdown(e) {
-        e.stopPropagation();
-        memberDropdownOpen ? closeMemberDropdown() : openMemberDropdown();
-    }
-
-    function openMemberDropdown() {
-        memberDropdown.classList.remove('hidden');
-        requestAnimationFrame(() => {
-            memberDropdown.classList.remove('opacity-0', 'scale-95');
-            memberDropdown.classList.add('opacity-100', 'scale-100');
-        });
-        memberAvatarBtn.setAttribute('aria-expanded', 'true');
-        memberDropdownOpen = true;
-    }
-
-    function closeMemberDropdown() {
-        memberDropdown.classList.add('opacity-0', 'scale-95');
-        memberDropdown.classList.remove('opacity-100', 'scale-100');
-        setTimeout(() => memberDropdown.classList.add('hidden'), 150);
-        memberAvatarBtn.setAttribute('aria-expanded', 'false');
-        memberDropdownOpen = false;
-    }
-
-    document.addEventListener('click', function(e) {
-        if (memberDropdownOpen && !document.getElementById('memberAvatarWrapper').contains(e.target)) {
-            closeMemberDropdown();
         }
     });
     </script>

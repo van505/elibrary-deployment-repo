@@ -1,6 +1,16 @@
 @extends('layouts.member')
 @section('title', $ebook->title)
 
+@push('breadcrumbs')
+<nav class="flex items-center text-sm">
+    <a href="{{ route('member.dashboard') }}" class="text-gray-400 hover:text-gray-600 transition-colors duration-150">Home</a>
+    <span class="text-gray-300 mx-1.5 select-none">›</span>
+    <a href="{{ route('member.ebooks.index') }}" class="text-gray-400 hover:text-gray-600 transition-colors duration-150">Library › Browse Ebooks</a>
+    <span class="text-gray-300 mx-1.5 select-none">›</span>
+    <span class="text-gray-700 font-medium truncate max-w-[200px]">{{ $ebook->title ?? 'Ebook Detail' }}</span>
+</nav>
+@endpush
+
 @section('content')
 <div class="space-y-6">
 

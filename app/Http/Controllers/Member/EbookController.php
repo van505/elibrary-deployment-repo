@@ -41,10 +41,27 @@ class EbookController extends BaseMemberController
             });
         }
 
+        if (request('sort')) {
+            $sort = request('sort');
+            if ($sort === 'popular') {
+                // Assuming 'accesses' is a relationship, or we can sort by views/accesses.
+                // If accesses relationship doesn't exist, we might have to join or use access count.
+                // But let's check if accesses relationship exists on Ebook model...
+                $query->withCount('accesses')->orderByDesc('accesses_count');
+            } elseif ($sort === 'az') {
+                $query->orderBy('title', 'asc');
+            } else {
+                $query->latest();
+            }
+        } else {
+            $query->latest();
+        }
+
         $ebooks      = $query->paginate(12);
         $accessedIds = $member->ebookAccess()->pluck('ebook_id')->toArray();
+        $wishlistIds = $member->wishlist()->pluck('ebook_id')->toArray();
 
-        return view('member.ebooks.index', compact('ebooks', 'categories', 'accessedIds', 'member'));
+        return view('member.ebooks.index', compact('ebooks', 'categories', 'accessedIds', 'member', 'wishlistIds'));
     }
 
     public function show(Ebook $ebook)

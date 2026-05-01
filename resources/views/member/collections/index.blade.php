@@ -1,10 +1,16 @@
 @extends('layouts.member')
 
-@section('header')
-    <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-        {{ __('Collections & Series') }}
-    </h2>
-@endsection
+@section('title', 'Collections')
+
+@push('breadcrumbs')
+<nav class="flex items-center text-sm">
+    <a href="{{ route('member.dashboard') }}" class="text-gray-400 hover:text-gray-600 transition-colors duration-150">Home</a>
+    <span class="text-gray-300 mx-1.5 select-none">›</span>
+    <span class="text-gray-400 mx-1.5">Library</span>
+    <span class="text-gray-300 mx-1.5 select-none">›</span>
+    <span class="text-gray-700 font-medium">Collections</span>
+</nav>
+@endpush
 
 @section('content')
 <div class="py-12">

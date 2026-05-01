@@ -1,16 +1,16 @@
 @extends('layouts.member')
 
-@section('header')
-    <div class="flex items-center gap-3">
-        <a href="{{ route('member.collections.index') }}" class="text-gray-500 hover:text-gray-900 transition flex items-center pr-2 border-r border-gray-300">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            <span class="sr-only">Back</span>
-        </a>
-        <h2 class="font-bold text-2xl text-gray-800 leading-tight">
-            {{ $collection->name }}
-        </h2>
-    </div>
-@endsection
+@section('title', $collection->name)
+
+@push('breadcrumbs')
+<nav class="flex items-center text-sm">
+    <a href="{{ route('member.dashboard') }}" class="text-gray-400 hover:text-gray-600 transition-colors duration-150">Home</a>
+    <span class="text-gray-300 mx-1.5 select-none">›</span>
+    <a href="{{ route('member.collections.index') }}" class="text-gray-400 hover:text-gray-600 transition-colors duration-150">Library › Collections</a>
+    <span class="text-gray-300 mx-1.5 select-none">›</span>
+    <span class="text-gray-700 font-medium truncate max-w-[200px]">{{ $collection->name ?? 'Collection' }}</span>
+</nav>
+@endpush
 
 @section('content')
 @php

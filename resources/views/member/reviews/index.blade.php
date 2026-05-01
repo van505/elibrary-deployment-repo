@@ -1,6 +1,16 @@
 @extends('layouts.member')
 @section('title', 'My Reviews')
 
+@push('breadcrumbs')
+<nav class="flex items-center text-sm">
+    <a href="{{ route('member.dashboard') }}" class="text-gray-400 hover:text-gray-600 transition-colors duration-150">Home</a>
+    <span class="text-gray-300 mx-1.5 select-none">›</span>
+    <span class="text-gray-400 mx-1.5">My Account</span>
+    <span class="text-gray-300 mx-1.5 select-none">›</span>
+    <span class="text-gray-700 font-medium">My Reviews</span>
+</nav>
+@endpush
+
 @section('content')
 <div class="space-y-6">
     <div>
