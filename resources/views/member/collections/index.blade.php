@@ -13,57 +13,73 @@
 @endpush
 
 @section('content')
-<div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        
-        <div class="mb-8 pl-4 sm:pl-0">
-            <h3 class="text-lg font-bold text-gray-900 border-l-4 border-yellow-400 pl-3">Browse Series</h3>
-            <p class="text-sm text-gray-500 mt-1 pl-4">Discover curated book collections and sequential series.</p>
+<div class="space-y-6">
+    
+    {{-- Search & Filters --}}
+    <form method="GET" class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-wrap gap-3 justify-between items-center">
+        <div class="relative flex-1 min-w-[200px] max-w-md">
+            <input type="text" name="search" value="{{ request('search') }}" autocomplete="off"
+                   placeholder="Search Collections..."
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
         </div>
+        <div class="flex items-center gap-3">
+            <select name="sort" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="">Sort By: Newest</option>
+                <option value="az" @selected(request('sort') === 'az')>Title (A-Z)</option>
+            </select>
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors">Search</button>
+            @if(request()->hasAny(['search', 'sort']))
+                <a href="{{ route('member.collections.index') }}" class="text-gray-500 hover:text-gray-700 px-4 py-2 text-sm">Clear</a>
+            @endif
+        </div>
+    </form>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 sm:px-0">
-            @forelse($collections as $collection)
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition group flex flex-col h-full">
-                    {{-- Cover Image --}}
-                    <div class="relative h-48 bg-gray-100 overflow-hidden">
-                        @if($collection->cover_image)
-                            <img src="{{ Storage::url($collection->cover_image) }}" alt="{{ $collection->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        @else
-                            <div class="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex flex-col items-center justify-center p-6 text-center text-white">
-                                <svg class="w-10 h-10 opacity-50 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                                <span class="font-bold text-lg opacity-90 leading-tight shadow-sm p-1">{{ $collection->name }}</span>
-                            </div>
-                        @endif
-                        
-                        {{-- Book Count Badge --}}
-                        <div class="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                            {{ $collection->ebooks_count }} {{ Str::plural('Book', $collection->ebooks_count) }}
+    <div class="mb-6">
+        <h3 class="text-xl font-bold text-gray-900 border-l-4 border-yellow-400 pl-3">Browse Series</h3>
+        <p class="text-sm text-gray-500 mt-1 pl-4">Discover curated book collections and sequential series.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @forelse($collections as $collection)
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col group hover:shadow-md transition-shadow">
+                {{-- Cover Image --}}
+                <div class="aspect-video w-full relative bg-gray-100 overflow-hidden">
+                    @if($collection->cover_image)
+                        <img src="{{ Storage::url($collection->cover_image) }}" alt="{{ $collection->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    @else
+                        <div class="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex flex-col items-center justify-center p-6 text-center text-white">
+                            <svg class="w-10 h-10 opacity-50 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                         </div>
-                    </div>
+                    @endif
                     
-                    {{-- Info --}}
-                    <div class="p-5 flex-1 flex flex-col">
-                        <h3 class="font-bold text-gray-900 text-lg mb-2 leading-tight">{{ $collection->name }}</h3>
-                        <p class="text-sm text-gray-500 line-clamp-2 mb-4 flex-1">{{ $collection->description ?: 'Explore this engaging book series.' }}</p>
-                        
-                        <a href="{{ route('member.collections.show', $collection->slug) }}" class="block w-full text-center bg-gray-50 hover:bg-yellow-400 border border-gray-200 hover:border-yellow-400 text-gray-900 font-bold py-2.5 rounded-xl transition-colors">
+                    {{-- Book Count Badge --}}
+                    <div class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full border border-white/10">
+                        {{ $collection->ebooks_count }} {{ Str::plural('Book', $collection->ebooks_count) }}
+                    </div>
+                </div>
+                
+                {{-- Info --}}
+                <div class="p-5 flex flex-col flex-grow">
+                    <h3 class="text-lg font-bold text-gray-900 mb-1 leading-tight">{{ $collection->name }}</h3>
+                    <p class="text-sm text-gray-500 line-clamp-2">{{ $collection->description ?: 'Explore this engaging book series.' }}</p>
+                    
+                    <div class="mt-auto pt-4">
+                        <a href="{{ route('member.collections.show', $collection->slug) }}" class="block w-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-medium py-2 rounded-lg transition-colors text-center">
                             View Series
                         </a>
                     </div>
                 </div>
-            @empty
-                <div class="col-span-full py-16 text-center text-gray-500 bg-white rounded-2xl shadow-sm border border-gray-100">
-                    <svg class="w-12 h-12 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    <p class="text-lg">No collections available yet.</p>
-                </div>
-            @endforelse
-        </div>
-        
-        <div class="mt-8 px-4 sm:px-0">
-            {{ $collections->links() }}
-        </div>
-        
+            </div>
+        @empty
+            <div class="col-span-full py-16 text-center text-gray-500 bg-white rounded-xl shadow-sm border border-slate-200">
+                <svg class="w-12 h-12 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <p class="text-lg">No collections available yet.</p>
+            </div>
+        @endforelse
+    </div>
+    
+    <div>
+        {{ $collections->links() }}
     </div>
 </div>
 @endsection

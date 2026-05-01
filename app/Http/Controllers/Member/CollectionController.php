@@ -9,10 +9,23 @@ class CollectionController extends Controller
 {
     public function index()
     {
-        $collections = Collection::active()
-                        ->withCount('ebooks')
-                        ->latest()
-                        ->paginate(12);
+        $query = Collection::active()->withCount('ebooks');
+
+        if (request('search')) {
+            $search = request('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if (request('sort') === 'az') {
+            $query->orderBy('name', 'asc');
+        } else {
+            $query->latest();
+        }
+
+        $collections = $query->paginate(12)->withQueryString();
 
         return view('member.collections.index', compact('collections'));
     }

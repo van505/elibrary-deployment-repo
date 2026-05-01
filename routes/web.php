@@ -162,14 +162,22 @@ Route::middleware(['auth', '2fa', 'verified', 'role:member', 'onboarding'])
         Route::get ('subscriptions',           [Member\SubscriptionController::class, 'index'])->name('subscriptions.index');
         Route::post('subscriptions/subscribe', [Member\SubscriptionController::class, 'subscribe'])->name('subscriptions.subscribe');
 
-        Route::resource('reviews', Member\ReviewController::class)->only(['index', 'store', 'destroy']);
+        Route::resource('reviews', Member\ReviewController::class)->only(['index', 'store', 'destroy', 'update']);
 
         // My Reading History
         Route::get('my-ebooks', [Member\MyEbookController::class, 'index'])->name('my-ebooks');
+        Route::delete('my-ebooks/clear', [Member\MyEbookController::class, 'clear'])->name('my-ebooks.clear');
+        Route::delete('my-ebooks/{id}', [Member\MyEbookController::class, 'destroy'])->name('my-ebooks.destroy');
 
         // Member Profile
         Route::get ('profile',        [Member\ProfileController::class, 'edit'])->name('profile.edit');
         Route::put ('profile/update', [Member\ProfileController::class, 'update'])->name('profile.update');
+
+        // Archive
+        Route::get ('archive', [Member\ArchiveController::class, 'index'])->name('archive.index');
+
+        // Help & Support
+        Route::get ('help', [Member\HelpController::class, 'index'])->name('help');
 
         // Bookmarks
         Route::get ('bookmarks',              [Member\BookmarkController::class, 'index'])->name('bookmarks.index');

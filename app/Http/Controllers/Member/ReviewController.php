@@ -46,6 +46,27 @@ class ReviewController extends BaseMemberController
         return redirect()->back()->with('success', 'Your review has been submitted and is awaiting approval.');
     }
 
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'rating'   => 'required|integer|min:1|max:5',
+            'comment'  => 'nullable|string|max:1000',
+        ]);
+
+        $member = $this->getOrCreateMember();
+        $review = Review::where('id', $id)
+            ->where('member_id', $member->id)
+            ->firstOrFail();
+
+        $review->update([
+            'rating'  => $request->rating,
+            'comment' => $request->comment,
+            'status'  => 'pending', // Re-evaluate on edit
+        ]);
+
+        return redirect()->back()->with('success', 'Your review has been updated and is awaiting approval.');
+    }
+
     public function destroy($id)
     {
         $member = $this->getOrCreateMember();
