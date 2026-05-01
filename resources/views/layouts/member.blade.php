@@ -6,7 +6,13 @@
     <title>ELibrary — @yield('title', 'Dashboard')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style> body { font-family: 'Plus Jakarta Sans', sans-serif; } </style>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 999px; }
+        .sidebar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+    </style>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @stack('styles')
 </head>
@@ -19,18 +25,18 @@
 
     {{-- ========== SIDEBAR ========== --}}
     <aside id="sidebar"
-           class="fixed md:relative z-30 w-64 bg-slate-800 flex flex-col flex-shrink-0 h-screen overflow-y-auto
+           class="sidebar fixed md:relative z-30 w-64 bg-gradient-to-b from-indigo-900 to-slate-900 flex flex-col flex-shrink-0 h-screen overflow-y-auto
                   -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
 
         {{-- Logo --}}
-        <div class="flex items-center gap-3 px-6 py-5 border-b border-slate-700">
+        <div class="flex items-center gap-3 px-6 py-5 border-b border-white/10">
             <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                 </svg>
             </div>
             <span class="text-white font-bold text-lg">ELibrary</span>
-            <span class="text-xs text-green-400 font-medium ml-auto">Member</span>
+            <span class="bg-white/15 text-white/80 rounded-full text-xs px-2 py-0.5 font-medium ml-auto">Member</span>
         </div>
 
         {{-- Navigation --}}
@@ -53,14 +59,14 @@
 
             @foreach($sections as $title => $links)
                 <div class="mb-4">
-                    <h3 class="px-3 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ $title }}</h3>
+                    <h3 class="px-3 text-xs font-bold text-white/30 uppercase tracking-wider mb-2">{{ $title }}</h3>
                     <ul class="space-y-1">
                         @foreach($links as $link)
                             @php $active = request()->routeIs($link['route'] . '*'); @endphp
                             <li>
                                 <a href="{{ route($link['route']) }}"
-                                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                                          {{ $active ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
+                                   class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150
+                                          {{ $active ? 'bg-white/15 text-white font-medium border-l-2 border-l-indigo-300' : 'text-white/60 hover:bg-white/10 hover:text-white' }}">
                                     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $link['icon'] }}"/>
                                     </svg>
@@ -73,10 +79,10 @@
             @endforeach
 
             {{-- BOTTOM LINKS --}}
-            <div class="mt-8 mb-4 border-t border-slate-700 pt-4">
+            <div class="mt-8 mb-4 border-t border-white/10 pt-4">
                 <ul class="space-y-1">
                     <li>
-                        <a href="{{ route('member.help') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium {{ request()->routeIs('member.help') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }} transition-colors">
+                        <a href="{{ route('member.help') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 {{ request()->routeIs('member.help') ? 'bg-white/15 text-white font-medium border-l-2 border-l-indigo-300' : 'text-white/60 hover:bg-white/10 hover:text-white' }}">
                             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Help
                         </a>

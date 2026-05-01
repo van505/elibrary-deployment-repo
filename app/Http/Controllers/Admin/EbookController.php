@@ -83,7 +83,7 @@ class EbookController extends Controller
             'file_type'    => $validated['file_type'],
             'access_level' => $validated['access_level'],
             'status'       => $validated['status'] ?? 'active',
-            'is_featured'  => $request->has('is_featured'),
+            'is_featured'  => $request->boolean('is_featured'),
             'preview_pages'=> (int) ($validated['preview_pages'] ?? 10),
         ]);
 
@@ -195,7 +195,7 @@ class EbookController extends Controller
             'file_type'    => $validated['file_type'],
             'access_level' => $validated['access_level'],
             'status'       => $validated['status'] ?? $ebook->status,
-            'is_featured'  => $request->has('is_featured'),
+            'is_featured'  => $request->boolean('is_featured'),
             'preview_pages'=> (int) ($validated['preview_pages'] ?? $ebook->preview_pages),
         ]);
 

@@ -14,13 +14,24 @@ Route::get('/', function () {
     $categories = Category::orderBy('name')->get();
 
     // Load up to 3 featured books for the hero section
-    $heroBooks = Ebook::where('is_featured', true)->latest()->limit(3)->get();
+    $heroBooks = Ebook::whereIn('status', ['active', 'Active', 'published', 'Published'])
+        ->where('is_featured', true)
+        ->latest()
+        ->limit(3)
+        ->get();
 
     // Editor's Choice spotlight
-    $spotlightEbook = Ebook::with('authors')->where('is_spotlighted', true)->first();
+    $spotlightEbook = Ebook::with('authors')
+        ->whereIn('status', ['active', 'Active', 'published', 'Published'])
+        ->where('is_spotlighted', true)
+        ->first();
 
     // Load all books with category for client-side filtering, sorted by access level
-    $featuredBooks = Ebook::with(['authors', 'category'])->orderByRaw("FIELD(access_level, 'free', 'basic', 'premium')")->latest()->get();
+    $featuredBooks = Ebook::with(['authors', 'category'])
+        ->whereIn('status', ['active', 'Active', 'published', 'Published'])
+        ->orderByRaw("FIELD(access_level, 'free', 'basic', 'premium')")
+        ->latest()
+        ->get();
 
     $featuredCollections = \App\Models\Collection::active()->withCount('ebooks')->latest()->take(4)->get();
 
