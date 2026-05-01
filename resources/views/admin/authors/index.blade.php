@@ -1,6 +1,16 @@
 @extends('layouts.admin')
 @section('title', 'Authors')
 
+@push('breadcrumbs')
+<nav class="flex items-center text-sm" aria-label="Breadcrumb">
+    <a href="{{ route('admin.dashboard') }}" class="text-gray-400 hover:text-gray-600 transition-colors duration-150">Dashboard</a>
+    <span class="text-gray-300 mx-1.5 select-none">›</span>
+    <span class="text-gray-400 mx-1.5">Library</span>
+    <span class="text-gray-300 mx-1.5 select-none">›</span>
+    <span class="text-gray-700 font-medium">Authors</span>
+</nav>
+@endpush
+
 @section('content')
 <div class="h-full" x-data="Object.assign(authorDrawer(), { viewMode: localStorage.getItem('authorsView') || 'grid' })" @keydown.window.escape="open = false">
     <div class="space-y-5">
@@ -125,7 +135,7 @@
                         </div>
                         <div class="pr-6">
                             <h3 class="font-semibold text-gray-900 text-sm">{{ $author->full_name }}</h3>
-                            <p class="text-xs text-gray-500 mt-0.5">{{ $flag }} {{ $author->nationality ?? 'Unknown nationality' }}</p>
+                            <p class="text-xs text-gray-500 mt-0.5">{{ $flag }} {{ trim(preg_replace('/^[A-Z]{2}\s/', '', $author->nationality ?? '')) ?: 'Unknown nationality' }}</p>
                             @if($author->bio)
                                 <p class="text-xs text-gray-400 mt-1 line-clamp-2">{{ $author->bio }}</p>
                             @endif
@@ -148,7 +158,7 @@
                         <th class="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Author</th>
                         <th class="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Nationality</th>
                         <th class="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Ebooks</th>
-                        <th class="px-6 py-3"></th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wide">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -166,7 +176,7 @@
                                 <span class="font-semibold text-gray-900">{{ $author->full_name }}</span>
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-gray-500 text-sm">{{ $flag }} {{ $author->nationality ?? '—' }}</td>
+                        <td class="px-6 py-4 text-gray-500 text-sm">{{ $flag }} {{ trim(preg_replace('/^[A-Z]{2}\s/', '', $author->nationality ?? '')) ?: '—' }}</td>
                         <td class="px-6 py-4">
                             <span class="inline-flex items-center px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
                                 {{ $author->ebooks_count ?? 0 }}

@@ -1,6 +1,16 @@
 @extends('layouts.admin')
 @section('title', 'Transactions')
 
+@push('breadcrumbs')
+<nav class="flex items-center text-sm" aria-label="Breadcrumb">
+    <a href="{{ route('admin.dashboard') }}" class="text-gray-400 hover:text-gray-600 transition-colors duration-150">Dashboard</a>
+    <span class="text-gray-300 mx-1.5 select-none">›</span>
+    <span class="text-gray-400 mx-1.5">Billing</span>
+    <span class="text-gray-300 mx-1.5 select-none">›</span>
+    <span class="text-gray-700 font-medium">Transactions</span>
+</nav>
+@endpush
+
 @section('content')
 <div class="space-y-5">
     <div class="flex items-center justify-between">

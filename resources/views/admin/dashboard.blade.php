@@ -1,6 +1,12 @@
 @extends('layouts.admin')
 @section('title', 'Dashboard')
 
+@push('breadcrumbs')
+<nav class="flex items-center text-sm" aria-label="Breadcrumb">
+    <span class="text-gray-700 font-medium">Dashboard</span>
+</nav>
+@endpush
+
 @section('content')
 <div x-data="{
     customizeOpen: false,

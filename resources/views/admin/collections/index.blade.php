@@ -1,6 +1,16 @@
 @extends('layouts.admin')
 @section('title', 'Collections')
 
+@push('breadcrumbs')
+<nav class="flex items-center text-sm" aria-label="Breadcrumb">
+    <a href="{{ route('admin.dashboard') }}" class="text-gray-400 hover:text-gray-600 transition-colors duration-150">Dashboard</a>
+    <span class="text-gray-300 mx-1.5 select-none">›</span>
+    <span class="text-gray-400 mx-1.5">Library</span>
+    <span class="text-gray-300 mx-1.5 select-none">›</span>
+    <span class="text-gray-700 font-medium">Collections</span>
+</nav>
+@endpush
+
 @section('content')
 <div class="h-full" x-data="Object.assign(collectionDrawer(), { viewMode: localStorage.getItem('collectionsView') || 'grid' })" @keydown.window.escape="open = false">
     <div class="space-y-5">
@@ -102,10 +112,20 @@
                  x-transition:enter-end="opacity-100 translate-y-0"
                  style="transition-delay: {{ ($index % 8) * 50 }}ms; display:none;"
                  class="bg-white rounded-xl border border-gray-100 shadow-[0_2px_4px_-1px_rgba(0,0,0,0.06),0_1px_2px_-1px_rgba(0,0,0,0.04)] overflow-hidden hover:-translate-y-1 hover:shadow-[0_12px_20px_-4px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.06)] hover:border-teal-200 transition-all duration-200 ease-out">
-                {{-- Gradient Banner --}}
-                <div class="h-28 bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center relative">
-                    <h3 class="text-white font-bold text-center px-4 leading-snug drop-shadow">{{ $collection->name }}</h3>
-                </div>
+                {{-- Cover image or fallback gradient --}}
+                @if($collection->cover_image)
+                    <img src="{{ asset('storage/' . $collection->cover_image) }}"
+                         alt="{{ $collection->name }}"
+                         class="w-full h-28 object-cover"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="h-28 w-full bg-gradient-to-br from-teal-400 to-teal-600 items-center justify-center hidden">
+                        <h3 class="text-white font-bold text-center px-4 leading-snug drop-shadow">{{ Str::limit($collection->name, 20) }}</h3>
+                    </div>
+                @else
+                    <div class="h-28 bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center relative">
+                        <h3 class="text-white font-bold text-center px-4 leading-snug drop-shadow">{{ $collection->name }}</h3>
+                    </div>
+                @endif
                 {{-- Body --}}
                 <div class="p-4 relative">
                     <div x-data="{ open: false }" class="absolute top-3 right-3">
@@ -168,7 +188,7 @@
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Books</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Created</th>
-                    <th class="px-4 py-3"></th>
+                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wide">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
