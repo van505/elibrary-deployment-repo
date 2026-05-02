@@ -65,15 +65,17 @@ class LoginRequest extends FormRequest
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey(), 900); // 15 minutes lockout
 
-            // Log the failed attempt (no auth()->id() since login failed)
-            ActivityLog::create([
-                'user_id'    => $existingUser?->id,
-                'action'     => 'login_failed',
-                'module'     => 'auth',
-                'description'=> 'Failed login attempt for: ' . $this->email,
-                'ip_address' => $this->ip(),
-                'user_agent' => $this->userAgent(),
-            ]);
+            // Log the failed attempt only if the user exists (avoid null user_id constraint violation)
+            if ($existingUser) {
+                ActivityLog::create([
+                    'user_id'    => $existingUser->id,
+                    'action'     => 'login_failed',
+                    'module'     => 'auth',
+                    'description'=> 'Failed login attempt for: ' . $this->email,
+                    'ip_address' => $this->ip(),
+                    'user_agent' => $this->userAgent(),
+                ]);
+            }
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
