@@ -9,7 +9,7 @@ class SettingsSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('settings')->insert([
+        $settings = [
             [
                 'key'         => 'platform_name',
                 'value'       => 'ELibrary',
@@ -50,6 +50,13 @@ class SettingsSeeder extends Seeder
                 'created_at'  => now(),
                 'updated_at'  => now(),
             ],
-        ]);
+        ];
+
+        foreach ($settings as $setting) {
+            DB::table('settings')->updateOrInsert(
+                ['key' => $setting['key']],
+                $setting
+            );
+        }
     }
 }
