@@ -85,4 +85,6 @@ return [
         public_path('storage') => storage_path('app/public'),
     ],
 
+    'relative_links' => true,
+
 ];
