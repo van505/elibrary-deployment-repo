@@ -1,5 +1,0 @@
-{
-  "build": {
-    "phpExtensions": ["gd", "mbstring", "pdo_mysql", "tokenizer", "xml", "ctype", "json", "bcmath", "fileinfo", "openssl"]
-  }
-}
