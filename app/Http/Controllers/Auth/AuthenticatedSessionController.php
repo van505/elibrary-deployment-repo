@@ -30,14 +30,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Invalidate all other sessions for this user EXCEPT the current one
-        $sessionId = $request->session()->getId();
-        if ($sessionId) {
-            DB::table('sessions')
-                ->where('user_id', auth()->id())
-                ->where('id', '!=', $sessionId)
-                ->delete();
-        }
+
         
         ActivityLogger::log('login', 'auth', 'User logged in successfully.');
 
