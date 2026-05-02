@@ -9,32 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Models\Ebook;
 use App\Models\Category;
-use Illuminate\Support\Facades\Artisan;
 
-Route::get('/seed-admin', function () {
-    try {
-        Artisan::call('db:seed', ['--class' => 'AdminSeeder', '--force' => true]);
-        return 'Admin seeded! Check /debug-db again.';
-    } catch (\Exception $e) {
-        return 'Error: ' . $e->getMessage();
-    }
-});
-
-Route::get('/debug-db', function () {
-    try {
-        $db = DB::connection()->getDatabaseName();
-        $users = DB::table('users')->get();
-        return response()->json([
-            'connection' => config('database.default'),
-            'database' => $db,
-            'host' => config('database.connections.mysql.host'),
-            'users_count' => count($users),
-            'users' => $users
-        ]);
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()]);
-    }
-});
 
 Route::get('/', function () {
     $categories = Category::orderBy('name')->get();
