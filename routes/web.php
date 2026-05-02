@@ -9,6 +9,16 @@ use Illuminate\Support\Facades\Route;
 
 use App\Models\Ebook;
 use App\Models\Category;
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/seed-admin', function () {
+    try {
+        Artisan::call('db:seed', ['--class' => 'AdminSeeder', '--force' => true]);
+        return 'Admin seeded! Check /debug-db again.';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
 
 Route::get('/debug-db', function () {
     try {
