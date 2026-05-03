@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Mail;
+use Symfony\Component\Mailer\Transport\Dsn;
+use Symfony\Component\Mailer\Bridge\Brevo\Transport\BrevoTransportFactory;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,6 +25,13 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Mail::extend('brevo', function (array $config = []) {
+            return (new BrevoTransportFactory())->create(new Dsn(
+                'brevo+api',
+                'default',
+                env('BREVO_API_KEY')
+            ));
+        });
         if (app()->environment('production') || str_contains(config('app.url'), 'https://')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
