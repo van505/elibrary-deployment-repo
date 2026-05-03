@@ -18,7 +18,8 @@
         "pragmarx/google2fa-laravel": "^3.0",
         "setasign/fpdf": "^1.8",
         "setasign/fpdi": "^2.6",
-        "symfony/brevo-mailer": "^7.4"
+        "symfony/brevo-mailer": "^7.4",
+        "symfony/http-client": "^7.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
